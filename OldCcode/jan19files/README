@@ -1,0 +1,11 @@
+This files included here are my research up to January 19, 1995.
+
+	The changes that exist here are as follows:
+		-a working 3-D annealer with 5 components
+		-a weight adjustment based on temperature (actually left from
+			2-D model)
+		-a normalization based on Simon's old normaliztion code
+		-heat.app a program that attempts to simulate the penalties 
+			produced by heat3D.c
+		-much work was done on the LU-Decomp. in attempts to find
+			a quicker way to solve it.  It didn't work.
