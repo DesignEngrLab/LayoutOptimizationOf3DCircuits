@@ -199,7 +199,7 @@ struct Design *design;
   FILE *fptr;
 
   pi = 4.0*atan(1.0);
-  design->first_comp = (struct Component *) malloc(sizeof(struct Component));
+  design->first_comp = (struct Component *) malloc(sizeof(struct Component));    //memory allocation
   comp_ptr = design->first_comp;
 
   fptr = fopen("datafile2", "r");
@@ -240,7 +240,7 @@ struct Design *design;
     comp_ptr->q = q;
     comp_ptr->k = k;
     comp_ptr->orientation = 0;
-    if (comp_ptr->shape_type[0] == 'B')
+    if (comp_ptr->shape_type[0] == 'B') //b = block
       {
 	comp_ptr->half_area = (x_dim * y_dim) + (y_dim * z_dim) + (x_dim * z_dim);
 	comp_ptr->volume = x_dim * y_dim * z_dim;
