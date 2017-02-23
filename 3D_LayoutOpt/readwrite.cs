@@ -343,7 +343,7 @@ namespace _3D_LayoutOpt
                 avg_old_value = Convert.ToDouble(items2[3]);
             }
 
-            init_bounds(design);
+            Program.init_bounds(design);
             obj_function.init_overlaps(design);
             i = -1;
             while (++i < Constants.OBJ_NUM)

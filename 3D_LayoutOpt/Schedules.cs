@@ -49,13 +49,14 @@ namespace _3D_LayoutOpt
                 i = 0;
                 sum = 0;
                 sum_sqrs = 0;
-                while ((fscanf(fptr, "%lf", &eval)) && !(feof(fptr)))
+                string line;
+                while ((line = streamreader.ReadLine()) != null)
                 {
                     ++i;
+                    eval = Convert.ToDouble(line);
                     sum += eval;
                     sum_sqrs += eval * eval;
                 }
-
             }
 
 
@@ -132,7 +133,7 @@ namespace _3D_LayoutOpt
 
                 while (++i <= Constants.SAMPLE)
                 {
-                    take_step(design, dummy_hustin, which1, which2); /* IN ANNEAL_ALG.C */
+                    anneal_alg.take_step(design, dummy_hustin, out which1, out which2); /* IN ANNEAL_ALG.C */
                     eval = obj_function.evaluate(design, i, Constants.SAMPLE); /* IN OBJ_FUNCTION.C */
 
                     /* Sending (eval + 1.0) as the current_eval makes every step an "improvement".  Thus  */
@@ -140,7 +141,7 @@ namespace _3D_LayoutOpt
                     accept_flag = anneal_alg.accept(1, eval, (eval + 1.0), design);
                     if (accept_flag > 0)
                     {
-                        update_accept(design, 0, accept_flag, column, update, /* IN ANNEAL_ALG.C */
+                        anneal_alg.update_accept(design, 0, accept_flag, column, update, /* IN ANNEAL_ALG.C */
                             eval, dummy_eval, (eval + 1.0));
                         streamwriter.WriteLine("%lf\n", eval);
                     }
@@ -148,7 +149,7 @@ namespace _3D_LayoutOpt
                     {
                         --i;
 
-                        update_reject(design, 0, which1, which2, eval); /* IN ANNEAL_ALG.C */
+                        anneal_alg.update_reject(design, 0, which1, which2, eval); /* IN ANNEAL_ALG.C */
                     }
                 }
             }

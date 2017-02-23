@@ -253,7 +253,7 @@ namespace _3D_LayoutOpt
 /* rotates a component 90 degrees along a random axis.  "Swap" switches the location  */
 /* of two components.                                                                 */
 /* ---------------------------------------------------------------------------------- */
-             static   void   take_step(Design design, Hustin hustin, out int which1, out int which2)
+        public static void take_step(Design design, Hustin hustin, out int which1, out int which2)
                 {
                     int i;
                     double prob;
@@ -262,10 +262,12 @@ namespace _3D_LayoutOpt
                     which1 = Program.my_random(1, Constants.COMP_NUM);
 
 /* Generate a random number to pick a move.  Then, step through the move probabilites */
-/* to find the appropriate move.                                                      */
-                    prob = random()/2147483649;
-                    i = -1;
+/* to find the appropriate move. 
+                                                     */
+                    Random random = new Random();
+                    prob = random.NextDouble();
 
+                    i = -1;
                     which2 = 0;
 
                     i = -1;
@@ -292,7 +294,7 @@ namespace _3D_LayoutOpt
 	                        else                   /* If we reach this, we are at the last move (swap) */
 	                        {
 /* Pick at random a second component (different from the first) to swap.              */
-                                which2 = my_random(1, (Constants.COMP_NUM - 1));
+                                which2 = Program.my_random(1, (Constants.COMP_NUM - 1));
 	                            if (which2 >= which1)
 		                            ++(which2);
 
@@ -507,7 +509,7 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
 /* This function does all the stuff you want to do when a step is accepted.           */
 /* ---------------------------------------------------------------------------------- */
-   static     void update_accept(Design design, int iteration, int accept_flag, int column, int update, double step_eval, double best_eval, double current_eval)
+   public static void update_accept(Design design, int iteration, int accept_flag, int column, int update, double step_eval, double best_eval, double current_eval)
         {
 
   
@@ -544,7 +546,7 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
 /* This function does all the stuff you want to do when a step is rejected.           */
 /* ---------------------------------------------------------------------------------- */
-   static     void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
+   public static     void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
         {
 #if OUTPUT
             Console.WriteLine("Rejecting step\n\n");
@@ -648,7 +650,7 @@ namespace _3D_LayoutOpt
         /* Note that this function accepts according to a simulated annealing, downhill or    */
         /* random search algorithm, depending on the #if statements.                       */
         /* ---------------------------------------------------------------------------------- */
-        static int accept(double temp, double step_eval, double this_eval, Design design)
+        public static int accept(double temp, double step_eval, double this_eval, Design design)
         {
             int i;
             double rnd, prob;
@@ -657,7 +659,9 @@ namespace _3D_LayoutOpt
             {
                 if (step_eval > this_eval)
 	            {
-	                rnd = random()/2147483647;
+                    Random random = new Random();
+                    rnd = random.NextDouble();
+
 	                prob = Math.Exp(-(step_eval-this_eval)/temp);
 	                if (rnd<prob)
 

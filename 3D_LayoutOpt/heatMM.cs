@@ -500,7 +500,7 @@ namespace _3D_LayoutOpt
 /* This is the matrix solver for the vector of nodes in tfield.  It uses LU decomp.   */
 /* ---------------------------------------------------------------------------------- */
 
-        static void LU_Decomp(Design design, double[][] R, double[] flux, int n, int hbw)
+        public static void LU_Decomp(Design design, double[][] R, double[] flux, int n, int hbw)
         {
             int i, j, k, c = hbw;
             double sum;

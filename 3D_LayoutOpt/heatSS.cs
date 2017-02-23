@@ -17,7 +17,7 @@ namespace _3D_LayoutOpt
         public static void thermal_analysis_SS(Design design)
         {
             double[] flux;
-           double[,] R;
+            double[][] R;
             double[] ss_dim = new double[3];
             double[] fringe = new double[3];
             int i, j, tot_nodes;
@@ -48,7 +48,7 @@ namespace _3D_LayoutOpt
             flux = new double[tot_nodes]; 
             for (i = 0; i<tot_nodes; i++)
 	            flux[i] = 0.0;
-            R =new double[tot_nodes, 2 * divisions[1] * divisions[2] + 1];
+            R =new double[tot_nodes][];
             for (i = 0; i<tot_nodes; i++)
             {
 	            for (j = 0; j< (2* divisions[1]* divisions[2] +1); ++j)
@@ -56,13 +56,8 @@ namespace _3D_LayoutOpt
             }
             find_k_and_q(design, divisions, tot_nodes, ss_dim, flux, fringe);
             set_up_SS_matrix(design, flux, R, ss_dim, divisions, tot_nodes);
-            LU_Decomp(design, R, flux, tot_nodes, divisions[1]*divisions[2]);
+            heatMM.LU_Decomp(design, R, flux, tot_nodes, divisions[1]*divisions[2]);
             find_avg_temp(design, tot_nodes, ss_dim);
-    
-            for (i = 0; i<tot_nodes; i++)
-            free(R[i]);
-            free(R);
-            free(flux);
         }
 
 /* ---------------------------------------------------------------------------------- */
@@ -109,7 +104,8 @@ namespace _3D_LayoutOpt
 		                design.tfield[m].coord[0] = (design.box_min[0] - fringe[0]) + (0.5* ss_dim[0] + i* ss_dim[0]);
 		                design.tfield[m].coord[1] = (design.box_min[1] - fringe[1]) + (0.5* ss_dim[1] + j* ss_dim[1]);
 		                design.tfield[m].coord[2] = (design.box_min[2] - fringe[2]) + (0.5* ss_dim[2] + k* ss_dim[2]);
-		                comp = design.first_comp;
+                        comp = design.components[0];
+                        int n = 0;
 		                ktot = 0.0;
 		                vol = 0.0;
 		                flux[m] = 0.0;
@@ -119,7 +115,8 @@ namespace _3D_LayoutOpt
                             flux[m] += (comp.q)*((comp_vol) / (comp.dim[0]* comp.dim[1]* comp.dim[2]));
 		                    ktot += (comp_vol)*(comp.k);
 		                    vol += comp_vol;
-		                    comp = comp.next_comp;
+                            n++;
+                            comp = design.components[n];
 		                }
 		                design.tfield[m].vol = vol;
 		                design.tfield[m].k = (ktot/subspace_vol) + (design.kb)*(1 - (vol/subspace_vol));
@@ -313,7 +310,7 @@ namespace _3D_LayoutOpt
             tempSS = design.first_comp.temp;
 
 
-            thermal_analysis_MM(design);
+            heatMM.thermal_analysis_MM(design);
             comp = design.first_comp;
             i = 0;
             while (comp != null)

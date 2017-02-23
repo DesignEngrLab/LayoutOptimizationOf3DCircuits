@@ -32,8 +32,8 @@ namespace _3D_LayoutOpt
             eval_part_1(design);
             eval_part_2(design);
             eval_part_3(design);
-            heat_eval(design, steps_at_t, gen_limit);
-            update_coef(design);
+            heatbasic.heat_eval(design, steps_at_t, gen_limit);
+            obj_balance.update_coef(design);
 
         /* Add up the individual evaluations. */
             eval = 0.0;

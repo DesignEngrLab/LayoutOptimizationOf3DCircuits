@@ -24,7 +24,7 @@
             tempapp = design.components[0].temp;
 
 
-        HeatMM.    thermal_analysis_MM(design);
+            heatMM.thermal_analysis_MM(design);
             int i = 0;
             comp = design.components[i];
             while (comp != null)

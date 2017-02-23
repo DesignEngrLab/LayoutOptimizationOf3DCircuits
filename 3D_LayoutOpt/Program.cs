@@ -264,7 +264,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function initializes the bounds for the bounding box.                         */
         /* ---------------------------------------------------------------------------------- */
-        static void init_bounds(Design design)
+        public static void init_bounds(Design design)
         {
             int i, j;
             Component comp;
