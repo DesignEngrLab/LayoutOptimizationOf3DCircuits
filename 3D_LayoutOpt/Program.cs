@@ -32,41 +32,43 @@ namespace _3D_LayoutOpt
             Program.initializations(design);
 
             /*  Console.WriteLine("Sampling points in design space\n\n");*/
-            sample_space(design);  /* IN SCHEDULE.C */
+            Schedules.sample_space(design);  /* IN SCHEDULE.C */
 
-        #ifdef WAIT
+        #if WAIT
             Console.WriteLine("\nHit return to continue.\n\n");
             getchar(wait);
         #endif
 
-        #ifdef BOTH
+        #if BOTH
             Console.WriteLine("Problem set up as minimization of weighted sum of area_ratio and overlap.\n");
         #endif
 
             /*  Console.WriteLine("Ready to begin search using simulated annealing algorithm.\n\n");*/
 
-        #ifdef WAIT
+        #if WAIT
             Console.WriteLine("\nHit return to continue.\n\n");
             getchar(wait);
         #endif
 
-            anneal(design);                        /* This function is in anneal_alg.c */
-            save_design(design);
-            save_container(design);
-            save_tfield(design);
+            anneal_alg.anneal(design);                        /* This function is in anneal_alg.c */
+            readwrite.save_design(design);
+            readwrite.save_container(design);
+            readwrite.save_tfield(design);
 
             /* downhill(design, MIN_MOVE_DIST);      */
             end_time = get_time();
-            fptr = fopen("results","a");
-            if (design.new_obj_values[1] != 0.0)
+
+            using (StreamWriter writetext = new StreamWriter("results"))
             {
-                fprintf(fptr,"*** THE FINAL OVERLAP WAS NOT ZERO!!!\n");
-                Console.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!\n");
+                if (design.new_obj_values[1] != 0.0)
+                {
+                    writetext.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!\n");
+                    Console.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!\n");
+                }
+                writetext.WriteLine("The elapsed time was %d seconds\n", (end_time - start_time));
+                Console.WriteLine("The elapsed time was %d seconds\n", (end_time - start_time));
             }
-            fprintf(fptr, "The elapsed time was %d seconds\n",(end_time - start_time));
-            Console.WriteLine("The elapsed time was %d seconds\n",(end_time - start_time));
-            fclose(fptr);
- 
+
 
         }
 
@@ -193,13 +195,13 @@ namespace _3D_LayoutOpt
           init_bounds(design);
 
           Console.WriteLine("Initializing overlaps.\n\n");
-          init_overlaps(design);          /* This function is in obj_function.c */
+          obj_function.init_overlaps(design);          /* This function is in obj_function.c */
 
           Console.WriteLine("Initializing weights.\n\n");
           init_weights(design);
 
           Console.WriteLine("Initializing heat parameters.\n\n");
-          init_heat_param(design);        /* This function is in heat.c */
+          heatbasic.init_heat_param(design);        /* This function is in heat.c */
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -223,7 +225,7 @@ namespace _3D_LayoutOpt
             int i, j;
             Component temp_comp;
 
-        #ifdef LOCATE
+        #if LOCATE
             Console.WriteLine("Entering init_locations\n");
         #endif
 
@@ -253,7 +255,7 @@ namespace _3D_LayoutOpt
               ++i;
           }
 
-        #ifdef LOCATE
+        #if LOCATE
             Console.WriteLine("Leavinging init_locations\n");
         #endif
 
@@ -286,7 +288,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function returns a random integer between integers rndmin and rndmax.         */
         /* ---------------------------------------------------------------------------------- */
-        static int my_random(int rndmin, int rndmax)
+        public static int my_random(int rndmin, int rndmax)
         {
             int t = get_time();
             Random r = new Random(t);
@@ -352,12 +354,12 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         void update_bounds(Design design, Component comp)
         {
-        int i, j;
-        Component temp_comp;
-        char wait;
+            int i, j;
+            Component temp_comp;
+            char wait;
 
-        #ifdef LOCATE
-          Console.WriteLine("Entering update_bounds\n");
+        #if LOCATE
+            Console.WriteLine("Entering update_bounds\n");
         #endif
 
         /* First test to see if we are moving the min_comp.  If we are, not, we just update   */
@@ -365,65 +367,52 @@ namespace _3D_LayoutOpt
         /* elements to find the new one (which may the the same as the current one).  To      */
         /* correctly update the bounds, we reset the box_min (since we've moved the min_comp  */
         /* the old value is no longer valid).                                                 */
-        i = -1;
-          while (++i <= 2)
+            i = -1;
+            while (++i <= 2)
             {
-
-        /*      Console.WriteLine("i = %d\n",i);
-              Console.WriteLine("The min and max comps are\n%s, %s, %s\n%s, %s, %s\n",design.min_comp[0].comp_name,
-	         design.min_comp[1].comp_name,design.min_comp[2].comp_name,
-	         design.max_comp[0].comp_name,design.max_comp[1].comp_name,
-	         design.max_comp[2].comp_name);
-        */
-
-              if (comp != design.min_comp[i])
-
-            update_min_bounds(design, comp, i);
-              else
-	        {
+                if (comp != design.min_comp[i])
+                    update_min_bounds(design, comp, i);
+                else
+	            {
         /*	  Console.WriteLine("Min comp may have changed - recomputing min bounds\n");
         */
-	          design.box_min[i] = comp.coord[i];
-	          j = 0;
-	          temp_comp = design.first_comp;
-	          while (++j <= Constants.COMP_NUM)
-	            {
+	                design.box_min[i] = comp.coord[i];
+	                j = 0;
+	                temp_comp = design.first_comp;
+	                while (++j <= Constants.COMP_NUM)
+	                {
 
-                  update_min_bounds(design, temp_comp, i);
-	              if (j< Constants.COMP_NUM)
-
-                temp_comp = temp_comp.next_comp;
+                        update_min_bounds(design, temp_comp, i);
+	                    if (j < Constants.COMP_NUM)
+	                        temp_comp = design.components[j];
+	                }
 	            }
-	        }
             }
 
         /* Now do the same for the max_comp. */
-          i = -1;
-          while (++i <= 2)
+            i = -1;
+            while (++i <= 2)
             {
-              if (comp != design.max_comp[i])
-
-            update_max_bounds(design, comp, i);
-              else
-	        {
+                if (comp != design.max_comp[i])
+                    update_max_bounds(design, comp, i);
+                else
+	            {
         /*	  Console.WriteLine("Max comp may have changed - recomputing max bounds\n");
         */
-	          design.box_max[i] = comp.coord[i];
-	          j = 0;
-	          temp_comp = design.first_comp;
-	          while (++j <= Constants.COMP_NUM)
-	            {
-
-                  update_max_bounds(design, temp_comp, i);
-	              if (j< Constants.COMP_NUM)
-
-                temp_comp = temp_comp.next_comp;
+	                design.box_max[i] = comp.coord[i];
+	                j = 0;
+	                temp_comp = design.first_comp;
+	                while (++j <= Constants.COMP_NUM)
+	                {
+                        update_max_bounds(design, temp_comp, i);
+	                    if (j < Constants.COMP_NUM)
+	                        temp_comp = design.components[j];
+	                }
 	            }
-	        }
             }
 
-        #ifdef LOCATE
-          Console.WriteLine("Leaving update_bounds\n");
+        #if LOCATE
+            Console.WriteLine("Leaving update_bounds\n");
         #endif
 
         }
@@ -435,7 +424,7 @@ namespace _3D_LayoutOpt
         {
             double location;
 
-        #ifdef LOCATE
+        #if LOCATE
             Console.WriteLine("Entering update_min_bounds\n");
         #endif
 
@@ -449,7 +438,7 @@ namespace _3D_LayoutOpt
 	            design.min_comp[i] = comp;
             }
 
-        # ifdef LOCATE
+        #if LOCATE
             Console.WriteLine("Leaving update_min_bounds\n");
         #endif
 
@@ -461,7 +450,7 @@ namespace _3D_LayoutOpt
         static void update_max_bounds(Design design, Component comp, int i)
         {
 
-        #ifdef LOCATE
+        #if LOCATE
             Console.WriteLine("Entering update_max_bounds\n");
         #endif
 
@@ -475,7 +464,7 @@ namespace _3D_LayoutOpt
 	            design.max_comp[i] = comp;
             }
 
-        #ifdef LOCATE
+        #if LOCATE
             Console.WriteLine("Leaving update_max_bounds\n");
         #endif
 
@@ -485,7 +474,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function calculates the center of gravity.                                    */
         /* ---------------------------------------------------------------------------------- */
-        void calc_c_grav(Design design)
+        public static void calc_c_grav(Design design)
         {
             int i, j;
             double mass;
@@ -526,9 +515,9 @@ namespace _3D_LayoutOpt
                 while (move_size <= 1.25)
                 {
                     writetext.WriteLine("%lf", move_size);
-                    restore_design(design);
+                    readwrite.restore_design(design);
                     downhill(design, move_size);
-                    eval = evaluate(design);
+                    eval = obj_function.evaluate(design);
                     writetext.WriteLine(" %lf\n", eval);
                     if (eval < min_eval)
                         min_eval = eval;

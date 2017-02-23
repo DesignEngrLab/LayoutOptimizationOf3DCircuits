@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class obj_function
+    static class obj_function
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -24,7 +24,7 @@ namespace _3D_LayoutOpt
             double eval;
             char wait;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering evaluate\n");
 #endif
 
@@ -54,7 +54,7 @@ namespace _3D_LayoutOpt
   fConsole.WriteLine(fptr,"%.2f %.2f %.2f %.2f\n", (design.coef[0] * design.weight[0] * design.new_obj_values[0]), (design.coef[1] * design.weight[1] * design.new_obj_values[1]), (design.coef[2] * design.weight[2] * design.new_obj_values[2]), (design.coef[3] * design.weight[3] * design.new_obj_values[3]));
   fclose(fptr);*/
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving evaluate\n");
 #endif
   
@@ -179,8 +179,8 @@ namespace _3D_LayoutOpt
                 j = i;
                 comp2 = comp1;
                 while (++j <= Constants.COMP_NUM)
-	            {
-	                comp2 = comp2.next_comp;
+                {
+                    comp2 = design.components[j];
 	                dx = (comp1.dim[0] + comp2.dim[0])/2.0 - Math.Abs(comp1.coord[0] - comp2.coord[0]);
                     dy = (comp1.dim[1] + comp2.dim[1])/2.0 - Math.Abs(comp1.coord[1] - comp2.coord[1]);
                     dz = (comp1.dim[2] + comp2.dim[2])/2.0 - Math.Abs(comp1.coord[2] - comp2.coord[2]);
@@ -191,7 +191,7 @@ namespace _3D_LayoutOpt
 	                else
 	                    design.overlap[j - 1][i - 1] = 0.0;
 	            }
-                comp1 = comp1.next_comp;
+                comp1 = design.components[i];
             }
         }
 
@@ -209,7 +209,7 @@ namespace _3D_LayoutOpt
             char wait;
             Component temp2;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering update_overlaps\n");
 #endif
 
@@ -266,10 +266,10 @@ namespace _3D_LayoutOpt
 	                    design.overlap[i][index] = 0.0;
 	            }
                 ++i;
-                temp2 = temp2.next_comp;
+                temp2 = design.components[i];
             }           
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving update_overlaps\n");
 #endif
 

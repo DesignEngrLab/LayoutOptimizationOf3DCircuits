@@ -82,14 +82,16 @@ namespace _3D_LayoutOpt
                 i[m] = 0;
             }
             comp = design.first_comp;
-            while (comp != NULL)
+            int n = 0;
+            while (comp != null)
             {
                 for (m = 0; m < Constants.DIMENSION; m++)
                 {
                     if (not_duplicate(comp.coord[m], xx[m], i[m]))
                         xx[m][++i[m]] = comp.coord[m];
                 }
-                comp = comp.next_comp;
+                n++;
+                comp = design.components[n];
             }
             for (m = 0; m < Constants.DIMENSION; m++)
             {
@@ -97,14 +99,14 @@ namespace _3D_LayoutOpt
                 picksort(node_dim[m], xx[m]);
             }
 
-#ifdef SFRINGE
+#if SFRINGE
             for (m = 0; m < Constants.DIMENSION; m++)
             {
                 fringe[m] = Constants.SFRINGE;
             }
 #endif
 
-#ifdef CFRINGE
+#if CFRINGE
             for (m = 0; m < Constants.DIMENSION; m++)
             {
                 fringe[m] = (design.container[m] - (design.box_max[m] - design.box_min[m]))/2;
@@ -133,7 +135,7 @@ namespace _3D_LayoutOpt
                         {
                             design.tfield[k].coord[m] = xx[m][i[m]];
                         }
-                        design.tfield[k].comp = NULL;
+                        design.tfield[k].comp = null;
 
                         find_if_comp_center(design.first_comp, design.tfield, k);
                         ++k;
@@ -147,16 +149,16 @@ namespace _3D_LayoutOpt
 /* It returns TRUE if no duplicates and FALSE if duplicates                           */
 /* ---------------------------------------------------------------------------------- */
 
-        int not_duplicate(double num, double[] arr, int n)
+        bool not_duplicate(double num, double[] arr, int n)
         {
             int m;
 
             for (m = 1; m <= n; ++m)
             {
                 if (Math.Abs(num - arr[m]) < Constants.CLOSE_NODE)
-                    return 0;
+                    return false;
             }
-            return 1;
+            return true;
         }
 
 /* ---------------------------------------------------------------------------------- */
@@ -216,7 +218,7 @@ namespace _3D_LayoutOpt
             Component comp;
 
             comp = first_comp;
-            while (comp != NULL)
+            while (comp != null)
             {
                 if ((Math.Abs(comp.coord[0] - tfield[k].coord[0]) < Constants.CLOSE_NODE) &&
                     (Math.Abs(comp.coord[1] - tfield[k].coord[1]) < Constants.CLOSE_NODE) &&
@@ -261,7 +263,7 @@ namespace _3D_LayoutOpt
         {
             /* This will check neighbors to the west so long as it didn't come FROM the west.*/
             if ((from != -1) && ((Math.Abs(tfield[k - hbw].coord[0] - comp.coord[0])) < (comp.dim[0]/2)) &&
-                (tfield[k - hbw].comp == NULL))
+                (tfield[k - hbw].comp == null))
             {
                 tfield[k - hbw].comp = comp;
                 ++n;
@@ -269,7 +271,7 @@ namespace _3D_LayoutOpt
             }
             /* Checks to the east. */
             if ((from != 1) && ((Math.Abs(tfield[k + hbw].coord[0] - comp.coord[0])) < (comp.dim[0]/2)) &&
-                (tfield[k + hbw].comp == NULL))
+                (tfield[k + hbw].comp == null))
             {
                 tfield[k + hbw].comp = comp;
                 ++n;
@@ -277,7 +279,7 @@ namespace _3D_LayoutOpt
             }
             /* Checks to the south. */
             if ((from != -2) && ((Math.Abs(tfield[k - znodes].coord[1] - comp.coord[1])) < (comp.dim[1]/2)) &&
-                (tfield[k - znodes].comp == NULL))
+                (tfield[k - znodes].comp == null))
             {
                 tfield[k - znodes].comp = comp;
                 ++n;
@@ -285,7 +287,7 @@ namespace _3D_LayoutOpt
             }
             /* Checks to the north. */
             if ((from != 2) && ((Math.Abs(tfield[k + znodes].coord[1] - comp.coord[1])) < (comp.dim[1]/2)) &&
-                (tfield[k + znodes].comp == NULL))
+                (tfield[k + znodes].comp == null))
             {
                 tfield[k + znodes].comp = comp;
                 ++n;
@@ -293,15 +295,15 @@ namespace _3D_LayoutOpt
             }
             /* Checks down. */
             if ((from != -3) && ((Math.Abs(tfield[k - 1].coord[2] - comp.coord[2])) < (comp.dim[2]/2)) &&
-                (tfield[k - 1].comp == NULL))
+                (tfield[k - 1].comp == null))
             {
                 tfield[k - 1].comp = comp;
                 ++n;
                 find_neighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
             }
             /* Checks up. */
-            if ((from != 3) && ((fabs(tfield[k + 1].coord[2] - comp.coord[2])) < (comp.dim[2]/2)) &&
-                (tfield[k + 1].comp == NULL))
+            if ((from != 3) && ((Math.Abs(tfield[k + 1].coord[2] - comp.coord[2])) < (comp.dim[2]/2)) &&
+                (tfield[k + 1].comp == null))
             {
                 tfield[k + 1].comp = comp;
                 ++n;
@@ -316,14 +318,14 @@ namespace _3D_LayoutOpt
 /* inside the component.                                                              */
 /* ---------------------------------------------------------------------------------- */
 
-        void set_up_flux(Design design, double flux, int tot_nodes)
+        void set_up_flux(Design design, double[] flux, int tot_nodes)
         {
             Component comp;
             int k;
             int i = 0;
             comp = design.components[i];
 /*  flux[(comp.node_center)] = comp.q;*/
-            while (comp != NULL)
+            while (comp != null)
             {
                 for (k = 0; k < tot_nodes; k++)
                 {
@@ -341,7 +343,7 @@ namespace _3D_LayoutOpt
 /* are done in this subroutine.                                                       */
 /* ---------------------------------------------------------------------------------- */
 
-        void set_up_coef_matrix(Design design, double flux, double R, int tot_nodes, int hbw, int znodes)
+        void set_up_coef_matrix(Design design, double[] flux, double[][] R, int tot_nodes, int hbw, int znodes)
         {
             int k, i;
             double n, e, w, s, u, d;
@@ -427,7 +429,7 @@ namespace _3D_LayoutOpt
             }
             else
             {
-                if (design.tfield[k].comp != NULL)
+                if (design.tfield[k].comp != null)
                 {
                     kc = design.tfield[k].comp.k;
                     xc = (design.tfield[k].comp.dim[dir]/2) - Math.Abs(design.tfield[k].comp.coord[dir] -
@@ -439,7 +441,7 @@ namespace _3D_LayoutOpt
                     kc = design.kb;
                     xc = 0.0;
                 }
-                if (design.tfield[k + step].comp != NULL)
+                if (design.tfield[k + step].comp != null)
                 {
                     kn = design.tfield[k + step].comp.k;
                     nx = (design.tfield[k + step].comp.dim[dir]/2) - Math.Abs(design.tfield[k + step].comp.coord[dir] -
@@ -485,7 +487,7 @@ namespace _3D_LayoutOpt
             int i = 0;
 
             comp = design.components[i];
-            while (comp != NULL)
+            while (comp != null)
             {
                 comp.temp = design.tfield[comp.node_center].temp;
                 /*Console.WriteLine("Component %d temperature = %.2f\n", ++i, comp.temp);*/
@@ -590,9 +592,9 @@ namespace _3D_LayoutOpt
                     design.tfield[k].temp = rtot/(R[k][hbw]);
                     /*   SOR   */
                     design.tfield[k].temp = Constants.OMEGA*design.tfield[k].temp +
-                                            (1 - OMEGA)*design.tfield[k].prev_temp;
+                                            (1 - Constants.OMEGA)*design.tfield[k].prev_temp;
                     /* Absolute Tolerance tabulation. */
-                    tol += fabs(design.tfield[k].temp - design.tfield[k].prev_temp)/tot_nodes;
+                    tol += Math.Abs(design.tfield[k].temp - design.tfield[k].prev_temp)/tot_nodes;
                 }
                 /*Console.WriteLine("Iteration %d: Component #1 temperature = %.2f  %f\n", iter, 
 	design.tfield[0].temp, tol);*/
@@ -618,7 +620,7 @@ namespace _3D_LayoutOpt
 
             int i = 0;
             comp = design.components[i];
-            while (comp != NULL)
+            while (comp != null)
             {
                 design.tfield[comp.node_center].temp = comp.temp;
                 i++;

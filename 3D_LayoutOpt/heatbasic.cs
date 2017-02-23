@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class heatbasic
+    static class heatbasic
     {
 
-        void heat_eval(Design design, int steps_at_t, int gen_limit)
+        public static void heat_eval(Design design, int steps_at_t, int gen_limit)
         {
             int correction;
             Component comp;
@@ -24,7 +24,7 @@ namespace _3D_LayoutOpt
 	                break;
 	            case 1:
 	                if (correction == 0)
-                        correct_SS_by_LU(design);
+                      heatSS.correct_SS_by_LU(design);
                     thermal_analysis_SS(design);
 	                break;
 	            case 2:
@@ -57,7 +57,7 @@ namespace _3D_LayoutOpt
 /* This function updates the heat parameters such as matrix tolerance and minimum     */
 /* node spacing and switches between analysis methods.                                */
 /* ---------------------------------------------------------------------------------- */
-        void update_heat_param(Design design, Schedule schedule, double t)
+        public static void update_heat_param(Design design, Schedule schedule, double t)
         {
             if ((t/(schedule.t_initial)) < design.analysis_switch[0])
             {
@@ -107,7 +107,7 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
 /* This function returns the value of the objective function for coolest              */
 /* ---------------------------------------------------------------------------------- */
-        double calc_cool_obj(double temp, double tempcrit)
+        static double calc_cool_obj(double temp, double tempcrit)
         {
             double value;
 
@@ -119,7 +119,7 @@ namespace _3D_LayoutOpt
 /* This function reverts to  the previous node temperatures if the new move was       */
 /* rejected.                                                                          */
 /* ---------------------------------------------------------------------------------- */
-        void revert_tfield(Design design)
+        static void revert_tfield(Design design)
         {
             int k;
 
@@ -131,7 +131,7 @@ namespace _3D_LayoutOpt
 /* This function backs up the current temperatures into old_temp if the step was      */
 /* accepted.                                                                          */
 /* ---------------------------------------------------------------------------------- */
-        void back_up_tfield(Design design)
+        static void back_up_tfield(Design design)
         {
             int k;
 
@@ -143,7 +143,7 @@ namespace _3D_LayoutOpt
 /* This function initializes the heat parameters such as matrix tolerance and minimum */
 /* node spacing.                                                                      */
 /* ---------------------------------------------------------------------------------- */
-        void init_heat_param(Design design)
+        public static void init_heat_param(Design design)
         {
             design.tolerance = 0.001;
             design.min_node_space = 50.0;
@@ -160,7 +160,7 @@ namespace _3D_LayoutOpt
 /* the beginning of the annealing run.  The sser provides input into when to
 /* switch between thermal anylses. */
 /* ---------------------------------------------------------------------------------- */
-        void establish_thermal_changes(Design design)
+        public static void establish_thermal_changes(Design design)
         {
             int i;
             Console.WriteLine("\nPlease define thermal anaylses changes.\n\n");

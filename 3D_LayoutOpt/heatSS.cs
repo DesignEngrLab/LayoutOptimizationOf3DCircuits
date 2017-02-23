@@ -16,21 +16,22 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void thermal_analysis_SS(Design design)
         {
-            double flux, R;
+            double[] flux;
+           double[,] R;
             double[] ss_dim = new double[3];
             double[] fringe = new double[3];
             int i, j, tot_nodes;
             int[] divisions = new int[3];
 
             tot_nodes = (design.choice)*100;
-#ifdef SFRINGE
+#if SFRINGE
             for (i = 0; i<Constants.DIMENSION; i++)
             {
 	            fringe[i] = SFRINGE;
             }
 #endif
 
-#ifdef CFRINGE
+#if CFRINGE
             for (i = 0; i<Constants.DIMENSION; i++)
             {
 	            fringe[i] = (design.container[i] - (design.box_max[i] - design.box_min[i]))/2;
@@ -44,13 +45,12 @@ namespace _3D_LayoutOpt
             /* total nodes might change from predicted amount. */
             /*  These commands set up the flux vector and R matrix using dynamic memory */
             /*  allocation.                                                             */
-            flux = (double*) malloc(sizeof (double) * tot_nodes); 
+            flux = new double[tot_nodes]; 
             for (i = 0; i<tot_nodes; i++)
 	            flux[i] = 0.0;
-            R = (double**) malloc(sizeof (double*) * tot_nodes);
+            R =new double[tot_nodes, 2 * divisions[1] * divisions[2] + 1];
             for (i = 0; i<tot_nodes; i++)
             {
-	            R[i] = (double*) malloc(sizeof(double) * (2* divisions[1]* divisions[2] +1));
 	            for (j = 0; j< (2* divisions[1]* divisions[2] +1); ++j)
 	            R[i][j] = 0.0;
             }
@@ -268,6 +268,7 @@ namespace _3D_LayoutOpt
             Component comp;
 
             comp = design.first_comp;
+            int j = 0;
             while (comp != null)
             {
 	            tot_vol = 0.0;
@@ -278,11 +279,12 @@ namespace _3D_LayoutOpt
                     tot_temp += (vol)*(design.tfield[i].temp);
 	                tot_vol += vol;
 	            }
-	        temp_avg = tot_temp/tot_vol;
-	        comp.temp = design.hcf* temp_avg;
-            comp = comp.next_comp;
-    }
-}
+	            temp_avg = tot_temp/tot_vol;
+	            comp.temp = design.hcf* temp_avg;
+                i++;
+                comp = design.components[i];
+            }
+        }
 
 /* ---------------------------------------------------------------------------------- */
 /* This function corrects the approximation method by comparing it to the LU method.  */
@@ -301,21 +303,25 @@ namespace _3D_LayoutOpt
 
             thermal_analysis_SS(design);
             comp = design.first_comp;
-            while (comp != NULL)
+            int i = 0;
+            while (comp != null)
             {
 	            tempSS += comp.temp/Constants.COMP_NUM;
-                comp = comp.next_comp;
+                i++;
+                comp = design.components[i];
             }   
             tempSS = design.first_comp.temp;
 
 
             thermal_analysis_MM(design);
             comp = design.first_comp;
-            while (comp != NULL)
+            i = 0;
+            while (comp != null)
             {
-	            tempMM += comp.temp/COMP_NUM;
-	            /*if (tempMM < comp.temp) tempMM = comp.temp;*/ 
-                comp = comp.next_comp;
+	            tempMM += comp.temp/Constants.COMP_NUM;
+                /*if (tempMM < comp.temp) tempMM = comp.temp;*/
+                i++;
+                comp = design.components[i];
             }   
             design.hcf = tempMM/tempSS;
         }

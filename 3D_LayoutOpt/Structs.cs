@@ -27,7 +27,7 @@ namespace _3D_LayoutOpt
         /* means that the node does not refer to the center of a component but merely to a    */
         /* a resistor junction.  A non-zero number refers to that component in the list of    */
         /* components.                                                                        */
-        Component comp, innercomp;
+        public Component comp, innercomp;
         public double[] coord = new double[3];
         public double prev_temp, old_temp, temp;
         public double vol, k;

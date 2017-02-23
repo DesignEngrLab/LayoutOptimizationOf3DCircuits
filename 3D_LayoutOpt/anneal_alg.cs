@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class anneal_alg
+    static class anneal_alg
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -18,7 +18,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This is the shape annealing algorithm.                                             */
         /* ---------------------------------------------------------------------------------- */
-        void anneal(Design design)
+        public static void anneal(Design design)
         {
             Schedule schedule;
             Hustin hustin;
@@ -36,7 +36,7 @@ namespace _3D_LayoutOpt
 /* updated.  mgl (maximum generation limit) is the max number of steps at a given     */
 /* temperature.                                                                       */
 
-# ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering anneal\n");
 #endif
 
@@ -47,19 +47,19 @@ namespace _3D_LayoutOpt
 
 /* Initialize variables and counters, coefficients and calculate initial objective    */
 /* function value.                                                                    */
-            init_anneal(design, best_eval, current_eval);
-            calc_statistics(schedule);                       /* IN SCHEDULE.C */
-            init_schedule(schedule);                         /* IN SCHEDULE.C */
+            init_anneal(design, out best_eval, out current_eval);
+            Schedules.calc_statistics(schedule);                       /* IN SCHEDULE.C */
+            Schedules.init_schedule(schedule);                         /* IN SCHEDULE.C */
 
             Console.WriteLine("The initial evaluation value is %lf\n", current_eval);
             Console.WriteLine("sigma and c_avg are %lf and %lf\n", schedule.sigma, schedule.c_avg);
             Console.WriteLine("The initial temperature is %lf\n", schedule.t_initial);
 
 /* Initialize the hustin structure. */
-            init_hustin(hustin);            /* IN HUSTIN.C */
+            Chustin.init_hustin(hustin);            /* IN HUSTIN.C */
 
 /* User provides input into when to switch between thermal anylses. */
-            establish_thermal_changes(design);
+            heatbasic.establish_thermal_changes(design);
 
         /* Initialization */
             t = schedule.t_initial;
@@ -104,8 +104,8 @@ namespace _3D_LayoutOpt
 	                    ++steps_at_t;
 
 /* Take a step and evaluate it.  Update state by accepting or rejecting step. */
-                        take_step(design, hustin, which1, which2);
-                        step_eval = evaluate(design, steps_at_t, gen_limit);
+                        take_step(design, hustin, out which1, out which2);
+                        step_eval = obj_function.evaluate(design, steps_at_t, gen_limit);
         /*	  fptr2 = fopen("output/data.out","a");
               fConsole.WriteLine(fptr,"iteration %d: eval %lf ",iteration);
               fclose(fptr2);
@@ -135,7 +135,7 @@ namespace _3D_LayoutOpt
 /* If we have taken more than MIN_SAMPLE steps, update parameters for the */
 /* equilibrium condition. */
 	                        if (steps_at_t > Constants.MIN_SAMPLE)
-                                equilibrium_update(step_eval, current_eval, schedule, hold_temp); /*schedule.c*/
+                                Schedules.equilibrium_update(step_eval, current_eval, schedule, hold_temp); /*schedule.c*/
 
 	                        if (current_eval != step_eval)
 		                    {
@@ -173,7 +173,7 @@ namespace _3D_LayoutOpt
 
 /* If we have taken MIN_SAMPLE steps, calculate new statistics. */
 	                    if (steps_at_t == Constants.MIN_SAMPLE)
-                            calc_statistics(schedule);
+                            Schedules.calc_statistics(schedule);
 	  
 /* If the number of steps at this temperature exceeds the generation limit, go to  */
 /* the next temperature.                                                           */
@@ -190,7 +190,7 @@ namespace _3D_LayoutOpt
 /* Check frozen condition.  If frozen, change the flag.  If not, do updates. */
                     if (accept_count == 0)
 	                    not_frozen = 0;
-                    else if (frozen_check(schedule))
+                    else if (Schedules.frozen_check(schedule))
 	                    --not_frozen;
                     else
 	                {
@@ -220,7 +220,7 @@ namespace _3D_LayoutOpt
 
 /* Print out evaluation information about the last design. */
                 design.choice = 3;
-                step_eval = evaluate(design, 0);
+                step_eval = obj_function.evaluate(design, 0);
                 Console.WriteLine("%d iterations were junked\n", junk);
                 Console.WriteLine("The best eval was %lf\n", best_eval);
                 Console.WriteLine("The final eval was %lf (%lf percent density)\n", step_eval,(100/design.new_obj_values[0]));
@@ -240,7 +240,7 @@ namespace _3D_LayoutOpt
                 }
 
 
-#ifdef LOCATE
+#if LOCATE
                 Console.WriteLine("Leaving anneal\n");
 #endif
 }
@@ -253,7 +253,7 @@ namespace _3D_LayoutOpt
 /* rotates a component 90 degrees along a random axis.  "Swap" switches the location  */
 /* of two components.                                                                 */
 /* ---------------------------------------------------------------------------------- */
-                void take_step(Design design, Hustin hustin, int which1, int which2)
+             static   void   take_step(Design design, Hustin hustin, out int which1, out int which2)
                 {
                     int i;
                     double prob;
@@ -310,14 +310,14 @@ namespace _3D_LayoutOpt
 /* a distance d, where d is a number between 0.1 and 2.5 (the component dimensions    */
 /* range from 5 to 10).                                                               */
 /* ---------------------------------------------------------------------------------- */
-        void move(Design design, int which, double move_size)
+     static   void move(Design design, int which, double move_size)
         {
             int i;
             double max_dist, d;
             double[] dir_vect = new double[3];
             Component comp;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering move\n");
 #endif
 
@@ -330,7 +330,7 @@ namespace _3D_LayoutOpt
             back_up(design, comp);
 
 /* Pick a random direction and distance, and move the component.                      */
-#ifdef OUTPUT
+#if OUTPUT
             Console.WriteLine("Moving %s\n", comp.comp_name);
 #endif
             i = -1;
@@ -350,7 +350,7 @@ namespace _3D_LayoutOpt
 /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving move\n");
 #endif
 }
@@ -359,7 +359,7 @@ namespace _3D_LayoutOpt
 /* This function takes a delta_vector, normalizes it, and puts the result in the      */
 /* normalized vector.                                                                 */
 /* ---------------------------------------------------------------------------------- */
-        void normalize(double[] dir_vect)
+    static    void normalize(double[] dir_vect)
         {
             double sum;
 
@@ -373,12 +373,12 @@ namespace _3D_LayoutOpt
 /* This function takes a rotation step.  An orientation (different from the current   */
 /* one) is randomly selected and the component dimensions are updated accordingly.    */
 /* ---------------------------------------------------------------------------------- */
-        void rotate(Design design, int which)
+  static      void rotate(Design design, int which)
         {
             int i, new_orientation;
             Component comp;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering rotate\n");
 #endif
 
@@ -391,7 +391,7 @@ namespace _3D_LayoutOpt
             back_up(design, comp);
 
 /* Pick a random orientation different from the current one and rotate the component. */
-#ifdef OUTPUT
+#if OUTPUT
             Console.WriteLine("Rotating %s\n", comp.comp_name);
 #endif
 
@@ -414,7 +414,7 @@ namespace _3D_LayoutOpt
 /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving rotate\n");
 #endif
 }
@@ -423,13 +423,13 @@ namespace _3D_LayoutOpt
 /* This function takes a rotation step.  An orientation (different from the current   */
 /* one) is randomly selected and the component dimensions are updated accordingly.    */
 /* ---------------------------------------------------------------------------------- */
-        void swap(Design design, int which1, int which2)
+    static    void swap(Design design, int which1, int which2)
         {
             int i;
             double temp_coord;
             Component comp1, comp2;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering swap\n");
 #endif
 
@@ -447,7 +447,7 @@ namespace _3D_LayoutOpt
                 comp2 = design.components[i];
 
             /* Swap the components by switching their coordinates.                                */
-# ifdef OUTPUT
+#if OUTPUT
             Console.WriteLine("Swapping %s and %s\n", comp1.comp_name, comp2.comp_name);
 #endif
             i = -1;
@@ -462,24 +462,24 @@ namespace _3D_LayoutOpt
             update_state(design, comp1, which1);
             update_state(design, comp2, which2);
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving swap\n");
 #endif
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function backs up component information.  Backup are pointers to components   */
-/* containing backup information about components in case we reject a step and need   */
-/* to revert to a previous design.  Whichbackup are pointers to the components which  */
-/* are backed up, so that we know where to where the old information should be copied */
-/* when we revert.  Which tells us which component is being backed up (0 or 1).       */
-/* ---------------------------------------------------------------------------------- */
-        void back_up(Design design, Component comp)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function backs up component information.  Backup are pointers to components   */
+        /* containing backup information about components in case we reject a step and need   */
+        /* to revert to a previous design.  Whichbackup are pointers to the components which  */
+        /* are backed up, so that we know where to where the old information should be copied */
+        /* when we revert.  Which tells us which component is being backed up (0 or 1).       */
+        /* ---------------------------------------------------------------------------------- */
+        static void back_up(Design design, Component comp)
         {
             int i;
             Component comp1;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering back_up\n");
 #endif
 
@@ -499,7 +499,7 @@ namespace _3D_LayoutOpt
             while (++i<Constants.OBJ_NUM)
                 design.backup_obj_values[i] = design.new_obj_values[i];
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving back_up\n");
 #endif
 }
@@ -507,19 +507,19 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
 /* This function does all the stuff you want to do when a step is accepted.           */
 /* ---------------------------------------------------------------------------------- */
-        void update_accept(Design design, int iteration, int accept_flag, int column, int update, double step_eval, double best_eval, double current_eval)
+   static     void update_accept(Design design, int iteration, int accept_flag, int column, int update, double step_eval, double best_eval, double current_eval)
         {
 
   
 /* If accept_flag = 2 then the step is an improvement. */
             if (accept_flag == 2)
             {
-#ifdef OUTPUT
+#if OUTPUT
                 Console.WriteLine("*** Improved step\n");
 #endif
             }
 
-#ifdef OUTPUT
+#if OUTPUT
             Console.WriteLine("Accepting step\n\n");
 #endif
 	      
@@ -530,12 +530,12 @@ namespace _3D_LayoutOpt
                 accept_flag = 3;
             }
 
-# ifdef OBJ_DATA
+#if OBJ_DATA
   /* Write objective function values to file */
             write_step(design, iteration, accept_flag);
 #endif
 
-#ifdef TESTS
+#if TESTS
 /* Do consistency checks on the design.  The 1 flag means it's an accepted step. */
             test_it(design, current_eval, 1, iteration);
 #endif
@@ -544,34 +544,34 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
 /* This function does all the stuff you want to do when a step is rejected.           */
 /* ---------------------------------------------------------------------------------- */
-        void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
+   static     void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
         {
-#ifdef OUTPUT
+#if OUTPUT
             Console.WriteLine("Rejecting step\n\n");
 #endif
 	      
-#ifdef OBJ_DATA
+#if OBJ_DATA
 /* Write objective function values to file */
             write_step(design, iteration, 0);
 #endif
       
             revert(design, which1, which2);
-#ifdef TESTS
+#if TESTS
 /* Do consistency checks on the design.  The zero flag means it's a rejected step. */
             test_it(design, current_eval, 0, iteration);
 #endif
 }
-/* ---------------------------------------------------------------------------------- */
-/* This function reverts to old information contained when a step is rejected.        */
-/* Which2 tells us if we are reverting 1 component (which2 = 0) or two (which2 > 0).  */
-/* ---------------------------------------------------------------------------------- */
-        void revert(Design design, int which1, int which2)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function reverts to old information contained when a step is rejected.        */
+        /* Which2 tells us if we are reverting 1 component (which2 = 0) or two (which2 > 0).  */
+        /* ---------------------------------------------------------------------------------- */
+        static void revert(Design design, int which1, int which2)
         {
             int i;
             double temp_coord;
             Component comp1, comp2;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering revert\n");
 #endif
 
@@ -621,34 +621,34 @@ namespace _3D_LayoutOpt
             while (++i<Constants.OBJ_NUM)
                 design.new_obj_values[i] = design.backup_obj_values[i];
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving revert\n");
 #endif
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function updates the overlaps and bounding box dimensions after taking a step */
-/* or after reverting to a previous design.                                           */
-/* ---------------------------------------------------------------------------------- */
-        void update_state(Design design, Component comp, int which)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function updates the overlaps and bounding box dimensions after taking a step */
+        /* or after reverting to a previous design.                                           */
+        /* ---------------------------------------------------------------------------------- */
+        static void update_state(Design design, Component comp, int which)
         {
 
             update_overlaps(design, comp, which);  /* THIS FUNCTION IS IN OBJ.FUNCTION.C */
             update_bounds(design, comp);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function returns a 1 or 2 if the step should be accepted.  The value of 2     */
-/* indicates that the evaluation function has improved.  A value of -1 or zero is     */
-/* returned if the step should be rejected.  The value of -1 indicates that the step  */
-/* should not be counted as in iteration because it is an illegal design.             */
-/* The probability function decreases with temperature.  The step_eval/this_eval term */
-/* has the effect that the farther from the current evaluation value a bad step is,   */
-/* the lower the probability of accepting the bad step.                               */
-/* Note that this function accepts according to a simulated annealing, downhill or    */
-/* random search algorithm, depending on the #ifdef statements.                       */
-/* ---------------------------------------------------------------------------------- */
-        int accept(double temp, double step_eval, double this_eval, Design design)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function returns a 1 or 2 if the step should be accepted.  The value of 2     */
+        /* indicates that the evaluation function has improved.  A value of -1 or zero is     */
+        /* returned if the step should be rejected.  The value of -1 indicates that the step  */
+        /* should not be counted as in iteration because it is an illegal design.             */
+        /* The probability function decreases with temperature.  The step_eval/this_eval term */
+        /* has the effect that the farther from the current evaluation value a bad step is,   */
+        /* the lower the probability of accepting the bad step.                               */
+        /* Note that this function accepts according to a simulated annealing, downhill or    */
+        /* random search algorithm, depending on the #if statements.                       */
+        /* ---------------------------------------------------------------------------------- */
+        static int accept(double temp, double step_eval, double this_eval, Design design)
         {
             int i;
             double rnd, prob;
@@ -673,10 +673,10 @@ namespace _3D_LayoutOpt
             return i;
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function rejects any steps that make the bounding box too big.                */
-/* ---------------------------------------------------------------------------------- */
-        int not_too_big(Design design)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function rejects any steps that make the bounding box too big.                */
+        /* ---------------------------------------------------------------------------------- */
+        static int not_too_big(Design design)
         {
             int i, small;
             double difference;
@@ -693,10 +693,10 @@ namespace _3D_LayoutOpt
             return(small);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function performs various consistency tests on the design.                    */
-/* ---------------------------------------------------------------------------------- */
-        void test_it(Design design, double current_eval, int accept_flag, int iteration)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function performs various consistency tests on the design.                    */
+        /* ---------------------------------------------------------------------------------- */
+        static void test_it(Design design, double current_eval, int accept_flag, int iteration)
         {
             int i, j;
             Component comp;
@@ -731,19 +731,19 @@ namespace _3D_LayoutOpt
                     comp = design.components[j];
             }
 
-/* Test to see if value reverted to is same as value before taking step. */
-/*  if (!(accept_flag) && (current_eval != evaluate(design, iteration)))
-    {
-      Console.WriteLine("\n\nERROR in test_it - didn't revert correctly\7\n\n");
-      exit();
-    }*/
-}
+            /* Test to see if value reverted to is same as value before taking step. */
+            /*  if (!(accept_flag) && (current_eval != obj_function.evaluate(design, iteration)))
+                {
+                  Console.WriteLine("\n\nERROR in test_it - didn't revert correctly\7\n\n");
+                  exit();
+                }*/
+        }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function initializes variables, counters, coefficients, and calculates the    */
-/* initial objective function value.                                                  */
-/* ---------------------------------------------------------------------------------- */
-        void init_anneal(Design design, double best_eval, double current_eval)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function initializes variables, counters, coefficients, and calculates the    */
+        /* initial objective function value.                                                  */
+        /* ---------------------------------------------------------------------------------- */
+        static void init_anneal(Design design, out double best_eval, out double current_eval)
         {
 
 /* Evaluate the initial design, initialize the obj. function matrix, calculate the    */
@@ -751,44 +751,44 @@ namespace _3D_LayoutOpt
 /* of the coefficients has been normalized to equal the number of components of the   */
 /* objective function times the initial value of the first component.                 */
 
-            current_eval = evaluate(design, 0);       /* In obj_function.c */
+            current_eval = obj_function.evaluate(design, 0);       /* In obj_function.c */
             best_eval = current_eval;
-            init_obj_values(design);                /* In obj_balance.c */
+            obj_balance.init_obj_values(design);                /* In obj_balance.c */
 
-            calc_c_grav(design);
+            Program.calc_c_grav(design);
             Console.WriteLine("The center of gravity is %lf %lf %lf\n", design.c_grav[0],
             design.c_grav[1], design.c_grav[2]);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This was used to test code.                                                        */
-/* ---------------------------------------------------------------------------------- */
-/*
-	  if (iteration > 4000) ||
-	      ((design.overlap[6][5] > 12.809)&&(design.overlap[6][5] < 12.81)))	   
-	    {
-	  Console.WriteLine("*******THIS IS AT THE TOP OF THE LOOP\n");
-	  Console.WriteLine("*******CURRENT EVAL IS %lf.  EVAL IS %lf\n",current_eval, evaluate(design));
-	      fptr = fopen("output/comp.out","a");
-	      fConsole.WriteLine(fptr, "Starting iteration #%d\n",iteration);
-	      fclose(fptr);
-	      print_overlaps(design);
-	      fprint_data(design, 9);
-	      fprint_data(design, 14);
-	      getchar(wait);
-	    }
-*/
+        /* ---------------------------------------------------------------------------------- */
+        /* This was used to test code.                                                        */
+        /* ---------------------------------------------------------------------------------- */
+        /*
+              if (iteration > 4000) ||
+                  ((design.overlap[6][5] > 12.809)&&(design.overlap[6][5] < 12.81)))	   
+                {
+              Console.WriteLine("*******THIS IS AT THE TOP OF THE LOOP\n");
+              Console.WriteLine("*******CURRENT EVAL IS %lf.  EVAL IS %lf\n",current_eval, obj_function.evaluate(design));
+                  fptr = fopen("output/comp.out","a");
+                  fConsole.WriteLine(fptr, "Starting iteration #%d\n",iteration);
+                  fclose(fptr);
+                  print_overlaps(design);
+                  fprint_data(design, 9);
+                  fprint_data(design, 14);
+                  getchar(wait);
+                }
+        */
 
-/* ---------------------------------------------------------------------------------- */
-/* This is the downhill search algorithm.                                             */
-/* ---------------------------------------------------------------------------------- */
-        void downhill(Design design, double move_size)
+        /* ---------------------------------------------------------------------------------- */
+        /* This is the downhill search algorithm.                                             */
+        /* ---------------------------------------------------------------------------------- */
+        static void downhill(Design design, double move_size)
         {
-            int iteration, which1, modelflag, column, cost_update, accept_count, improving, count, max;
+            int iteration, which1, modelflag, column, cost_update, accept_count, count, max;
             double step_eval, current_eval, best_eval, old_eval, dx, dy, dz, d;
             char wait;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering downhill\n");
 #endif
 
@@ -803,9 +803,9 @@ namespace _3D_LayoutOpt
             count = 0;
             cost_update = 0;
             accept_count = 0;
-            improving = 1;
+            var improving = true;
   
-            current_eval = evaluate(design, max);
+            current_eval = obj_function.evaluate(design, max);
             best_eval = current_eval;
             step_eval = current_eval;
             Console.WriteLine("current_eval is %lf\n", current_eval);
@@ -829,7 +829,7 @@ namespace _3D_LayoutOpt
       d = dx*dx+dy*dy+dz*dz;
 */
 
-                    step_eval = evaluate(design, max);
+                    step_eval = obj_function.evaluate(design, max);
 	                if (step_eval <= current_eval)
 	                {
 
@@ -848,11 +848,11 @@ namespace _3D_LayoutOpt
 	                }
 	            }
                 if (current_eval/old_eval > 0.99)
-	                improving = 0;
+	                improving = false;
             }
             write_loop_data(0.0, (1000*count), accept_count, 0, 0, 3);
 
-            step_eval = evaluate(design, max);
+            step_eval = obj_function.evaluate(design, max);
             Console.WriteLine("The best eval was %lf\n", best_eval);
             Console.WriteLine("The final eval was %lf\n", step_eval);
 
@@ -862,24 +862,24 @@ namespace _3D_LayoutOpt
                 writetext.WriteLine("The best eval was %lf\n", best_eval);
                 writetext.WriteLine("The final eval was %lf\n", step_eval);
             }
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving downhill\n");
 #endif
         }
- 
-/* ---------------------------------------------------------------------------------- */
-/* This function takes a move step, moving a component along a random direction for   */
-/* a distance d, where d is a number between 0.1 and 2.5 (the component dimensions    */
-/* range from 5 to 10).                                                               */
-/* ---------------------------------------------------------------------------------- */
-        void downhill_move(Design design, int which, double move_size)
+
+        /* ---------------------------------------------------------------------------------- */
+        /* This function takes a move step, moving a component along a random direction for   */
+        /* a distance d, where d is a number between 0.1 and 2.5 (the component dimensions    */
+        /* range from 5 to 10).                                                               */
+        /* ---------------------------------------------------------------------------------- */
+        static void downhill_move(Design design, int which, double move_size)
         {
             int i;
             double max_dist, d;
             double[] dir_vect = new double[3];
             Component comp;
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Entering downhill_move\n");
 #endif
 
@@ -896,7 +896,7 @@ namespace _3D_LayoutOpt
 /* Pick a random direction and distance, and move the component. Multiply that vector */
 /* by a vector from the center of the component to the center of gravity, to imrove   */
 /* chances of having an improvement step (i.e. never move away from c_grav).          */
-#ifdef OUTPUT
+#if OUTPUT
             Console.WriteLine("Moving %s\n", comp.comp_name);
 #endif
             i = -1;
@@ -916,7 +916,7 @@ namespace _3D_LayoutOpt
 /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);
 
-#ifdef LOCATE
+#if LOCATE
             Console.WriteLine("Leaving downhill_move\n");
 #endif
         }

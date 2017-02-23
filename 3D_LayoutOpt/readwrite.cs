@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class readwrite
+    static class readwrite
     {
 
         /* ---------------------------------------------------------------------------------- */
@@ -20,7 +20,7 @@ namespace _3D_LayoutOpt
         /* This function prints out component information.                                    */
         /* ---------------------------------------------------------------------------------- */
 
-        void fprint_data(Design design, int which)
+        static void fprint_data(Design design, int which)
         {
             int i;
             Component comp;
@@ -60,7 +60,7 @@ namespace _3D_LayoutOpt
         /* This function writes accepted steps to a file.                                     */
         /* ---------------------------------------------------------------------------------- */
 
-        void write_step(Design design, int iteration, int flag)
+        static void write_step(Design design, int iteration, int flag)
         {
 
             if (iteration == 0)         //????????????????????
@@ -128,7 +128,7 @@ namespace _3D_LayoutOpt
 /* This function writes data regarding the last temperature to a file.                */
 /* ---------------------------------------------------------------------------------- */
 
-        void write_loop_data(double t, int steps_at_t, int accept_count, int bad_accept_count, int gen_limit, int flag)
+        static void write_loop_data(double t, int steps_at_t, int accept_count, int bad_accept_count, int gen_limit, int flag)
         {
             using (StreamWriter writetext = new StreamWriter("output/temperature.out"))
             {
@@ -158,7 +158,7 @@ namespace _3D_LayoutOpt
 /* This function prints out component information.                                    */
 /* ---------------------------------------------------------------------------------- */
 
-        void print_data(Design design, int which)
+        static void print_data(Design design, int which)
         {
             int i;
             Component comp;
@@ -189,7 +189,7 @@ namespace _3D_LayoutOpt
 /* This function writes component data to a file.                                     */
 /* ---------------------------------------------------------------------------------- */
 
-        void print_comp_data(Design design)
+        static void print_comp_data(Design design)
         {
             int i;
 
@@ -202,7 +202,7 @@ namespace _3D_LayoutOpt
 /* This function prints out overlap data.                                             */
 /* ---------------------------------------------------------------------------------- */
 
-        void print_overlaps(Design design)
+        static void print_overlaps(Design design)
         {
             int i, j;
 
@@ -220,7 +220,7 @@ namespace _3D_LayoutOpt
 /* This function writes design data to a file.                                        */
 /* ---------------------------------------------------------------------------------- */
 
-        void save_design(Design design)
+        public static void save_design(Design design)
         {
             int i, j;
             double avg_old_value;
@@ -260,7 +260,7 @@ namespace _3D_LayoutOpt
 /* This function writes container data to a file.                                        */
 /* ---------------------------------------------------------------------------------- */
 
-        void save_container(Design design)
+        public static void save_container(Design design)
         {
             int i, j;
             double avg_old_value;
@@ -288,7 +288,7 @@ namespace _3D_LayoutOpt
 /* This function reads design data from a file.                                       */
 /* ---------------------------------------------------------------------------------- */
 
-        void restore_design(Design design)
+        public static void restore_design(Design design)
         {
             int i, j;
             double avg_old_value;
@@ -344,7 +344,7 @@ namespace _3D_LayoutOpt
             }
 
             init_bounds(design);
-            init_overlaps(design);
+            obj_function.init_overlaps(design);
             i = -1;
             while (++i < Constants.OBJ_NUM)
             {
@@ -359,7 +359,7 @@ namespace _3D_LayoutOpt
 /* change in delta_c due to each move, and the percentage of attempts for each move.  */
 /* ---------------------------------------------------------------------------------- */
 
-        void write_probs(Hustin hustin, double temp)
+        static void write_probs(Hustin hustin, double temp)
         {
             int i, total_attempts;
             double total_delta_c;
@@ -402,7 +402,7 @@ namespace _3D_LayoutOpt
 /* This function writes the final temperature field to a file.                        */
 /* ---------------------------------------------------------------------------------- */
 
-        void save_tfield(Design design)
+        public static void save_tfield(Design design)
         {
             int k = 0;
             Console.WriteLine("Saving current tfield\n");
@@ -425,7 +425,7 @@ namespace _3D_LayoutOpt
 /* This function restores the temperature field to a old_temp's.                       */
 /* ---------------------------------------------------------------------------------- */
 
-        void restore_tfield(Design design)
+        static void restore_tfield(Design design)
         {
             int k = 0;
             Console.WriteLine("Restoring tfield\n");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class Chustin
+    static class Chustin
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -48,7 +48,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the move set probabilities.                                  */
         /* ---------------------------------------------------------------------------------- */
-        void update_hustin(Hustin hustin)
+        public static void update_hustin(Hustin hustin)
         {
             int i;
             double quality_sum;
@@ -76,7 +76,7 @@ namespace _3D_LayoutOpt
         /* This function reinitializes the hustin structure.  This is called after updating   */
         /* the probabilities to reset values for the next temperature.                        */
         /* ---------------------------------------------------------------------------------- */
-        void reset_hustin(Hustin hustin)
+        public static void reset_hustin(Hustin hustin)
         {
             int i;
 
