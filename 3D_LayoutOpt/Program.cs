@@ -298,7 +298,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function returns a random integer between integers rndmin and rndmax.         */
         /* ---------------------------------------------------------------------------------- */
-        static double my_double_random(double rndmin, double rndmax)
+        public static double my_double_random(double rndmin, double rndmax)
         {
             int t = get_time();
             Random random = new Random(t);
@@ -309,7 +309,7 @@ namespace _3D_LayoutOpt
         /* This function updates the x-y-z dimensions of a component based in its initial     */
         /* dimensions and its current orientation.                                            */
         /* ---------------------------------------------------------------------------------- */
-        static void update_dim(Component comp)
+        public static void update_dim(Component comp)
         {
           switch(comp.orientation)
           {
@@ -352,7 +352,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the max and min x, y and z bounds for the bounding box.      */
         /* ---------------------------------------------------------------------------------- */
-        void update_bounds(Design design, Component comp)
+        public static void update_bounds(Design design, Component comp)
         {
             int i, j;
             Component temp_comp;
@@ -516,8 +516,8 @@ namespace _3D_LayoutOpt
                 {
                     writetext.WriteLine("%lf", move_size);
                     readwrite.restore_design(design);
-                    downhill(design, move_size);
-                    eval = obj_function.evaluate(design);
+                    anneal_alg.downhill(design, move_size);
+                    eval = obj_function.evaluate(design, 0, 0);
                     writetext.WriteLine(" %lf\n", eval);
                     if (eval < min_eval)
                         min_eval = eval;

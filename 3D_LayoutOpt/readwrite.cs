@@ -128,7 +128,7 @@ namespace _3D_LayoutOpt
 /* This function writes data regarding the last temperature to a file.                */
 /* ---------------------------------------------------------------------------------- */
 
-        static void write_loop_data(double t, int steps_at_t, int accept_count, int bad_accept_count, int gen_limit, int flag)
+        public static void write_loop_data(double t, int steps_at_t, int accept_count, int bad_accept_count, int gen_limit, int flag)
         {
             using (StreamWriter writetext = new StreamWriter("output/temperature.out"))
             {
@@ -359,7 +359,7 @@ namespace _3D_LayoutOpt
 /* change in delta_c due to each move, and the percentage of attempts for each move.  */
 /* ---------------------------------------------------------------------------------- */
 
-        static void write_probs(Hustin hustin, double temp)
+        public static void write_probs(Hustin hustin, double temp)
         {
             int i, total_attempts;
             double total_delta_c;

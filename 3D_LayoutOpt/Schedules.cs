@@ -18,7 +18,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the temperature.                                             */
         /* ---------------------------------------------------------------------------------- */
-        static void update_temp(double t, double sigma)
+        public static void update_temp(double t, double sigma)
         {
             double reduce = Math.Exp(-(Math.Pow(Constants.LAMBDA, t)) / sigma);
             if (reduce < Constants.T_RATIO_MIN)

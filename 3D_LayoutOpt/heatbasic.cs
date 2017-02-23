@@ -20,20 +20,20 @@ namespace _3D_LayoutOpt
 	            case 0:
                     /*if (correction == 0)
 		            correct_APP_by_LU(design);*/
-                    thermal_analysis_APP(design);
+                    HeatAPP.thermal_analysis_APP(design);
 	                break;
 	            case 1:
 	                if (correction == 0)
                       heatSS.correct_SS_by_LU(design);
-                    thermal_analysis_SS(design);
+                    heatSS.thermal_analysis_SS(design);
 	                break;
 	            case 2:
 	                if (correction == 0)
-                        correct_SS_by_LU(design);
-                    thermal_analysis_SS(design);
+                        heatSS.correct_SS_by_LU(design);
+                    heatSS.thermal_analysis_SS(design);
 	                break;
 	            case 3:
-                    thermal_analysis_MM(design);
+                    heatMM.thermal_analysis_MM(design);
 	                break;
 	            default:
                     Console.WriteLine("ERROR in Thermal Analysis Choice.\n");
@@ -107,7 +107,7 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
 /* This function returns the value of the objective function for coolest              */
 /* ---------------------------------------------------------------------------------- */
-        static double calc_cool_obj(double temp, double tempcrit)
+        public static double calc_cool_obj(double temp, double tempcrit)
         {
             double value;
 
@@ -119,7 +119,7 @@ namespace _3D_LayoutOpt
 /* This function reverts to  the previous node temperatures if the new move was       */
 /* rejected.                                                                          */
 /* ---------------------------------------------------------------------------------- */
-        static void revert_tfield(Design design)
+        public static void revert_tfield(Design design)
         {
             int k;
 
@@ -131,7 +131,7 @@ namespace _3D_LayoutOpt
 /* This function backs up the current temperatures into old_temp if the step was      */
 /* accepted.                                                                          */
 /* ---------------------------------------------------------------------------------- */
-        static void back_up_tfield(Design design)
+        public static void back_up_tfield(Design design)
         {
             int k;
 

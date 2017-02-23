@@ -20,7 +20,7 @@ namespace _3D_LayoutOpt
         /* updated.                                                                  */
         /* ------------------------------------------------------------------------- */
 
-        void thermal_analysis_MM(Design design)
+        public static void thermal_analysis_MM(Design design)
         {
             double[] flux;
             double[][] R;
@@ -70,7 +70,7 @@ namespace _3D_LayoutOpt
 /* corresponds to a simple resistor junction.                                         */
 /* ---------------------------------------------------------------------------------- */
 
-        void set_up_tfield(Design design, int[] node_dim)
+        static void set_up_tfield(Design design, int[] node_dim)
         {
             Component comp;
             double[][] xx = new double[3][];
@@ -149,7 +149,7 @@ namespace _3D_LayoutOpt
 /* It returns TRUE if no duplicates and FALSE if duplicates                           */
 /* ---------------------------------------------------------------------------------- */
 
-        bool not_duplicate(double num, double[] arr, int n)
+        static bool not_duplicate(double num, double[] arr, int n)
         {
             int m;
 
@@ -166,7 +166,7 @@ namespace _3D_LayoutOpt
 /* ascending order.                                                                   */
 /* ---------------------------------------------------------------------------------- */
 
-        void picksort(int n, double[] arr)
+        static void picksort(int n, double[] arr)
         {
             int i, j;
             double a;
@@ -189,7 +189,7 @@ namespace _3D_LayoutOpt
 /*                                                                                    */
 /* ---------------------------------------------------------------------------------- */
 
-        void refinemesh(int[] node_dim, double[] arr, int vector, double min_node_space)
+        static void refinemesh(int[] node_dim, double[] arr, int vector, double min_node_space)
         {
             int i, j;
 
@@ -213,7 +213,7 @@ namespace _3D_LayoutOpt
 /* x and y.  Returns zero if no such component.                                       */
 /* ---------------------------------------------------------------------------------- */
 
-        void find_if_comp_center(Component first_comp, Temperature_field[] tfield, int k)
+        static void find_if_comp_center(Component first_comp, Temperature_field[] tfield, int k)
         {
             Component comp;
 
@@ -236,7 +236,7 @@ namespace _3D_LayoutOpt
 /* component heat sources.                                                            */
 /* ---------------------------------------------------------------------------------- */
 
-        void find_contained_nodes(Design design, int hbw, int znodes)
+        static void find_contained_nodes(Design design, int hbw, int znodes)
         {
             int k = 0;
             Component comp;
@@ -259,7 +259,7 @@ namespace _3D_LayoutOpt
 /* component.                                                                         */
 /* ---------------------------------------------------------------------------------- */
 
-        void find_neighbors(Temperature_field[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
+        static void find_neighbors(Temperature_field[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
         {
             /* This will check neighbors to the west so long as it didn't come FROM the west.*/
             if ((from != -1) && ((Math.Abs(tfield[k - hbw].coord[0] - comp.coord[0])) < (comp.dim[0]/2)) &&
@@ -318,7 +318,7 @@ namespace _3D_LayoutOpt
 /* inside the component.                                                              */
 /* ---------------------------------------------------------------------------------- */
 
-        void set_up_flux(Design design, double[] flux, int tot_nodes)
+        static void set_up_flux(Design design, double[] flux, int tot_nodes)
         {
             Component comp;
             int k;
@@ -343,7 +343,7 @@ namespace _3D_LayoutOpt
 /* are done in this subroutine.                                                       */
 /* ---------------------------------------------------------------------------------- */
 
-        void set_up_coef_matrix(Design design, double[] flux, double[][] R, int tot_nodes, int hbw, int znodes)
+        static void set_up_coef_matrix(Design design, double[] flux, double[][] R, int tot_nodes, int hbw, int znodes)
         {
             int k, i;
             double n, e, w, s, u, d;
@@ -416,7 +416,7 @@ namespace _3D_LayoutOpt
 /* both nodes within the same component.                                              */
 /* ---------------------------------------------------------------------------------- */
 
-        void calc_resistances(Design design, double[] flux, double[][] R, int hbw, double area, double x, int k,
+        static void calc_resistances(Design design, double[] flux, double[][] R, int hbw, double area, double x, int k,
             int step, int dir)
         {
             double xc, nx, kc, kn;
@@ -481,7 +481,7 @@ namespace _3D_LayoutOpt
 /* the component data structure for analysis by eval_part_5.                          */
 /* ---------------------------------------------------------------------------------- */
 
-        void find_comp_temp(Design design)
+        static void find_comp_temp(Design design)
         {
             Component comp;
             int i = 0;
@@ -500,7 +500,7 @@ namespace _3D_LayoutOpt
 /* This is the matrix solver for the vector of nodes in tfield.  It uses LU decomp.   */
 /* ---------------------------------------------------------------------------------- */
 
-        void LU_Decomp(Design design, double[][] R, double[] flux, int n, int hbw)
+        static void LU_Decomp(Design design, double[][] R, double[] flux, int n, int hbw)
         {
             int i, j, k, c = hbw;
             double sum;

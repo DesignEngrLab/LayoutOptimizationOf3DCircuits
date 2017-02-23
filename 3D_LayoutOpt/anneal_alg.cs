@@ -130,7 +130,7 @@ namespace _3D_LayoutOpt
 		hustin.delta_c[hustin.which_move] += (step_eval - current_eval)/5.0;*/
                             update_accept(design, iteration, accept_flag, column, cost_update, step_eval, best_eval, current_eval);
 
-                            back_up_tfield(design);
+                            heatbasic.back_up_tfield(design);
 
 /* If we have taken more than MIN_SAMPLE steps, update parameters for the */
 /* equilibrium condition. */
@@ -153,7 +153,7 @@ namespace _3D_LayoutOpt
 		                    {
 
                                 update_reject(design, iteration, which1, which2, current_eval);
-                                evert_tfield(design);
+                                heatbasic.revert_tfield(design);
                             /* Write evaluation to file. */
                                 using (StreamWriter streamwriter = new StreamWriter("sample.data"))
                                 {
@@ -167,7 +167,7 @@ namespace _3D_LayoutOpt
 		                        --steps_at_t;
 		                        ++junk;
                                 update_reject(design, 0, which1, which2, current_eval);
-                                revert_tfield(design);
+                                heatbasic.revert_tfield(design);
 		                    }
 	                    }
 
@@ -185,7 +185,7 @@ namespace _3D_LayoutOpt
                     Console.WriteLine("%d steps were accepted\n", accept_count);
                     Console.WriteLine("%d of them were inferior steps\n", bad_accept_count);
 
-                    write_loop_data(t, steps_at_t, accept_count, bad_accept_count, gen_limit, 1);
+                    readwrite.write_loop_data(t, steps_at_t, accept_count, bad_accept_count, gen_limit, 1);
 
 /* Check frozen condition.  If frozen, change the flag.  If not, do updates. */
                     if (accept_count == 0)
@@ -200,15 +200,15 @@ namespace _3D_LayoutOpt
 
 /* Update the temperature, the move probabilities, and weights, and write the move */
 /* probabilities to a file.                                                        */
-                        update_temp(t, schedule.sigma);   /* IN SCHEDULE.C */
+                        Schedules.update_temp(t, schedule.sigma);   /* IN SCHEDULE.C */
 
-                        update_heat_param(design, schedule, t); /* IN HEAT.C */
+                        heatbasic.update_heat_param(design, schedule, t); /* IN HEAT.C */
 
-                        update_hustin(hustin);              /* IN HUSTIN.C */
+                        Chustin.update_hustin(hustin);              /* IN HUSTIN.C */
 
-                        write_probs(hustin, t);             /* IN READWRITE.C */
+                        readwrite.write_probs(hustin, t);             /* IN READWRITE.C */
 
-                        reset_hustin(hustin);
+                        Chustin.reset_hustin(hustin);
 /*		  Console.WriteLine("\nHit return to continue\n\n");
 		  getchar(wait);
 */
@@ -216,7 +216,7 @@ namespace _3D_LayoutOpt
                 }                             /* END OUTER LOOP */
 
 
-                write_loop_data(t, steps_at_t, accept_count, bad_accept_count, gen_limit, 0);
+                readwrite.write_loop_data(t, steps_at_t, accept_count, bad_accept_count, gen_limit, 0);
 
 /* Print out evaluation information about the last design. */
                 design.choice = 3;
@@ -259,7 +259,7 @@ namespace _3D_LayoutOpt
                     double prob;
 
 /* Pick a component to move */
-                    which1 = my_random(1, Constants.COMP_NUM);
+                    which1 = Program.my_random(1, Constants.COMP_NUM);
 
 /* Generate a random number to pick a move.  Then, step through the move probabilites */
 /* to find the appropriate move.                                                      */
@@ -335,7 +335,7 @@ namespace _3D_LayoutOpt
 #endif
             i = -1;
             while (++i <= 2)
-                dir_vect[i] = my_double_random(-1.0,1.0);
+                dir_vect[i] = Program.my_double_random(-1.0,1.0);
             if (Constants.DIMENSION == 2)
                 dir_vect[2] = 0.0;
             normalize(dir_vect);
@@ -397,7 +397,7 @@ namespace _3D_LayoutOpt
 
             if (Constants.DIMENSION == 3)
             {
-                new_orientation = my_random(1,5);
+                new_orientation = Program.my_random(1,5);
                 if (new_orientation >= comp.orientation)
                     ++new_orientation;
                 comp.orientation = new_orientation;
@@ -409,7 +409,7 @@ namespace _3D_LayoutOpt
                 else
                     comp.orientation = 1;
             }
-            update_dim(comp);    /* IN TEST3.C */
+            Program.update_dim(comp);    /* IN TEST3.C */
 
 /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);
@@ -633,8 +633,8 @@ namespace _3D_LayoutOpt
         static void update_state(Design design, Component comp, int which)
         {
 
-            update_overlaps(design, comp, which);  /* THIS FUNCTION IS IN OBJ.FUNCTION.C */
-            update_bounds(design, comp);
+            obj_function.update_overlaps(design, comp, which);  /* THIS FUNCTION IS IN OBJ.FUNCTION.C */
+            Program.update_bounds(design, comp);
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -676,19 +676,20 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function rejects any steps that make the bounding box too big.                */
         /* ---------------------------------------------------------------------------------- */
-        static int not_too_big(Design design)
+        public static bool not_too_big(Design design)
         {
-            int i, small;
+            int i;
+            bool small;
             double difference;
 
-            small = 1;
+            small = true;
             i = -1;
             difference = 0.0;
             while (++i <= 2)
             {
                 difference = (design.box_max[i] - design.box_min[i]) - Constants.BOX_LIMIT;
                 if (difference > 0.0)
-	                small = 0;
+	                small = false;
             }
             return(small);
         }
@@ -782,7 +783,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This is the downhill search algorithm.                                             */
         /* ---------------------------------------------------------------------------------- */
-        static void downhill(Design design, double move_size)
+        public static void downhill(Design design, double move_size)
         {
             int iteration, which1, modelflag, column, cost_update, accept_count, count, max;
             double step_eval, current_eval, best_eval, old_eval, dx, dy, dz, d;
@@ -850,7 +851,7 @@ namespace _3D_LayoutOpt
                 if (current_eval/old_eval > 0.99)
 	                improving = false;
             }
-            write_loop_data(0.0, (1000*count), accept_count, 0, 0, 3);
+            readwrite.write_loop_data(0.0, (1000*count), accept_count, 0, 0, 3);
 
             step_eval = obj_function.evaluate(design, max);
             Console.WriteLine("The best eval was %lf\n", best_eval);
@@ -883,7 +884,7 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Entering downhill_move\n");
 #endif
 
-            which = my_random(1, Constants.COMP_NUM);
+            which = Program.my_random(1, Constants.COMP_NUM);
 
 /* Find the correct component and back up the component information in case we reject */
 /* the step.                                                                          */
@@ -902,12 +903,12 @@ namespace _3D_LayoutOpt
             i = -1;
             while (++i <=2)
             {
-                dir_vect[i] = my_double_random(0.0,1.0);
+                dir_vect[i] = Program.my_double_random(0.0,1.0);
                 dir_vect[i] *= design.c_grav[i] - comp.coord[i];
             }
 
             normalize(dir_vect);
-            d = move_size * my_double_random(0.5,1.0);
+            d = move_size * Program.my_double_random(0.5,1.0);
 
             i = -1;
             while (++i <= 2)
