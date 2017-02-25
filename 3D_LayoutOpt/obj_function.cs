@@ -98,7 +98,7 @@ namespace _3D_LayoutOpt
             {
                 j = i;
                 while (++j<Constants.COMP_NUM)
-                    sum += design.overlap[j][i];
+                    sum += design.overlap[j, i];
             }
             if (sum > 0.0)
                 design.new_obj_values[1] = (0.05+sum)* design.new_obj_values[0];
@@ -142,8 +142,8 @@ namespace _3D_LayoutOpt
                 j = i;
                 while (++j<Constants.COMP_NUM)
 	            {
-	                if (design.overlap[j][i] > max)
-	                    max = design.overlap[j][i];
+	                if (design.overlap[j,i] > max)
+	                    max = design.overlap[j,i];
 	            }
             }
             return(max);
@@ -180,18 +180,20 @@ namespace _3D_LayoutOpt
                 comp2 = comp1;
                 while (++j <= Constants.COMP_NUM)
                 {
-                    comp2 = design.components[j];
+                    if (j < Constants.COMP_NUM - 1)
+                        comp2 = design.components[j];
 	                dx = (comp1.dim[0] + comp2.dim[0])/2.0 - Math.Abs(comp1.coord[0] - comp2.coord[0]);
                     dy = (comp1.dim[1] + comp2.dim[1])/2.0 - Math.Abs(comp1.coord[1] - comp2.coord[1]);
                     dz = (comp1.dim[2] + comp2.dim[2])/2.0 - Math.Abs(comp1.coord[2] - comp2.coord[2]);
 
 /* Calculate the average percentage of overlap */
 	                if ((dx > 0) && (dy > 0) && (dz > 0))
-	                    design.overlap[j - 1][i - 1] = 2* dx* dy* dz/(comp1.volume + comp2.volume);
+	                    design.overlap[j - 1, i - 1] = 2* dx* dy* dz/(comp1.volume + comp2.volume);
 	                else
-	                    design.overlap[j - 1][i - 1] = 0.0;
-	            }
-                comp1 = design.components[i];
+	                    design.overlap[j - 1, i - 1] = 0.0;
+                }
+                if (i < Constants.COMP_NUM - 1)
+                    comp1 = design.components[i];
             }
         }
 
@@ -217,7 +219,7 @@ namespace _3D_LayoutOpt
 /* matrix, there is an if statement which switches the indices of the matrix elements. */
             i = 0;
             index = which - 1;
-            temp2 = design.first_comp;
+            temp2 = design.components[i];
             while (i <= (Constants.COMP_NUM-1))
             {
                 dx = (temp1.dim[0] + temp2.dim[0])/2.0 - Math.Abs(temp1.coord[0] - temp2.coord[0]);
@@ -254,19 +256,20 @@ namespace _3D_LayoutOpt
                 if (i<index)
 	            {
 	                if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
-	                    design.overlap[index][i] = 2* dx* dy* dz/(temp1.volume + temp2.volume);
+	                    design.overlap[index,i] = 2* dx* dy* dz/(temp1.volume + temp2.volume);
 	                else
-	                    design.overlap[index][i] = 0.0;
+	                    design.overlap[index,i] = 0.0;
 	            }
                 else if (i > index)
 	            {
 	                if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
-	                    design.overlap[i][index] = 2* dx* dy* dz/(temp1.volume + temp2.volume);
+	                    design.overlap[i, index] = 2* dx* dy* dz/(temp1.volume + temp2.volume);
 	                else
-	                    design.overlap[i][index] = 0.0;
+	                    design.overlap[i,index] = 0.0;
 	            }
                 ++i;
-                temp2 = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    temp2 = design.components[i];
             }           
 
 #if LOCATE

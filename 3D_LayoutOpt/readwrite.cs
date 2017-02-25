@@ -211,7 +211,7 @@ namespace _3D_LayoutOpt
             {
                 j = -1;
                 while (++j <= i)
-                    Console.WriteLine("%lf ", design.overlap[i][j]);
+                    Console.WriteLine("%lf ", design.overlap[i, j]);
                 Console.WriteLine("\n");
             }
         }
@@ -231,7 +231,7 @@ namespace _3D_LayoutOpt
             i = -1;
             avg_old_value = 0.0;
             while (++i < Constants.BALANCE_AVG)
-                avg_old_value += design.old_obj_values[1][i];
+                avg_old_value += design.old_obj_values[1,i];
             avg_old_value /= Constants.BALANCE_AVG;
 
             using (StreamWriter writetext = new StreamWriter("output/design.data"))
@@ -350,7 +350,7 @@ namespace _3D_LayoutOpt
             {
                 j = -1;
                 while (++j < Constants.BALANCE_AVG)
-                    design.old_obj_values[i][j] = avg_old_value;
+                    design.old_obj_values[i,j] = avg_old_value;
             }
         }
 

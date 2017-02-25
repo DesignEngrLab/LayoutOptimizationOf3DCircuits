@@ -120,7 +120,7 @@ namespace _3D_LayoutOpt
 
             Chustin.init_hustin(dummy_hustin);
             dummy_eval = 0;
-            eval = obj_function.evaluate(design, 0); /* IN ANNEAL_ALG.C */
+            eval = obj_function.evaluate(design, 0, 1000); /* IN ANNEAL_ALG.C */
             obj_balance.init_obj_values(design); /* IN OBJ_BALANCE.C */
 
             using (StreamWriter streamwriter = new StreamWriter("sample.data"))

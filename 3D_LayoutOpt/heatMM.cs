@@ -81,9 +81,10 @@ namespace _3D_LayoutOpt
             {
                 i[m] = 0;
             }
-            comp = design.first_comp;
+
             int n = 0;
-            while (comp != null)
+            comp = design.components[n];
+            while (n < design.components.Count)
             {
                 for (m = 0; m < Constants.DIMENSION; m++)
                 {
@@ -91,7 +92,8 @@ namespace _3D_LayoutOpt
                         xx[m][++i[m]] = comp.coord[m];
                 }
                 n++;
-                comp = design.components[n];
+                if (n < Constants.COMP_NUM - 1)
+                    comp = design.components[n];
             }
             for (m = 0; m < Constants.DIMENSION; m++)
             {
@@ -137,7 +139,7 @@ namespace _3D_LayoutOpt
                         }
                         design.tfield[k].comp = null;
 
-                        find_if_comp_center(design.first_comp, design.tfield, k);
+                        //find_if_comp_center(design.first_comp, design.tfield, k);
                         ++k;
                     }
                 }
@@ -213,6 +215,8 @@ namespace _3D_LayoutOpt
 /* x and y.  Returns zero if no such component.                                       */
 /* ---------------------------------------------------------------------------------- */
 
+        /*
+
         static void find_if_comp_center(Component first_comp, Temperature_field[] tfield, int k)
         {
             Component comp;
@@ -230,6 +234,8 @@ namespace _3D_LayoutOpt
                 comp = comp.next_comp;
             }
         }
+         
+         */
 
 /* ---------------------------------------------------------------------------------- */
 /* This function finds all the nodes that are contained in components and inner       */

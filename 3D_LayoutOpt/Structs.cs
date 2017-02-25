@@ -45,7 +45,7 @@ namespace _3D_LayoutOpt
         public int old_orientation;
         public double[] box_min = new double[3];
         public double[] box_max = new double[3];
-        public double[][] overlap = new double[Constants.COMP_NUM][];
+        public double[,] overlap = new double[Constants.COMP_NUM, Constants.COMP_NUM];
         public double[] old_coord = new double[3];
         public double[] old_dim = new double[3];
         public double[] c_grav = new double[3];
@@ -58,8 +58,9 @@ namespace _3D_LayoutOpt
         /* contains backup information in case we reject a step and need to revert to a       */
         /* previous design.                                                                   */
 
-        public Component[] min_comp, max_comp = new Component[3];
-        public List<Component> components;
+        public Component[] min_comp = new Component[3];
+        public Component[] max_comp = new Component[3];
+        public List<Component> components = new List<Component>();
         public Component first_comp;
 
         /* THESE HAVE BEEN ADDED FOR BALANCING THE COMPONENTS OF THE OBJECTIVE FUNCTION       */
@@ -76,7 +77,7 @@ namespace _3D_LayoutOpt
         /* copies the backed up values to new_obj_values to restore the previous state.       */
 
         public double[] new_obj_values = new double[Constants.OBJ_NUM];
-        public double[][] old_obj_values = new double[Constants.OBJ_NUM][];
+        public double[,] old_obj_values = new double[Constants.OBJ_NUM, Constants.BALANCE_AVG];
         public double[] backup_obj_values = new double[Constants.OBJ_NUM];
         public double[] coef = new double[Constants.OBJ_NUM];
         public double[] weight = new double[Constants.OBJ_NUM];

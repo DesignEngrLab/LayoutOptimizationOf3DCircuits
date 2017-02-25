@@ -58,12 +58,13 @@
             box_area = 2*(box_x_dim* box_y_dim + box_x_dim* box_z_dim + box_y_dim* box_z_dim);
 
             comp = design.components[i];
-            while (comp != null)
+            while (i < design.components.Count)
             {
                 Qtot += comp.q;
                 Kave += (comp.k)/Constants.COMP_NUM;
                 i++;
-                comp = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    comp = design.components[i];
             }
             Kave = Kave*(design.volume/box_volume) + (design.kb)*(1 - design.volume/box_volume);
 
@@ -75,11 +76,12 @@
 
             i = 0;
             comp = design.components[i];
-            while (comp != null)
+            while (i < design.components.Count)
             {
                 comp.temp = Tave;
                 i++;
-                comp = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    comp = design.components[i];
             }
         }
     }

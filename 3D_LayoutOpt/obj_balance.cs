@@ -25,9 +25,9 @@ namespace _3D_LayoutOpt
             {
                 for (j = Constants.BALANCE_AVG - 1; j > 0; j--)
                 {
-	                design.old_obj_values[i][j] = design.old_obj_values[i][j - 1];
+	                design.old_obj_values[i, j] = design.old_obj_values[i, j - 1];
                 }
-                design.old_obj_values[i][0] = 1.0;
+                design.old_obj_values[i,0] = 1.0;
             }
         }
 
@@ -66,8 +66,8 @@ namespace _3D_LayoutOpt
 /* if they are non-zero.  If they are zero, the row is initialized with values of     */
 /* design.new_obj_values[0], which results in an initial coefficient of 1.           */
                     if (design.new_obj_values[i] != 0.0)
-	                design.old_obj_values[i][j] = design.new_obj_values[i];
-                    else design.old_obj_values[i][j] = design.new_obj_values[0];
+	                design.old_obj_values[i,j] = design.new_obj_values[i];
+                    else design.old_obj_values[i,j] = design.new_obj_values[0];
                 }
             }
         }

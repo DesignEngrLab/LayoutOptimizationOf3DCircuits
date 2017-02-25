@@ -63,6 +63,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="datafile1" />
+    <None Include="datafile2" />
+    <None Include="makefile" />
+    <None Include="results" />
+    <None Include="sample.data" />
+    <None Include="test3" />
+    <None Include="test3.o" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

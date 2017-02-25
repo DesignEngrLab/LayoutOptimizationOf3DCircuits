@@ -44,12 +44,13 @@ namespace _3D_LayoutOpt
             design.new_obj_values[4] = 0.0;
             int i = 0;
             comp = design.components[0];
-            while (comp != null)
+            while (i < design.components.Count)
             {
 	            design.new_obj_values[3] += calc_temp_penalty(comp.temp, comp.tempcrit);
                 design.new_obj_values[4] += calc_cool_obj(comp.temp, comp.tempcrit);
                 i++;
-                comp = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    comp = design.components[i];
             }
         }
 

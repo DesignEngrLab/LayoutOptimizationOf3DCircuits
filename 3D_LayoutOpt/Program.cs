@@ -146,7 +146,7 @@ namespace _3D_LayoutOpt
                     string line;
                     while ((line = readtext.ReadLine()) != null)
                     {
-                        string[] items = line.Split('\t',' ');
+                        string[] items = line.Split(new char[]{ ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                         Component comp_ptr = new Component();
                         comp_ptr.comp_name = items[0].ToCharArray();
                         comp_ptr.shape_type = items[1].ToCharArray();
@@ -243,7 +243,8 @@ namespace _3D_LayoutOpt
 	                temp_comp.coord[2] = 0.0;
                 Console.WriteLine("%d Dimensional Initial Placement\n", Constants.DIMENSION);
                 ++i;
-                temp_comp = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    temp_comp = design.components[i];
             }
 
         /* Set the initial max and min bounding box dimensions */
@@ -281,7 +282,8 @@ namespace _3D_LayoutOpt
                     update_max_bounds(design, comp, j);
 	                ++j;
 	            }
-                comp = design.components[i];
+                if (i < Constants.COMP_NUM -1)
+                    comp = design.components[i];
             }
         }
 
@@ -378,7 +380,7 @@ namespace _3D_LayoutOpt
         */
 	                design.box_min[i] = comp.coord[i];
 	                j = 0;
-	                temp_comp = design.first_comp;
+                    temp_comp = design.components[j];
 	                while (++j <= Constants.COMP_NUM)
 	                {
 
@@ -401,7 +403,7 @@ namespace _3D_LayoutOpt
         */
 	                design.box_max[i] = comp.coord[i];
 	                j = 0;
-	                temp_comp = design.first_comp;
+                    temp_comp = design.components[j];
 	                while (++j <= Constants.COMP_NUM)
 	                {
                         update_max_bounds(design, temp_comp, i);

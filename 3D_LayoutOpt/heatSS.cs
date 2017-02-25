@@ -264,9 +264,9 @@ namespace _3D_LayoutOpt
             double temp_avg, vol;
             Component comp;
 
-            comp = design.first_comp;
             int j = 0;
-            while (comp != null)
+            comp = design.components[j];
+            while (j < design.components.Count)
             {
 	            tot_vol = 0.0;
 	            tot_temp = 0.0;
@@ -279,6 +279,7 @@ namespace _3D_LayoutOpt
 	            temp_avg = tot_temp/tot_vol;
 	            comp.temp = design.hcf* temp_avg;
                 i++;
+                if (j < Constants.COMP_NUM - 1)
                 comp = design.components[i];
             }
         }
@@ -299,26 +300,30 @@ namespace _3D_LayoutOpt
 
 
             thermal_analysis_SS(design);
-            comp = design.first_comp;
+
             int i = 0;
-            while (comp != null)
+            comp = design.components[i];
+            while (i < Constants.COMP_NUM - 1)
             {
 	            tempSS += comp.temp/Constants.COMP_NUM;
                 i++;
-                comp = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    comp = design.components[i];
             }   
-            tempSS = design.first_comp.temp;
+            tempSS = design.components[0].temp;
 
 
             heatMM.thermal_analysis_MM(design);
-            comp = design.first_comp;
+
             i = 0;
-            while (comp != null)
+            comp = design.components[i];
+            while (i < Constants.COMP_NUM - 1)
             {
 	            tempMM += comp.temp/Constants.COMP_NUM;
                 /*if (tempMM < comp.temp) tempMM = comp.temp;*/
                 i++;
-                comp = design.components[i];
+                if (i < Constants.COMP_NUM - 1)
+                    comp = design.components[i];
             }   
             design.hcf = tempMM/tempSS;
         }

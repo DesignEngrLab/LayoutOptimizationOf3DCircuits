@@ -23,7 +23,8 @@ namespace _3D_LayoutOpt
             Schedule schedule;
             Hustin hustin;
             int iteration, which1, which2, modelflag, column, cost_update, accept_flag, not_frozen, q;
-            int k, steps_at_t, hold_temp, accept_count, bad_accept_count, gen_limit, junk;
+            int k, gen_limit, junk;
+            int steps_at_t = 0, hold_temp, accept_count = 0, bad_accept_count = 0;
             char wait;
             double t, step_eval, current_eval, best_eval, move_size, last_best;
 
@@ -220,7 +221,7 @@ namespace _3D_LayoutOpt
 
 /* Print out evaluation information about the last design. */
                 design.choice = 3;
-                step_eval = obj_function.evaluate(design, 0);
+                step_eval = obj_function.evaluate(design, 0, 1000);
                 Console.WriteLine("%d iterations were junked\n", junk);
                 Console.WriteLine("The best eval was %lf\n", best_eval);
                 Console.WriteLine("The final eval was %lf (%lf percent density)\n", step_eval,(100/design.new_obj_values[0]));
@@ -441,7 +442,7 @@ namespace _3D_LayoutOpt
             i = 1;
             comp1 = design.components[i - 1];
             while (++i <= which1)
-                comp1 = design.components[i];
+                comp1 = design.components[i-1];
 
             i = 1;
             comp2 = design.components[i - 1];
@@ -756,7 +757,7 @@ namespace _3D_LayoutOpt
 /* of the coefficients has been normalized to equal the number of components of the   */
 /* objective function times the initial value of the first component.                 */
 
-            current_eval = obj_function.evaluate(design, 0);       /* In obj_function.c */
+            current_eval = obj_function.evaluate(design, 0, 1000);       /* In obj_function.c */
             best_eval = current_eval;
             obj_balance.init_obj_values(design);                /* In obj_balance.c */
 
@@ -789,8 +790,9 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void downhill(Design design, double move_size)
         {
-            int iteration, which1, modelflag, column, cost_update, accept_count, count, max;
-            double step_eval, current_eval, best_eval, old_eval, dx, dy, dz, d;
+            int iteration, which1 = 0, modelflag, column, cost_update, accept_count, count, max;
+            double step_eval, current_eval, best_eval, dx, dy, dz, d;
+            double old_eval = 1;
             char wait;
 
 #if LOCATE
@@ -810,7 +812,7 @@ namespace _3D_LayoutOpt
             accept_count = 0;
             var improving = true;
   
-            current_eval = obj_function.evaluate(design, max);
+            current_eval = obj_function.evaluate(design, max, 1000);
             best_eval = current_eval;
             step_eval = current_eval;
             Console.WriteLine("current_eval is %lf\n", current_eval);
@@ -834,7 +836,7 @@ namespace _3D_LayoutOpt
       d = dx*dx+dy*dy+dz*dz;
 */
 
-                    step_eval = obj_function.evaluate(design, max);
+                    step_eval = obj_function.evaluate(design, max, 1000);
 	                if (step_eval <= current_eval)
 	                {
 
@@ -857,7 +859,7 @@ namespace _3D_LayoutOpt
             }
             readwrite.write_loop_data(0.0, (1000*count), accept_count, 0, 0, 3);
 
-            step_eval = obj_function.evaluate(design, max);
+            step_eval = obj_function.evaluate(design, max, 1000);
             Console.WriteLine("The best eval was %lf\n", best_eval);
             Console.WriteLine("The final eval was %lf\n", step_eval);
 
