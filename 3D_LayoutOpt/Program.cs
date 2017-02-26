@@ -457,7 +457,6 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void calc_c_grav(Design design)
         {
-            int i, j;
             double mass;
             double[] sum = new double[3];
             Component comp;
@@ -467,19 +466,22 @@ namespace _3D_LayoutOpt
             sum[1] = 0.0;
             sum[2] = 0.0;
 
-            i = 0;
-            comp = design.components[i];
-            while (++i <= Constants.COMP_NUM)
+            
+            for (int i = 0; i < design.comp_count; i++)
             {
-                mass += comp.mass;
-                j = -1;
-                while (++j <= 2)
-	            sum[j] += comp.mass* comp.coord[j];
                 comp = design.components[i];
+                mass += comp.mass;
+                for (int j = 0; j < 3; j++)
+                {
+                    sum[j] += comp.mass * comp.coord[j];
+                }
             }
-            i = -1;
-            while (++i <= 2)
-            design.c_grav[i] = sum[i]/mass;
+
+            for (int i = 0; i < 3; i++)
+            {
+                design.c_grav[i] = sum[i] / mass;
+            }
+
         }
 
         /* ---------------------------------------------------------------------------------- */
