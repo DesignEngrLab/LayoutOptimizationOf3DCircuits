@@ -28,8 +28,8 @@ namespace _3D_LayoutOpt
 
             Program.initializations(design);
 
-            /*  Console.WriteLine("Sampling points in design space\n\n");*/
-            Schedules.sample_space(design);  /* IN SCHEDULE.C */
+            Console.WriteLine("Sampling points in design space\n\n");
+            Schedules.sample_space(design);  
 
         #if WAIT
             Console.WriteLine("\nHit return to continue.\n\n");
@@ -190,13 +190,13 @@ namespace _3D_LayoutOpt
           init_bounds(design);
 
           Console.WriteLine("Initializing overlaps.\n\n");
-          obj_function.init_overlaps(design);          /* This function is in obj_function.c */
+          obj_function.init_overlaps(design);          
 
           Console.WriteLine("Initializing weights.\n\n");
           init_weights(design);
 
           Console.WriteLine("Initializing heat parameters.\n\n");
-          heatbasic.init_heat_param(design);        /* This function is in heat.c */
+          heatbasic.init_heat_param(design);        
         }
 
         /* ---------------------------------------------------------------------------------- */

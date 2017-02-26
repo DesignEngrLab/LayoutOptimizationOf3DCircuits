@@ -23,17 +23,13 @@
             thermal_analysis_APP(design);
             tempapp = design.components[0].temp;
 
-
             heatMM.thermal_analysis_MM(design);
-            int i = 0;
-            comp = design.components[i];
-            while (comp != null)
+
+            for (int i = 0; i < design.comp_count; i++)
             {
-	        /*tempMM += comp.temp/COMP_NUM;*/
-	            if (tempMM<comp.temp)
-                    tempMM = comp.temp;
-                i++;
                 comp = design.components[i];
+                if (tempMM < comp.temp)
+                    tempMM = comp.temp;
             }
             design.hcf = tempMM/tempapp;
         }
@@ -48,7 +44,6 @@
             Component comp;
             double Tave, Rtot, Qtot = 0.0, Kave = 0.0, Have = 0.0;
             double box_x_dim, box_y_dim, box_z_dim, box_area, box_volume;
-            int i = 0;
 
             box_x_dim = design.box_max[0] - design.box_min[0];
             box_y_dim = design.box_max[1] - design.box_min[1];
@@ -57,15 +52,13 @@
             box_volume = box_x_dim* box_y_dim * box_z_dim;
             box_area = 2*(box_x_dim* box_y_dim + box_x_dim* box_z_dim + box_y_dim* box_z_dim);
 
-            comp = design.components[i];
-            while (i < design.components.Count)
+            for (int i = 0; i < design.comp_count; i++)
             {
+                comp = design.components[i];
                 Qtot += comp.q;
-                Kave += (comp.k)/Constants.COMP_NUM;
-                i++;
-                if (i < Constants.COMP_NUM - 1)
-                    comp = design.components[i];
+                Kave += (comp.k) / design.comp_count;
             }
+
             Kave = Kave*(design.volume/box_volume) + (design.kb)*(1 - design.volume/box_volume);
 
             Have = ((design.h[0]) + (design.h[1]) + (design.h[2]))/Constants.DIMENSION;
@@ -74,14 +67,11 @@
             Rtot = ((box_x_dim + box_y_dim + box_z_dim)/(Kave* box_area)) + 1/(Have* box_area);
             Tave = (design.tamb) + design.hcf*(Qtot* Rtot);
 
-            i = 0;
-            comp = design.components[i];
-            while (i < design.components.Count)
+
+            for (int i = 0; i < design.comp_count; i++)
             {
+                comp = design.components[i];
                 comp.temp = Tave;
-                i++;
-                if (i < Constants.COMP_NUM - 1)
-                    comp = design.components[i];
             }
         }
     }

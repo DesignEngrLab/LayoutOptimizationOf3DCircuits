@@ -82,19 +82,16 @@ namespace _3D_LayoutOpt
                 i[m] = 0;
             }
 
-            int n = 0;
-            comp = design.components[n];
-            while (n < design.components.Count)
+            for (int n = 0; n < design.comp_count; n++)
             {
+                comp = design.components[n];
                 for (m = 0; m < Constants.DIMENSION; m++)
                 {
                     if (not_duplicate(comp.coord[m], xx[m], i[m]))
                         xx[m][++i[m]] = comp.coord[m];
                 }
-                n++;
-                if (n < Constants.COMP_NUM - 1)
-                    comp = design.components[n];
             }
+         
             for (m = 0; m < Constants.DIMENSION; m++)
             {
                 node_dim[m] = i[m];
@@ -247,16 +244,12 @@ namespace _3D_LayoutOpt
             int k = 0;
             Component comp;
 
-
-            comp = design.components[k];
-            while (comp != null)
+            for (int i = 0; i < design.comp_count; i++)
             {
+                comp = design.components[k];
                 design.tfield[comp.node_center].comp = comp;
                 comp.nodes = 1;
-
                 find_neighbors(design.tfield, comp, comp.node_center, comp.nodes, hbw, znodes, 0);
-                k++;
-                comp = design.components[k];
             }
         }
 
@@ -328,18 +321,18 @@ namespace _3D_LayoutOpt
         {
             Component comp;
             int k;
-            int i = 0;
-            comp = design.components[i];
-/*  flux[(comp.node_center)] = comp.q;*/
-            while (comp != null)
+            
+            /*  flux[(comp.node_center)] = comp.q;*/
+
+
+            for (int i = 0; i < design.comp_count; i++)
             {
+                comp = design.components[i];
                 for (k = 0; k < tot_nodes; k++)
                 {
                     if (design.tfield[k].comp == comp)
-                        flux[k] = comp.q/comp.nodes;
+                        flux[k] = comp.q / comp.nodes;
                 }
-                i++;
-                comp = design.components[i];
             }
         }
 
@@ -490,15 +483,12 @@ namespace _3D_LayoutOpt
         static void find_comp_temp(Design design)
         {
             Component comp;
-            int i = 0;
 
-            comp = design.components[i];
-            while (comp != null)
+            for (int i = 0; i < design.comp_count; i++)
             {
+                comp = design.components[i];
                 comp.temp = design.tfield[comp.node_center].temp;
                 /*Console.WriteLine("Component %d temperature = %.2f\n", ++i, comp.temp);*/
-                i++;
-                comp = design.components[i];
             }
         }
 
@@ -623,14 +613,11 @@ namespace _3D_LayoutOpt
             {
                 design.tfield[k].temp = design.tfield[k].old_temp;
             }
-
-            int i = 0;
-            comp = design.components[i];
-            while (comp != null)
+            
+            for (int i = 0; i < design.comp_count; i++)
             {
-                design.tfield[comp.node_center].temp = comp.temp;
-                i++;
                 comp = design.components[i];
+                design.tfield[comp.node_center].temp = comp.temp;
             }
         }
     }

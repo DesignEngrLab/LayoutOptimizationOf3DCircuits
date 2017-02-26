@@ -120,8 +120,8 @@ namespace _3D_LayoutOpt
 
             Chustin.init_hustin(dummy_hustin);
             dummy_eval = 0;
-            eval = obj_function.evaluate(design, 0, 1000); /* IN ANNEAL_ALG.C */
-            obj_balance.init_obj_values(design); /* IN OBJ_BALANCE.C */
+            eval = obj_function.evaluate(design, 0, 1000); 
+            obj_balance.init_obj_values(design); 
 
             using (StreamWriter streamwriter = new StreamWriter("sample.data"))
             {
@@ -133,8 +133,8 @@ namespace _3D_LayoutOpt
 
                 while (++i <= Constants.SAMPLE)
                 {
-                    anneal_alg.take_step(design, dummy_hustin, out which1, out which2); /* IN ANNEAL_ALG.C */
-                    eval = obj_function.evaluate(design, i, Constants.SAMPLE); /* IN OBJ_FUNCTION.C */
+                    anneal_alg.take_step(design, dummy_hustin, out which1, out which2); 
+                    eval = obj_function.evaluate(design, i, Constants.SAMPLE); 
 
                     /* Sending (eval + 1.0) as the current_eval makes every step an "improvement".  Thus  */
                     /* every step will be accepted (unless the BOX_LIMIT box is violated).                */

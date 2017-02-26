@@ -264,23 +264,21 @@ namespace _3D_LayoutOpt
             double temp_avg, vol;
             Component comp;
 
-            int j = 0;
-            comp = design.components[j];
-            while (j < design.components.Count)
+
+            for (int j = 0; j < design.comp_count; j++)
             {
-	            tot_vol = 0.0;
-	            tot_temp = 0.0;
-	            for (i = 0; i<tot_nodes; i++)
+                comp = design.components[j];
+                tot_vol = 0.0;
+                tot_temp = 0.0;
+                for (i = 0; i < tot_nodes; i++)
                 {
-	                vol = find_vol(comp, design.tfield[i].coord, ss_dim);
-                    tot_temp += (vol)*(design.tfield[i].temp);
-	                tot_vol += vol;
-	            }
-	            temp_avg = tot_temp/tot_vol;
-	            comp.temp = design.hcf* temp_avg;
-                i++;
-                if (j < Constants.COMP_NUM - 1)
-                comp = design.components[i];
+                    vol = find_vol(comp, design.tfield[i].coord, ss_dim);
+                    tot_temp += (vol) * (design.tfield[i].temp);
+                    tot_vol += vol;
+                }
+                temp_avg = tot_temp / tot_vol;
+                comp.temp = design.hcf * temp_avg;
+
             }
         }
 
@@ -301,30 +299,22 @@ namespace _3D_LayoutOpt
 
             thermal_analysis_SS(design);
 
-            int i = 0;
-            comp = design.components[i];
-            while (i < Constants.COMP_NUM - 1)
+            for (int i = 0; i < design.comp_count; i++)
             {
-	            tempSS += comp.temp/Constants.COMP_NUM;
-                i++;
-                if (i < Constants.COMP_NUM - 1)
-                    comp = design.components[i];
-            }   
+                comp = design.components[i];
+                tempSS += comp.temp / design.comp_count;
+            }
+
+       
             tempSS = design.components[0].temp;
-
-
             heatMM.thermal_analysis_MM(design);
 
-            i = 0;
-            comp = design.components[i];
-            while (i < Constants.COMP_NUM - 1)
+            for (int i = 0; i < design.comp_count; i++)
             {
-	            tempMM += comp.temp/Constants.COMP_NUM;
-                /*if (tempMM < comp.temp) tempMM = comp.temp;*/
-                i++;
-                if (i < Constants.COMP_NUM - 1)
-                    comp = design.components[i];
-            }   
+                comp = design.components[i];
+                tempMM += comp.temp / design.comp_count;
+            }
+            
             design.hcf = tempMM/tempSS;
         }
     }

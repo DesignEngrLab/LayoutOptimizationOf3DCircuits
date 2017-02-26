@@ -33,7 +33,7 @@ namespace _3D_LayoutOpt
             eval_part_2(design);
             eval_part_3(design);
             heatbasic.heat_eval(design, steps_at_t, gen_limit);
-            obj_balance.update_coef(design);
+            obj_balance.update_coef(design);                            //WHAT DOES IT DO?
 
         /* Add up the individual evaluations. */
             eval = 0.0;
@@ -43,7 +43,7 @@ namespace _3D_LayoutOpt
             }
   
             if ((design.choice != 0) && (design.choice != 1))
-                Console.WriteLine("%d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n", design.choice,
+                Console.WriteLine("{0}{1}{2}{3}{4}{5}{6}", design.choice,
                 design.weight[0]*design.new_obj_values[0],
                 design.weight[1]*design.new_obj_values[1],
                 design.weight[2]*design.new_obj_values[2],
@@ -89,19 +89,18 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
         static void eval_part_2(Design design)
         {
-            int i, j;
             double sum;
-
             sum = 0.0;
-            i = -1;
-            while (++i<Constants.COMP_NUM)
+
+            for (int i = 0; i < Constants.COMP_NUM; i++)
             {
-                j = i;
-                while (++j<Constants.COMP_NUM)
+                for (int j = i; j < Constants.COMP_NUM; j++)
+                {
                     sum += design.overlap[j, i];
+                }
             }
             if (sum > 0.0)
-                design.new_obj_values[1] = (0.05+sum)* design.new_obj_values[0];
+                design.new_obj_values[1] = (0.05 + sum) * design.new_obj_values[0];
             else
                 design.new_obj_values[1] = 0.0;
         }
@@ -112,17 +111,16 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
         static void eval_part_3(Design design)
         {
-            int i;
             double difference, box_penalty;
             box_penalty = 0.0;
-            i = -1;
-            while (++i <= 2)
+
+            for (int i = 0; i < 3; i++)
             {
                 difference = (design.box_max[i] - design.box_min[i]) - design.container[i];
                 if (difference > 0.0)
-	                box_penalty += difference;
+                    box_penalty += difference;
             }
-            design.new_obj_values[2] = box_penalty* box_penalty;
+            design.new_obj_values[2] = box_penalty * box_penalty;
         }  
 
 /* ---------------------------------------------------------------------------------- */
@@ -193,32 +191,11 @@ namespace _3D_LayoutOpt
                     /* Calculate the average percentage of overlap */
 
                     if ((dx > 0) && (dy > 0) && (dz > 0))
-                        design.overlap[j - 1, i - 1] = 2 * dx * dy * dz / (comp1.volume + comp2.volume);
+                        design.overlap[j, i ] = 2 * dx * dy * dz / (comp1.volume + comp2.volume);
                     else
-                        design.overlap[j - 1, i - 1] = 0.0;
+                        design.overlap[j, i ] = 0.0;
                 }
             }
-//            while (++i<Constants.COMP_NUM)
-//            {
-//                j = i;
-//                comp2 = comp1;
-//                while (++j <= Constants.COMP_NUM)
-//                {
-//                    if (j < Constants.COMP_NUM - 1)
-//                        comp2 = design.components[j];
-//	                dx = (comp1.dim[0] + comp2.dim[0])/2.0 - Math.Abs(comp1.coord[0] - comp2.coord[0]);
-//                    dy = (comp1.dim[1] + comp2.dim[1])/2.0 - Math.Abs(comp1.coord[1] - comp2.coord[1]);
-//                    dz = (comp1.dim[2] + comp2.dim[2])/2.0 - Math.Abs(comp1.coord[2] - comp2.coord[2]);
-
-///* Calculate the average percentage of overlap */
-//	                if ((dx > 0) && (dy > 0) && (dz > 0))
-//	                    design.overlap[j - 1, i - 1] = 2* dx* dy* dz/(comp1.volume + comp2.volume);
-//	                else
-//	                    design.overlap[j - 1, i - 1] = 0.0;
-//                }
-//                if (i < Constants.COMP_NUM - 1)
-//                    comp1 = design.components[i];
-//            }
         }
 
 /* ---------------------------------------------------------------------------------- */
@@ -300,63 +277,5 @@ namespace _3D_LayoutOpt
 
 
         }
-//            while (i <= (Constants.COMP_NUM-1))
-//            {
-//                dx = (temp1.dim[0] + temp2.dim[0])/2.0 - Math.Abs(temp1.coord[0] - temp2.coord[0]);
-//                dy = (temp1.dim[1] + temp2.dim[1])/2.0 - Math.Abs(temp1.coord[1] - temp2.coord[1]);
-//                dz = (temp1.dim[2] + temp2.dim[2])/2.0 - Math.Abs(temp1.coord[2] - temp2.coord[2]);
-
-///*  Recalculate overlaps if both objects are cylinders with aligned z axes. */
-//                if ((temp1.shape_type[0] == 'C') && (temp2.shape_type[0] == 'C'))
-//	            {
-//	                if (((temp1.orientation* temp2.orientation) == 3) && (dz > 0.0))
-//	                {
-//	                    d1 = temp1.coord[0] - temp2.coord[0];
-//	                    d2 = temp1.coord[1] - temp2.coord[1];
-//	                    dx = (temp1.dim[0] + temp2.dim[0])/2.0 - Math.Sqrt(d1* d1 + d2* d2);
-//                        dy = dx;
-//	                }
-//	                else if (((temp1.orientation* temp2.orientation) == 8) && (dy > 0.0))
-//	                {
-//	                    d1 = temp1.coord[0] - temp2.coord[0];
-//	                    d2 = temp1.coord[2] - temp2.coord[2];
-//	                    dx = (temp1.dim[0] + temp2.dim[0])/2.0 - Math.Sqrt(d1* d1 + d2* d2);
-//                        dz = dx;
-//	                }
-//	                else if (((temp1.orientation* temp2.orientation) == 30) && (dx > 0.0))
-//	                {
-//	                    d1 = temp1.coord[1] - temp2.coord[1];
-//	                    d2 = temp1.coord[2] - temp2.coord[2];
-//	                    dy = (temp1.dim[1] + temp2.dim[1])/2.0 - Math.Sqrt(d1* d1 + d2* d2);
-//                        dz = dy;
-//	                }
-//	            }
-
-///* Set overlap value in matrix. */
-//                if (i<index)
-//	            {
-//	                if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
-//	                    design.overlap[index,i] = 2* dx* dy* dz/(temp1.volume + temp2.volume);
-//	                else
-//	                    design.overlap[index,i] = 0.0;
-//	            }
-//                else if (i > index)
-//	            {
-//	                if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
-//	                    design.overlap[i, index] = 2* dx* dy* dz/(temp1.volume + temp2.volume);
-//	                else
-//	                    design.overlap[i,index] = 0.0;
-//	            }
-//                ++i;
-//                if (i < Constants.COMP_NUM - 1)
-//                    temp2 = design.components[i];
-//            }           
-
-//#if LOCATE
-//            Console.WriteLine("Leaving update_overlaps\n");
-//#endif
-
-//        }
-
     }
 }

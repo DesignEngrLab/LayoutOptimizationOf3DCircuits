@@ -336,9 +336,11 @@ namespace _3D_LayoutOpt
 #if OUTPUT
             Console.WriteLine("Moving %s\n", comp.comp_name);
 #endif
-            i = -1;
-            while (++i <= 2)
-                dir_vect[i] = Program.my_double_random(-1.0,1.0);
+          
+            for (int j = 0; j < 3; j++)
+            {
+                dir_vect[j] = Program.my_double_random(-1.0, 1.0);
+            }
             if (Constants.DIMENSION == 2)
                 dir_vect[2] = 0.0;
             normalize(dir_vect);
@@ -362,7 +364,7 @@ namespace _3D_LayoutOpt
 /* This function takes a delta_vector, normalizes it, and puts the result in the      */
 /* normalized vector.                                                                 */
 /* ---------------------------------------------------------------------------------- */
-    static    void normalize(double[] dir_vect)
+        static void normalize(double[] dir_vect)
         {
             double sum;
 
@@ -376,7 +378,7 @@ namespace _3D_LayoutOpt
 /* This function takes a rotation step.  An orientation (different from the current   */
 /* one) is randomly selected and the component dimensions are updated accordingly.    */
 /* ---------------------------------------------------------------------------------- */
-  static      void rotate(Design design, int which)
+        static void rotate(Design design, int which)
         {
             int i, new_orientation;
             Component comp;
@@ -426,7 +428,7 @@ namespace _3D_LayoutOpt
 /* This function takes a rotation step.  An orientation (different from the current   */
 /* one) is randomly selected and the component dimensions are updated accordingly.    */
 /* ---------------------------------------------------------------------------------- */
-    static    void swap(Design design, int which1, int which2)
+        static void swap(Design design, int which1, int which2)
         {
             int i;
             double temp_coord;
@@ -453,13 +455,13 @@ namespace _3D_LayoutOpt
 #if OUTPUT
             Console.WriteLine("Swapping %s and %s\n", comp1.comp_name, comp2.comp_name);
 #endif
-            i = -1;
-            while (++i <= 2)
+            for (int j = 0; j < 3; j++)
             {
-                temp_coord = comp1.coord[i];
-                comp1.coord[i] = comp2.coord[i];
-                comp2.coord[i] = temp_coord;
+                temp_coord = comp1.coord[j];
+                comp1.coord[j] = comp2.coord[j];
+                comp2.coord[j] = temp_coord;
             }
+            
 
 /* Update the overlaps and the bounding box dimensions for the changed components.    */
             update_state(design, comp1, which1);
@@ -490,17 +492,20 @@ namespace _3D_LayoutOpt
 /*  Console.WriteLine("The component being backed up is %s\n",comp.comp_name);
 */
             design.old_orientation = comp.orientation;
-            i = -1;
-            while (++i <= 2)
+
+            for (int j = 0; j < 3; j++)
             {
-                design.old_coord[i] = comp.coord[i];
-                design.old_dim[i] = comp.dim[i];
+                design.old_coord[j] = comp.coord[j];
+                design.old_dim[j] = comp.dim[j];
             }
 
-/* Back up current objective_function values. */
-            i = -1;
-            while (++i<Constants.OBJ_NUM)
-                design.backup_obj_values[i] = design.new_obj_values[i];
+            /* Back up current objective_function values. */
+
+            for (int j = 0; j < Constants.OBJ_NUM; j++)
+            {
+                design.backup_obj_values[j] = design.new_obj_values[j];
+            }
+
 
 #if LOCATE
             Console.WriteLine("Leaving back_up\n");
@@ -572,27 +577,30 @@ namespace _3D_LayoutOpt
         {
             int i;
             double temp_coord;
-            Component comp1, comp2;
+            Component comp1 = null, comp2 = null;
 
 #if LOCATE
             Console.WriteLine("Entering revert\n");
 #endif
 
-/* Find the first component. */
-            i = 1;
-            comp1 = design.components[i - 1];
-            while (++i <= which1)
-                comp1 = design.components[i];
+            /* Find the first component. */
+
+            for (int j = 0; j < which1; j++)
+            {
+                comp1 = design.components[j];
+            }
+
 
             if (which2 > 0)
             {
                 comp1.orientation = design.old_orientation;
-                i = -1;
-                while (++i <= 2)
-	            {
-	                comp1.coord[i] = design.old_coord[i];
-	                comp1.dim[i] = design.old_dim[i];
-	            }
+
+                for (int j = 0; j < 3; j++)
+                {
+                    comp1.coord[j] = design.old_coord[j];
+                    comp1.dim[j] = design.old_dim[j];
+                }
+
 
 /* Update the overlaps and bounding box dimensions back to how they were since we reverted */
             update_state(design, comp1, which1);    
@@ -606,13 +614,14 @@ namespace _3D_LayoutOpt
                 while (++i <= which2)
                     comp2 = design.components[i];
 
-                i = -1;
-                while (++i <= 2)
-	            {
-	                temp_coord = comp1.coord[i];
-	                comp1.coord[i] = comp2.coord[i];
-	                comp2.coord[i] = temp_coord;
-	            }
+
+                for (int j = 0; j < 3; j++)
+                {
+                    temp_coord = comp1.coord[j];
+                    comp1.coord[j] = comp2.coord[j];
+                    comp2.coord[j] = temp_coord;
+                }
+
 
 /* Update the overlaps and bounding box dimensions back to how they were since we reverted */
                 update_state(design, comp1, which1);
@@ -620,9 +629,12 @@ namespace _3D_LayoutOpt
             }
 
 /* Revert objective_function values to the values before the step. */
-            i = -1;
-            while (++i<Constants.OBJ_NUM)
-                design.new_obj_values[i] = design.backup_obj_values[i];
+            
+            for (int j = 0; j < Constants.OBJ_NUM; j++)
+            {
+                design.new_obj_values[j] = design.backup_obj_values[j];
+            }
+            
 
 #if LOCATE
             Console.WriteLine("Leaving revert\n");
@@ -683,18 +695,18 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static bool not_too_big(Design design)
         {
-            int i;
+
             bool small;
             double difference;
 
             small = true;
-            i = -1;
             difference = 0.0;
-            while (++i <= 2)
+
+            for (int i = 0; i < 3; i++)
             {
                 difference = (design.box_max[i] - design.box_min[i]) - Constants.BOX_LIMIT;
                 if (difference > 0.0)
-	                small = false;
+                    small = false;
             }
             return(small);
         }
@@ -704,38 +716,33 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         static void test_it(Design design, double current_eval, int accept_flag, int iteration)
         {
-            int i, j;
             Component comp;
             char wait;
 
-            j = 0;
-            comp = design.components[j];
-            while (++j <= Constants.COMP_NUM)
+            for (int j = 0; j < design.comp_count; j++)
             {
-/* Test to make sure the bounding box dimensions are correct. */
-                i = -1;
-                while (++i <= 2)
-	            {
-	                if (((comp.coord[i] - comp.dim[i]/2) <= design.box_min[i]) &&
-	                    (design.min_comp[i] != comp))
-	                {
+                comp = design.components[j];
+                for (int i = 0; i < 3; i++)                 // Test to make sure the bounding box dimensions are correct. 
+                {
+                    if (((comp.coord[i] - comp.dim[i] / 2) <= design.box_min[i]) &&
+                        (design.min_comp[i] != comp))
+                    {
 
                         Console.WriteLine("\n\nERROR in test_it - box_min.\n\n");
 
-	                    return;
-	                }
-	                if (((comp.coord[i] + comp.dim[i]/2) >= design.box_max[i]) &&
-	                    (design.max_comp[i] != comp))
-	                {
+                        return;
+                    }
+                    if (((comp.coord[i] + comp.dim[i] / 2) >= design.box_max[i]) &&
+                        (design.max_comp[i] != comp))
+                    {
 
                         Console.WriteLine("\n\nERROR in test_it - box_max.\n\n");
 
-	                    return;
-	                }
-	            }
-                if (j < Constants.COMP_NUM)
-                    comp = design.components[j];
+                        return;
+                    }
+                }
             }
+        }
 
             /* Test to see if value reverted to is same as value before taking step. */
             /*  if (!(accept_flag) && (current_eval != obj_function.evaluate(design, iteration)))
@@ -743,7 +750,6 @@ namespace _3D_LayoutOpt
                   Console.WriteLine("\n\nERROR in test_it - didn't revert correctly\7\n\n");
                   exit();
                 }*/
-        }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function initializes variables, counters, coefficients, and calculates the    */
@@ -906,19 +912,22 @@ namespace _3D_LayoutOpt
 #if OUTPUT
             Console.WriteLine("Moving %s\n", comp.comp_name);
 #endif
-            i = -1;
-            while (++i <=2)
-            {
-                dir_vect[i] = Program.my_double_random(0.0,1.0);
-                dir_vect[i] *= design.c_grav[i] - comp.coord[i];
-            }
 
+            for (int j = 0; j < 3; j++)
+            {
+                dir_vect[j] = Program.my_double_random(0.0, 1.0);
+                dir_vect[j] *= design.c_grav[j] - comp.coord[j];
+            }
+            
             normalize(dir_vect);
             d = move_size * Program.my_double_random(0.5,1.0);
 
-            i = -1;
-            while (++i <= 2)
-                comp.coord[i] += (d* dir_vect[i]);
+
+            for (int j = 0; j < 3; j++)
+            {
+                comp.coord[j] += (d * dir_vect[j]);
+            }
+            
 
 /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);

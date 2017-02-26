@@ -19,16 +19,15 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void init_hustin(Hustin hustin)
         {
-            int i;
+            
             double init_prob, distance, delta_dist, dist;
 
             dist = Constants.MIN_MOVE_DIST;
             delta_dist = (Constants.MAX_MOVE_DIST - Constants.MIN_MOVE_DIST)/ Constants.TRANS_NUM;
             init_prob = 1.0/ Constants.MOVE_NUM;
             hustin.usable_prob = 1 - Constants.MIN_PROB * Constants.MOVE_NUM;
-            i = -1;
-  
-            while (++i< Constants.TRANS_NUM)
+            
+            for (int i = 0; i < Constants.TRANS_NUM; i++)
             {
                 hustin.move_size[i] = dist;
                 dist += delta_dist;
@@ -36,13 +35,13 @@ namespace _3D_LayoutOpt
                 hustin.attempts[i] = 0;
                 hustin.delta_c[i] = 0.0;
             }
-            while (i< Constants.MOVE_NUM)
+            for (int i = 0; i < Constants.MOVE_NUM; i++)
             {
                 hustin.prob[i] = init_prob;
                 hustin.attempts[i] = 0;
                 hustin.delta_c[i] = 0.0;
-                ++i;
             }
+            
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -50,26 +49,23 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void update_hustin(Hustin hustin)
         {
-            int i;
             double quality_sum;
-
             quality_sum = 0.0;
-            i = -1;
-            while (++i<Constants.MOVE_NUM)
+            
+            for (int i = 0; i < Constants.MOVE_NUM; i++)
             {
                 if (hustin.attempts[i] > 0)
-	                hustin.quality[i] = hustin.delta_c[i]/(1* hustin.attempts[i]);
+                    hustin.quality[i] = hustin.delta_c[i] / (1 * hustin.attempts[i]);
                 else
-	                hustin.quality[i] = 0;
+                    hustin.quality[i] = 0;
                 quality_sum += hustin.quality[i];
             }
 
-            i = -1;
-
-            while (++i<Constants.MOVE_NUM)
+            for (int i = 0; i < Constants.MOVE_NUM; i++)
             {
                 hustin.prob[i] = Constants.MIN_PROB + hustin.usable_prob * hustin.quality[i] / quality_sum;
             }
+
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -78,16 +74,11 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void reset_hustin(Hustin hustin)
         {
-            int i;
-
-            i = -1;
-
-            while (++i<Constants.MOVE_NUM)
+            for (int i = 0; i < Constants.MOVE_NUM; i++)
             {
                 hustin.attempts[i] = 0;
                 hustin.delta_c[i] = 0.0;
             }
         }
-
     }
 }
