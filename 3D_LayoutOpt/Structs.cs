@@ -7,14 +7,14 @@ namespace _3D_LayoutOpt
     public class Component
     {
 
-        public int orientation, node_center, nodes;
+        public int orientation, node_center, nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
         public double[] coord = new double[3];
         public double[] dim = new double[3];
         public double[] dim_initial = new double[3];
         public double half_area, volume, mass;
         public double temp, tempcrit, q, k;
-        public char[] comp_name = new char[Constants.MAX_NAME_LENGTH];
-        public char[] shape_type = new char[5];
+        public char[] comp_name = new char[Constants.MAX_NAME_LENGTH];    //TO DO: change char array to string
+        public char[] shape_type = new char[5];                             //TO DO: change char array to string
 
     }
 
@@ -42,6 +42,7 @@ namespace _3D_LayoutOpt
         /* that only the top half of the overlap matrix is used.  half_area is half of the    */
         /* total of all the surface areas of the components.                                  */
 
+        public int comp_count;
         public int old_orientation;
         public double[] box_min = new double[3];
         public double[] box_max = new double[3];
@@ -106,6 +107,16 @@ namespace _3D_LayoutOpt
         public double[] h = new double[3];
         public double[] analysis_switch = new double[Constants.SWITCH_NUM];
         public int hcf_per_temp, gauss, max_iter, choice;
+
+
+
+        public void store_component_cnt()
+        {
+            comp_count = components.Count;
+        }
+
+
+    
     }
 
     public class Schedule

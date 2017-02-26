@@ -11,7 +11,7 @@ namespace _3D_LayoutOpt
     {
         static void Main(string[] args)
         {
-            int comp_num, i, which, end_time;
+            int i, which, end_time;
             double eval, h, w, l;
             char wait;
             Design design = new Design();
@@ -21,13 +21,10 @@ namespace _3D_LayoutOpt
             Program.setseed();
 
             /* The component data is read in from a file and the number of components is returned */
-            comp_num = getdata(design);
-            /*  Console.WriteLine("%d components were read in from the file.\n\n",comp_num);*/
-            if (comp_num != Constants.COMP_NUM)
-            {
-                Console.WriteLine("The number of components read in is not the number expected.\n");
-                //exit();
-            }
+            getdata(design);
+            design.store_component_cnt();
+            Console.WriteLine("{0} components were read in from the file.\n\n",design.comp_count);
+
 
             Program.initializations(design);
 
@@ -76,15 +73,15 @@ namespace _3D_LayoutOpt
         {
             int seconds;
             seconds = get_time();
-            Console.WriteLine("\nSetting seed for random number generator to %d.\n\n", seconds);
+            Console.WriteLine("\nSetting seed for random number generator to {0}", seconds);
             using (StreamWriter writetext = new StreamWriter("output/seed.out"))
             {
-                writetext.WriteLine("The seed is %d\n\n", seconds);
+                writetext.WriteLine("The seed is {0}\n\n", seconds);
             }
 
             using (StreamWriter writetext = new StreamWriter("results"))
             {
-                writetext.WriteLine("\nThe seed is %d\n", seconds);
+                writetext.WriteLine("\nThe seed is {0}\n", seconds);
             }
         }
 
@@ -100,15 +97,14 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function gets component data from a file.                                     */
         /* ---------------------------------------------------------------------------------- */
-        public static int getdata(Design design)
+        public static void getdata(Design design)
         {
             int i;
             double x_dim, y_dim, z_dim, tempcrit, q, k, pi;
             char[] name = new char[Constants.MAX_NAME_LENGTH];
             char[] type = new char[Constants.MAX_NAME_LENGTH];
             char[] shape = new char[5];
-
-            pi = 4.0*Math.Atan(1.0);
+            
             try
             {
                 using (StreamReader readtext = new StreamReader("datafile2"))
@@ -123,8 +119,8 @@ namespace _3D_LayoutOpt
                         design.container[2] = Convert.ToDouble(items[2]);
                         design.kb = Convert.ToDouble(items[3]);
                         design.h[0] = Convert.ToDouble(items[4]);
-                        design.h[0] = Convert.ToDouble(items[5]);
-                        design.h[0] = Convert.ToDouble(items[6]);
+                        design.h[1] = Convert.ToDouble(items[5]);
+                        design.h[2] = Convert.ToDouble(items[6]);
                         design.tamb = Convert.ToDouble(items[7]);
                     }
                 }
@@ -147,7 +143,7 @@ namespace _3D_LayoutOpt
                     while ((line = readtext.ReadLine()) != null)
                     {
                         string[] items = line.Split(new char[]{ ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                        Component comp_ptr = new Component();
+                        Component comp_ptr = new Component();                   //TO DO: change comp_ptr to comp
                         comp_ptr.comp_name = items[0].ToCharArray();
                         comp_ptr.shape_type = items[1].ToCharArray();
                         comp_ptr.dim_initial[0] = Convert.ToDouble(items[2]);
@@ -161,13 +157,13 @@ namespace _3D_LayoutOpt
                         {
                             comp_ptr.half_area = (comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1]) + (comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2]) + (comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2]);
                             comp_ptr.volume = comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2];
-                            comp_ptr.mass = comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2];
+                            comp_ptr.mass = comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2];                    // TO DO: add density so that mass = density * volume
                         }
                         else
                         {
-                            comp_ptr.half_area = (pi * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] / 4.0) + (pi * comp_ptr.dim_initial[2] * comp_ptr.dim_initial[0] / 2.0);
-                            comp_ptr.volume = pi * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2] / 4.0;
-                            comp_ptr.mass = pi * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2] / 4.0;
+                            comp_ptr.half_area = (Math.PI * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] / 4.0) + (Math.PI * comp_ptr.dim_initial[2] * comp_ptr.dim_initial[0] / 2.0);
+                            comp_ptr.volume = Math.PI * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2] / 4.0;
+                            comp_ptr.mass = Math.PI * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2] / 4.0;
                         }
                         design.half_area += comp_ptr.half_area;
                         design.volume += comp_ptr.volume;
@@ -180,7 +176,6 @@ namespace _3D_LayoutOpt
             catch (IOException ex)
             {
             }
-            return design.components.Count();
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -222,39 +217,34 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         static void init_locations(Design design)
         {
-            int i, j;
-            Component temp_comp;
+            Component temp_comp = null;
 
         #if LOCATE
             Console.WriteLine("Entering init_locations\n");
         #endif
-
-            i = 0;
-            temp_comp = design.components[i];
-            while (i <= Constants.COMP_NUM - 1)
+   
+            for (int i = 0; i < design.comp_count; i++)
             {
-                temp_comp.orientation = my_random(1, 6);
+                temp_comp = design.components[i];
+                temp_comp.orientation = my_random(1, 6);            //TO DO: WHY SET IT TO 1 AFTER RANDOM?
                 temp_comp.orientation = 1;
                 update_dim(temp_comp);
-                j = -1;
-                while (++j <= Constants.DIMENSION -1)
-	                temp_comp.coord[j] = my_double_random(-Constants.INITIAL_BOX_SIZE, Constants.INITIAL_BOX_SIZE);
+                for (int j = 0; j < Constants.DIMENSION; j++)
+                {
+                    temp_comp.coord[j] = my_double_random(-Constants.INITIAL_BOX_SIZE, Constants.INITIAL_BOX_SIZE);
+                }
                 if (Constants.DIMENSION == 2)
-	                temp_comp.coord[2] = 0.0;
-                Console.WriteLine("%d Dimensional Initial Placement\n", Constants.DIMENSION);
-                ++i;
-                if (i < Constants.COMP_NUM - 1)
-                    temp_comp = design.components[i];
+                    temp_comp.coord[2] = 0.0;
+                Console.WriteLine("%d Dimensional Initial Placement {0}\n", Constants.DIMENSION);                 
+                
             }
 
-        /* Set the initial max and min bounding box dimensions */
-          i = 0;
-          while (i <= 2)
-          {
-              design.box_min[i] = temp_comp.coord[i];
-              design.box_max[i] = temp_comp.coord[i];
-              ++i;
-          }
+            /* Set the initial max and min bounding box dimensions */
+            for (int i = 0; i < 3; i++)
+            {
+                design.box_min[i] = temp_comp.coord[i];
+                design.box_max[i] = temp_comp.coord[i];
+            }
 
         #if LOCATE
             Console.WriteLine("Leavinging init_locations\n");
@@ -267,23 +257,14 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void init_bounds(Design design)
         {
-            int i, j;
             Component comp;
 
-            i = 0;
-            comp = design.components[i];
-            while (++i <= Constants.COMP_NUM)
+            
+            for (int i = 0; i < design.comp_count; i++)
             {
-                j = 0;
-                while (j <=2)
-	            {
-
-                    update_min_bounds(design, comp, j);
-                    update_max_bounds(design, comp, j);
-	                ++j;
-	            }
-                if (i < Constants.COMP_NUM -1)
-                    comp = design.components[i];
+                comp = design.components[i];
+                update_min_bounds(design, comp);
+                update_max_bounds(design, comp);   
             }
         }
 
@@ -356,7 +337,6 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void update_bounds(Design design, Component comp)
         {
-            int i, j;
             Component temp_comp;
             char wait;
 
@@ -369,48 +349,43 @@ namespace _3D_LayoutOpt
         /* elements to find the new one (which may the the same as the current one).  To      */
         /* correctly update the bounds, we reset the box_min (since we've moved the min_comp  */
         /* the old value is no longer valid).                                                 */
-            i = -1;
-            while (++i <= 2)
+
+            for (int i = 0; i < 3; i++)
             {
                 if (comp != design.min_comp[i])
-                    update_min_bounds(design, comp, i);
+                    update_min_bounds(design, comp);
                 else
-	            {
-        /*	  Console.WriteLine("Min comp may have changed - recomputing min bounds\n");
-        */
-	                design.box_min[i] = comp.coord[i];
-	                j = 0;
-                    temp_comp = design.components[j];
-	                while (++j <= Constants.COMP_NUM)
-	                {
+                {
+                    /*	  Console.WriteLine("Min comp may have changed - recomputing min bounds\n");
+                    */
+                    design.box_min[i] = comp.coord[i];
 
-                        update_min_bounds(design, temp_comp, i);
-	                    if (j < Constants.COMP_NUM)
-	                        temp_comp = design.components[j];
-	                }
-	            }
+                    for (int j = 0; j < design.comp_count; j++)
+                    {
+                        temp_comp = design.components[j];
+                        update_min_bounds(design, temp_comp);
+                    }
+
+                }
             }
 
+
         /* Now do the same for the max_comp. */
-            i = -1;
-            while (++i <= 2)
+            for (int i = 0; i < 3; i++)
             {
                 if (comp != design.max_comp[i])
-                    update_max_bounds(design, comp, i);
+                    update_max_bounds(design, comp);
                 else
-	            {
-        /*	  Console.WriteLine("Max comp may have changed - recomputing max bounds\n");
-        */
-	                design.box_max[i] = comp.coord[i];
-	                j = 0;
-                    temp_comp = design.components[j];
-	                while (++j <= Constants.COMP_NUM)
-	                {
-                        update_max_bounds(design, temp_comp, i);
-	                    if (j < Constants.COMP_NUM)
-	                        temp_comp = design.components[j];
-	                }
-	            }
+                {
+                    /*	  Console.WriteLine("Max comp may have changed - recomputing max bounds\n");
+                    */
+                    design.box_max[i] = comp.coord[i];
+                    for (int j = 0; j < design.comp_count; j++)
+                    {
+                        temp_comp = design.components[j];
+                        update_max_bounds(design, temp_comp);
+                    }
+                }
             }
 
         #if LOCATE
@@ -422,23 +397,26 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the  min x, y and z bounds for the bounding box.             */
         /* ---------------------------------------------------------------------------------- */
-        static void update_min_bounds(Design design, Component comp, int i)
+        static void update_min_bounds(Design design, Component comp)
         {
             double location;
 
         #if LOCATE
             Console.WriteLine("Entering update_min_bounds\n");
-        #endif
+#endif
 
-        /*  Console.WriteLine("updating min bounds %d for %s\n",i,comp.comp_name);
-        */
-
-            location = comp.coord[i] - comp.dim[i]/2.0;
-            if (location<design.box_min[i])
+            /*  Console.WriteLine("updating min bounds %d for %s\n",i,comp.comp_name);
+            */
+            for (int i = 0; i < 3; i++)
             {
-	            design.box_min[i] = location;
-	            design.min_comp[i] = comp;
+                location = comp.coord[i] - comp.dim[i] / 2.0;
+                if (location < design.box_min[i])
+                {
+                    design.box_min[i] = location;
+                    design.min_comp[i] = comp;
+                }
             }
+            
 
         #if LOCATE
             Console.WriteLine("Leaving update_min_bounds\n");
@@ -449,21 +427,22 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the max and min x, y and z bounds for the bounding box.      */
         /* ---------------------------------------------------------------------------------- */
-        static void update_max_bounds(Design design, Component comp, int i)
+        static void update_max_bounds(Design design, Component comp)
         {
+            double location;
 
-        #if LOCATE
+#if LOCATE
             Console.WriteLine("Entering update_max_bounds\n");
-        #endif
+#endif
 
-        /*  Console.WriteLine("updating max bounds %d for %s\n",i,comp.comp_name);
-        */
-
-            double location = comp.coord[i] + comp.dim[i]/2.0;
-            if (location > design.box_max[i])
+            for (int i = 0; i < 3; i++)
             {
-	            design.box_max[i] = location;
-	            design.max_comp[i] = comp;
+                location = comp.coord[i] + comp.dim[i] / 2.0;
+                if (location > design.box_max[i])
+                {
+                    design.box_max[i] = location;
+                    design.max_comp[i] = comp;
+                }
             }
 
         #if LOCATE

@@ -326,8 +326,8 @@ namespace _3D_LayoutOpt
 
 /* Find the correct component and back up the component information in case we reject */
 /* the step.                                                                          */
-            i = 1;
-            comp = design.components[i-1];
+            i = 0;
+            comp = design.components[i];
             while (++i <= which)
                 comp = design.components[i];
             back_up(design, comp);
