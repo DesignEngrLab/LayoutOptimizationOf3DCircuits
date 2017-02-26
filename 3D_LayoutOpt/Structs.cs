@@ -13,8 +13,8 @@ namespace _3D_LayoutOpt
         public double[] dim_initial = new double[3];
         public double half_area, volume, mass;
         public double temp, tempcrit, q, k;
-        public char[] comp_name = new char[Constants.MAX_NAME_LENGTH];    //TO DO: change char array to string
-        public char[] shape_type = new char[5];                             //TO DO: change char array to string
+        public string comp_name;
+        public string shape_type;                     
 
     }
 

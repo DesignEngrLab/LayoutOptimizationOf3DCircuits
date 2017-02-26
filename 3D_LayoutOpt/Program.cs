@@ -101,9 +101,9 @@ namespace _3D_LayoutOpt
         {
             int i;
             double x_dim, y_dim, z_dim, tempcrit, q, k, pi;
-            char[] name = new char[Constants.MAX_NAME_LENGTH];
-            char[] type = new char[Constants.MAX_NAME_LENGTH];
-            char[] shape = new char[5];
+            string name;
+            string type;
+            string shape;
             
             try
             {
@@ -144,8 +144,8 @@ namespace _3D_LayoutOpt
                     {
                         string[] items = line.Split(new char[]{ ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                         Component comp_ptr = new Component();                   //TO DO: change comp_ptr to comp
-                        comp_ptr.comp_name = items[0].ToCharArray();
-                        comp_ptr.shape_type = items[1].ToCharArray();
+                        comp_ptr.comp_name = items[0];
+                        comp_ptr.shape_type = items[1];
                         comp_ptr.dim_initial[0] = Convert.ToDouble(items[2]);
                         comp_ptr.dim_initial[1] = Convert.ToDouble(items[3]);
                         comp_ptr.dim_initial[2] = Convert.ToDouble(items[4]);

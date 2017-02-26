@@ -305,8 +305,8 @@ namespace _3D_LayoutOpt
                 {
                     line = readtext.ReadLine();
                     string[] items = line.Split(' ');
-                    comp.comp_name = items[0].ToCharArray();
-                    comp.shape_type = items[1].ToCharArray();
+                    comp.comp_name = items[0];
+                    comp.shape_type = items[1];
                     comp.orientation = Convert.ToInt16(items[2]);
 
                     line = readtext.ReadLine();
