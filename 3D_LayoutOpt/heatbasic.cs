@@ -42,16 +42,14 @@ namespace _3D_LayoutOpt
 
             design.new_obj_values[3] = 0.0;
             design.new_obj_values[4] = 0.0;
-            int i = 0;
-            comp = design.components[0];
-            while (i < design.components.Count)
+
+            for (int i = 0; i < design.comp_count; i++)
             {
-	            design.new_obj_values[3] += calc_temp_penalty(comp.temp, comp.tempcrit);
+                comp = design.components[i];
+                design.new_obj_values[3] += calc_temp_penalty(comp.temp, comp.tempcrit);
                 design.new_obj_values[4] += calc_cool_obj(comp.temp, comp.tempcrit);
-                i++;
-                if (i < Constants.COMP_NUM - 1)
-                    comp = design.components[i];
             }
+
         }
 
 /* ---------------------------------------------------------------------------------- */
@@ -128,10 +126,10 @@ namespace _3D_LayoutOpt
                 design.tfield[k].temp = design.tfield[k].old_temp;
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function backs up the current temperatures into old_temp if the step was      */
-/* accepted.                                                                          */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function backs up the current temperatures into old_temp if the step was      */
+        /* accepted.                                                                          */
+        /* ---------------------------------------------------------------------------------- */
         public static void back_up_tfield(Design design)
         {
             int k;
@@ -140,10 +138,10 @@ namespace _3D_LayoutOpt
                 design.tfield[k].old_temp = design.tfield[k].temp;
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function initializes the heat parameters such as matrix tolerance and minimum */
-/* node spacing.                                                                      */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function initializes the heat parameters such as matrix tolerance and minimum */
+        /* node spacing.                                                                      */
+        /* ---------------------------------------------------------------------------------- */
         public static void init_heat_param(Design design)
         {
             design.tolerance = 0.001;

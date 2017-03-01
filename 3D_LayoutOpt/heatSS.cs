@@ -104,20 +104,20 @@ namespace _3D_LayoutOpt
 		                design.tfield[m].coord[0] = (design.box_min[0] - fringe[0]) + (0.5* ss_dim[0] + i* ss_dim[0]);
 		                design.tfield[m].coord[1] = (design.box_min[1] - fringe[1]) + (0.5* ss_dim[1] + j* ss_dim[1]);
 		                design.tfield[m].coord[2] = (design.box_min[2] - fringe[2]) + (0.5* ss_dim[2] + k* ss_dim[2]);
-                        comp = design.components[0];
-                        int n = 0;
+
 		                ktot = 0.0;
 		                vol = 0.0;
 		                flux[m] = 0.0;
-		                while (comp != null)
-                        {		    
-		                    comp_vol = find_vol(comp, design.tfield[m].coord, ss_dim);
-                            flux[m] += (comp.q)*((comp_vol) / (comp.dim[0]* comp.dim[1]* comp.dim[2]));
-		                    ktot += (comp_vol)*(comp.k);
-		                    vol += comp_vol;
-                            n++;
+
+                        for (int n = 0; n < design.comp_count; n++)
+                        {
                             comp = design.components[n];
-		                }
+                            comp_vol = find_vol(comp, design.tfield[m].coord, ss_dim);
+                            flux[m] += (comp.q) * ((comp_vol) / (comp.dim[0] * comp.dim[1] * comp.dim[2]));
+                            ktot += (comp_vol) * (comp.k);
+                            vol += comp_vol;
+                        }
+
 		                design.tfield[m].vol = vol;
 		                design.tfield[m].k = (ktot/subspace_vol) + (design.kb)*(1 - (vol/subspace_vol));
 		                ++m;

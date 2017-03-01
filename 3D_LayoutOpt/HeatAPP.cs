@@ -70,7 +70,7 @@
 
             for (int i = 0; i < design.comp_count; i++)
             {
-                comp = design.components[i];
+                comp = design.components[i];                                                                            //SETTING Tave TO ALL COMPONENTS
                 comp.temp = Tave;
             }
         }

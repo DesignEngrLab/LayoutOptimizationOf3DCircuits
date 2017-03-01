@@ -226,7 +226,7 @@ namespace _3D_LayoutOpt
             for (int i = 0; i < design.comp_count; i++)
             {
                 temp_comp = design.components[i];
-                temp_comp.orientation = my_random(1, 6);            //TO DO: WHY SET IT TO 1 AFTER RANDOM?
+                //temp_comp.orientation = my_random(1, 6);            //TO DO: WHY SET IT TO 1 AFTER RANDOM?
                 temp_comp.orientation = 1;
                 update_dim(temp_comp);
                 for (int j = 0; j < Constants.DIMENSION; j++)
@@ -257,9 +257,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void init_bounds(Design design)
         {
-            Component comp;
-
-            
+            Component comp;  
             for (int i = 0; i < design.comp_count; i++)
             {
                 comp = design.components[i];
@@ -284,7 +282,7 @@ namespace _3D_LayoutOpt
         public static double my_double_random(double rndmin, double rndmax)
         {
             int t = get_time();
-            Random random = new Random(t);
+            Random random = new Random();
             return random.NextDouble() * (rndmax - rndmin) + rndmin;
         }
 

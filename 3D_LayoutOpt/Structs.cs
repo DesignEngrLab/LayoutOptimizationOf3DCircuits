@@ -50,7 +50,7 @@ namespace _3D_LayoutOpt
         public double[] old_coord = new double[3];
         public double[] old_dim = new double[3];
         public double[] c_grav = new double[3];
-        public double[] container = new double[3];
+        public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
         public double half_area, volume, mass;
 
         /* First comp is a pointer to the first component in the component list.  Min_comp    */

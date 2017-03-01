@@ -28,7 +28,7 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Entering evaluate\n");
 #endif
 
-/* Evaluate the four components of the objective function. */
+            /* Evaluate the four components of the objective function. */
             eval_part_1(design);
             eval_part_2(design);
             eval_part_3(design);
@@ -37,7 +37,7 @@ namespace _3D_LayoutOpt
 
         /* Add up the individual evaluations. */
             eval = 0.0;
-            for (i = 0; i< Constants.OBJ_NUM; ++i)
+            for (i = 0; i< Constants.OBJ_NUM; i++)
             {
                 eval += design.weight[i]*design.new_obj_values[i];
             }
@@ -61,10 +61,10 @@ namespace _3D_LayoutOpt
             return(eval);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function sets the value of the first part of the objective function;          */
-/* inverse density.                                                                   */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function sets the value of the first part of the objective function;          */
+        /* inverse density.                                                                   */
+        /* ---------------------------------------------------------------------------------- */
         static void eval_part_1(Design design)
         {
             double box_x_dim, box_y_dim, box_z_dim, half_box_area, box_volume;
@@ -76,9 +76,9 @@ namespace _3D_LayoutOpt
 /*  half_box_area = (box_x_dim*box_y_dim) + (box_x_dim*box_z_dim) + (box_y_dim*box_z_dim);
   design.new_obj_values[0] = half_box_area/design.half_area;*/
 
-/*  box_volume = box_x_dim * box_y_dim * box_z_dim;
-  design.new_obj_values[0] = box_volume/design.volume;*/
-            design.new_obj_values[0] = 1.0;
+            box_volume = box_x_dim * box_y_dim * box_z_dim;
+            design.new_obj_values[0] = box_volume/design.volume;
+            //design.new_obj_values[0] = 1.0;
         }
 
 /* ---------------------------------------------------------------------------------- */
