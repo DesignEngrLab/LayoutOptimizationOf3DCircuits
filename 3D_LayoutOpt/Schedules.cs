@@ -26,7 +26,7 @@ namespace _3D_LayoutOpt
             else if (reduce > Constants.T_RATIO_MAX)
                 reduce = Constants.T_RATIO_MAX;
             Console.WriteLine("Reducing temperature by a factor of %lf\n", reduce);
-            using (StreamWriter streamwriter = new StreamWriter("output / temperature.out"))
+            using (StreamWriter streamwriter = new StreamWriter(" / temperature.out"))
             {
                 streamwriter.WriteLine("Reducing temperature by a factor of %lf\n", reduce);
             }

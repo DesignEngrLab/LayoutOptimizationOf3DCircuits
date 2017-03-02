@@ -50,7 +50,7 @@ namespace _3D_LayoutOpt
                 design.weight[3]*design.new_obj_values[3],
                 design.weight[4]*design.new_obj_values[4],
                 eval);
-/*  fptr = fopen("output/eval.out","a");
+/*  fptr = fopen("/eval.out","a");
   fConsole.WriteLine(fptr,"%.2f %.2f %.2f %.2f\n", (design.coef[0] * design.weight[0] * design.new_obj_values[0]), (design.coef[1] * design.weight[1] * design.new_obj_values[1]), (design.coef[2] * design.weight[2] * design.new_obj_values[2]), (design.coef[3] * design.weight[3] * design.new_obj_values[3]));
   fclose(fptr);*/
 

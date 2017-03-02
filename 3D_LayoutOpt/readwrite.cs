@@ -25,7 +25,7 @@ namespace _3D_LayoutOpt
             int i;
             Component comp;
 
-            using (StreamWriter writetext = new StreamWriter("output/comp.out"))
+            using (StreamWriter writetext = new StreamWriter("/comp.out"))
             {
                 comp = design.components[0];
                 i = 1;
@@ -65,11 +65,11 @@ namespace _3D_LayoutOpt
 
             if (iteration == 0)         //????????????????????
             {
-                StreamWriter F1 = new StreamWriter("output/ratio.out");
-                StreamWriter F2 = new StreamWriter("output/container.out");
-                StreamWriter F3 = new StreamWriter("output/overlap.out");
-                StreamWriter F4 = new StreamWriter("output/coef.out");
-                StreamWriter F5 = new StreamWriter("output/overlap2.out");
+                StreamWriter F1 = new StreamWriter("/ratio.out");
+                StreamWriter F2 = new StreamWriter("/container.out");
+                StreamWriter F3 = new StreamWriter("/overlap.out");
+                StreamWriter F4 = new StreamWriter("/coef.out");
+                StreamWriter F5 = new StreamWriter("/overlap2.out");
 
 
                 if (flag != 0)
@@ -130,7 +130,7 @@ namespace _3D_LayoutOpt
 
         public static void write_loop_data(double t, int steps_at_t, int accept_count, int bad_accept_count, int gen_limit, int flag)
         {
-            using (StreamWriter writetext = new StreamWriter("output/temperature.out"))
+            using (StreamWriter writetext = new StreamWriter("/temperature.out"))
             {
                 if (flag == 1)
                 {
@@ -234,7 +234,7 @@ namespace _3D_LayoutOpt
                 avg_old_value += design.old_obj_values[1,i];
             avg_old_value /= Constants.BALANCE_AVG;
 
-            using (StreamWriter writetext = new StreamWriter("output/design.data"))
+            using (StreamWriter writetext = new StreamWriter("/design.data"))
             {
                 i = 0;
                 comp = design.components[0];
@@ -269,7 +269,7 @@ namespace _3D_LayoutOpt
 
             Console.WriteLine("Saving current container\n");
 
-            using (StreamWriter writetext = new StreamWriter("output/container.data"))
+            using (StreamWriter writetext = new StreamWriter("/container.data"))
             {
                 box_dim[0] = design.box_max[0] - design.box_min[0];
                 box_dim[1] = design.box_max[1] - design.box_min[1];
@@ -296,7 +296,7 @@ namespace _3D_LayoutOpt
 
             Console.WriteLine("Restoring saved design\n");
 
-            using (StreamReader readtext = new StreamReader("output/design.data"))
+            using (StreamReader readtext = new StreamReader("/design.data"))
             {
                 i = 0;
                 comp = design.components[0];
@@ -374,9 +374,9 @@ namespace _3D_LayoutOpt
                 total_delta_c += hustin.delta_c[i];
             }
 
-            StreamWriter F1 = new StreamWriter("output/probs.out");
-            StreamWriter F2 = new StreamWriter("output/delta_c.out");
-            StreamWriter F3 = new StreamWriter("output/attempts.out");
+            StreamWriter F1 = new StreamWriter("/probs.out");
+            StreamWriter F2 = new StreamWriter("/delta_c.out");
+            StreamWriter F3 = new StreamWriter("/attempts.out");
 
 
             F1.WriteLine(temp);
@@ -406,7 +406,7 @@ namespace _3D_LayoutOpt
         {
             int k = 0;
             Console.WriteLine("Saving current tfield\n");
-            StreamWriter F1 = new StreamWriter("output/tfield.data");
+            StreamWriter F1 = new StreamWriter("/tfield.data");
 
             while (design.tfield[k].temp != 0.0)
             {

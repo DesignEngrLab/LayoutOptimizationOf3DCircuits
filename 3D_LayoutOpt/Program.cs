@@ -16,7 +16,7 @@ namespace _3D_LayoutOpt
             char wait;
             Design design = new Design();
             Component comp;
-
+            Directory.SetCurrentDirectory("../../workspace");
             int start_time = Program.get_time();
             Program.setseed();
 
@@ -74,7 +74,7 @@ namespace _3D_LayoutOpt
             int seconds;
             seconds = get_time();
             Console.WriteLine("\nSetting seed for random number generator to {0}", seconds);
-            using (StreamWriter writetext = new StreamWriter("output/seed.out"))
+            using (StreamWriter writetext = new StreamWriter("/seed.out"))
             {
                 writetext.WriteLine("The seed is {0}\n\n", seconds);
             }

@@ -107,7 +107,7 @@ namespace _3D_LayoutOpt
                         /* Take a step and evaluate it.  Update state by accepting or rejecting step. */
                         take_step(design, hustin, out which1, out which2);
                         step_eval = obj_function.evaluate(design, steps_at_t, gen_limit);
-                        /*	  fptr2 = fopen("output/data.out","a");
+                        /*	  fptr2 = fopen("/data.out","a");
                               fConsole.WriteLine(fptr,"iteration %d: eval %lf ",iteration);
                               fclose(fptr2);
                         */
@@ -336,7 +336,7 @@ namespace _3D_LayoutOpt
             back_up(design, comp);
 
             /* Pick a random direction and distance, and move the component.                      */
-#if OUTPUT
+#if DEBUG
             Console.WriteLine("Moving %s\n", comp.comp_name);
 #endif
           
@@ -401,7 +401,7 @@ namespace _3D_LayoutOpt
             back_up(design, comp);
 
 /* Pick a random orientation different from the current one and rotate the component. */
-#if OUTPUT
+#if DEBUG
             Console.WriteLine("Rotating %s\n", comp.comp_name);
 #endif
 
@@ -459,7 +459,7 @@ namespace _3D_LayoutOpt
 
 
             /* Swap the components by switching their coordinates.                                */
-#if OUTPUT
+#if DEBUG
                 Console.WriteLine("Swapping %s and %s\n", comp1.comp_name, comp2.comp_name);
     #endif
                 for (int j = 0; j < 3; j++)
@@ -529,12 +529,12 @@ namespace _3D_LayoutOpt
 /* If accept_flag = 2 then the step is an improvement. */
             if (accept_flag == 2)
             {
-#if OUTPUT
+#if DEBUG
                 Console.WriteLine("*** Improved step\n");
 #endif
             }
 
-#if OUTPUT
+#if DEBUG
             Console.WriteLine("Accepting step\n\n");
 #endif
 	      
@@ -561,7 +561,7 @@ namespace _3D_LayoutOpt
 /* ---------------------------------------------------------------------------------- */
    public static     void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
         {
-#if OUTPUT
+#if DEBUG
             Console.WriteLine("Rejecting step\n\n");
 #endif
 	      
@@ -788,7 +788,7 @@ namespace _3D_LayoutOpt
                 {
               Console.WriteLine("*******THIS IS AT THE TOP OF THE LOOP\n");
               Console.WriteLine("*******CURRENT EVAL IS %lf.  EVAL IS %lf\n",current_eval, obj_function.evaluate(design));
-                  fptr = fopen("output/comp.out","a");
+                  fptr = fopen("/comp.out","a");
                   fConsole.WriteLine(fptr, "Starting iteration #%d\n",iteration);
                   fclose(fptr);
                   print_overlaps(design);
@@ -918,7 +918,7 @@ namespace _3D_LayoutOpt
 /* Pick a random direction and distance, and move the component. Multiply that vector */
 /* by a vector from the center of the component to the center of gravity, to imrove   */
 /* chances of having an improvement step (i.e. never move away from c_grav).          */
-#if OUTPUT
+#if DEBUG
             Console.WriteLine("Moving %s\n", comp.comp_name);
 #endif
 
