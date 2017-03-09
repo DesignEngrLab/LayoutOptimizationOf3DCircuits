@@ -20,14 +20,14 @@ namespace _3D_LayoutOpt
         public static void init_hustin(Hustin hustin)
         {
             
-            double init_prob, distance, delta_dist, dist;
+            double init_prob, delta_dist, dist;
 
             dist = Constants.MIN_MOVE_DIST;
             delta_dist = (Constants.MAX_MOVE_DIST - Constants.MIN_MOVE_DIST)/ Constants.TRANS_NUM;
             init_prob = 1.0/ Constants.MOVE_NUM;
             hustin.usable_prob = 1 - Constants.MIN_PROB * Constants.MOVE_NUM;
             
-            for (int i = 0; i < Constants.TRANS_NUM; i++)
+            for (int i = 0; i < Constants.TRANS_NUM; i++)                           //GRADUALLY INCREASING MOVE DISTANCE OVER 15 INCREMENTS
             {
                 hustin.move_size[i] = dist;
                 dist += delta_dist;
@@ -35,7 +35,7 @@ namespace _3D_LayoutOpt
                 hustin.attempts[i] = 0;
                 hustin.delta_c[i] = 0.0;
             }
-            for (int i = 0; i < Constants.MOVE_NUM; i++)
+            for (int i = Constants.TRANS_NUM; i < Constants.MOVE_NUM; i++)
             {
                 hustin.prob[i] = init_prob;
                 hustin.attempts[i] = 0;

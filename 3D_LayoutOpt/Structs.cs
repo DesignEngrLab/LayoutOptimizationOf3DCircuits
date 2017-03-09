@@ -101,7 +101,8 @@ namespace _3D_LayoutOpt
         /* analysis switches.                                                                 */
         /* choice is the flag for the heat_eval H.T. chooser.                                 */
 
-        public Temperature_field[] tfield = new Temperature_field[Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM];
+        //public Temperature_field[] tfield = new Temperature_field[Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM];
+        public Temperature_field[] tfield = InitializeArray<Temperature_field>(Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM);
         public double kb, tamb, tolerance, min_node_space;
         public double hcf, gaussmove;
         public double[] h = new double[3];
@@ -115,8 +116,18 @@ namespace _3D_LayoutOpt
             comp_count = components.Count;
         }
 
+        static T[] InitializeArray<T>(int length) where T : new()
+        {
+            T[] array = new T[length];
+            for (int i = 0; i < length; ++i)
+            {
+                array[i] = new T();
+            }
 
-    
+            return array;
+        }
+
+
     }
 
     public class Schedule

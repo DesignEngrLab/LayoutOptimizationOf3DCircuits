@@ -23,27 +23,27 @@ namespace _3D_LayoutOpt
             /* The component data is read in from a file and the number of components is returned */
             getdata(design);
             design.store_component_cnt();
-            Console.WriteLine("{0} components were read in from the file.\n\n",design.comp_count);
+            Console.WriteLine("{0} components were read in from the file.\n",design.comp_count);
 
 
             Program.initializations(design);
 
-            Console.WriteLine("Sampling points in design space\n\n");
+            Console.WriteLine("Sampling points in design space\n");
             Schedules.sample_space(design);  
 
         #if WAIT
-            Console.WriteLine("\nHit return to continue.\n\n");
+            Console.WriteLine("\nHit return to continue.\n");
             getchar(wait);
         #endif
 
         #if BOTH
-            Console.WriteLine("Problem set up as minimization of weighted sum of area_ratio and overlap.\n");
+            Console.WriteLine("Problem set up as minimization of weighted sum of area_ratio and overlap.");
         #endif
 
-            /*  Console.WriteLine("Ready to begin search using simulated annealing algorithm.\n\n");*/
+            /*  Console.WriteLine("Ready to begin search using simulated annealing algorithm.\n");*/
 
         #if WAIT
-            Console.WriteLine("\nHit return to continue.\n\n");
+            Console.WriteLine("\nHit return to continue.\n");
             getchar(wait);
         #endif
 
@@ -59,11 +59,11 @@ namespace _3D_LayoutOpt
             {
                 if (design.new_obj_values[1] != 0.0)
                 {
-                    writetext.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!\n");
-                    Console.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!\n");
+                    writetext.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!");
+                    Console.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!");
                 }
-                writetext.WriteLine("The elapsed time was %d seconds\n", (end_time - start_time));
-                Console.WriteLine("The elapsed time was %d seconds\n", (end_time - start_time));
+                writetext.WriteLine("The elapsed time was {0} seconds", (end_time - start_time));
+                Console.WriteLine("The elapsed time was {0} seconds", (end_time - start_time));
             }
 
 
@@ -76,12 +76,12 @@ namespace _3D_LayoutOpt
             Console.WriteLine("\nSetting seed for random number generator to {0}", seconds);
             using (StreamWriter writetext = new StreamWriter("/seed.out"))
             {
-                writetext.WriteLine("The seed is {0}\n\n", seconds);
+                writetext.WriteLine("The seed is {0}\n", seconds);
             }
 
             using (StreamWriter writetext = new StreamWriter("results"))
             {
-                writetext.WriteLine("\nThe seed is {0}\n", seconds);
+                writetext.WriteLine("\nThe seed is {0}", seconds);
             }
         }
 
@@ -109,7 +109,7 @@ namespace _3D_LayoutOpt
             {
                 using (StreamReader readtext = new StreamReader("datafile2"))
                 {
-                    Console.WriteLine("Reading container dimensions from file.\n");
+                    Console.WriteLine("Reading container dimensions from file.");
                     string line;
                     while ((line = readtext.ReadLine()) != null)
                     {
@@ -134,7 +134,7 @@ namespace _3D_LayoutOpt
             {
                 using (StreamReader readtext = new StreamReader("datafile1"))
                 {
-                    Console.WriteLine("Reading component data from file.\n");
+                    Console.WriteLine("Reading component data from file.");
                     design.half_area = 0;
                     design.volume = 0.0;
                     design.mass = 0.0;
@@ -170,7 +170,7 @@ namespace _3D_LayoutOpt
                         design.mass += comp_ptr.mass;
                         design.components.Add(comp_ptr);
                     }
-                    Console.WriteLine("EOF reached in the input file.\n\n");
+                    Console.WriteLine("EOF reached in the input file.\n");
                 }
             }
             catch (IOException ex)
@@ -183,19 +183,19 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void initializations(Design design)
         {
-          Console.WriteLine("Initializing locations.\n\n");
+          Console.WriteLine("Initializing locations.\n");
           init_locations(design);
 
-          Console.WriteLine("Initializing box bounds.\n\n");
+          Console.WriteLine("Initializing box bounds.\n");
           init_bounds(design);
 
-          Console.WriteLine("Initializing overlaps.\n\n");
+          Console.WriteLine("Initializing overlaps.\n");
           obj_function.init_overlaps(design);          
 
-          Console.WriteLine("Initializing weights.\n\n");
+          Console.WriteLine("Initializing weights.\n");
           init_weights(design);
 
-          Console.WriteLine("Initializing heat parameters.\n\n");
+          Console.WriteLine("Initializing heat parameters.\n");
           heatbasic.init_heat_param(design);        
         }
 
@@ -220,7 +220,7 @@ namespace _3D_LayoutOpt
             Component temp_comp = null;
 
         #if LOCATE
-            Console.WriteLine("Entering init_locations\n");
+            Console.WriteLine("Entering init_locations");
         #endif
    
             for (int i = 0; i < design.comp_count; i++)
@@ -235,7 +235,7 @@ namespace _3D_LayoutOpt
                 }
                 if (Constants.DIMENSION == 2)
                     temp_comp.coord[2] = 0.0;
-                Console.WriteLine("%d Dimensional Initial Placement {0}\n", Constants.DIMENSION);                 
+                Console.WriteLine("{0} Dimensional Initial Placement ", Constants.DIMENSION);                 
                 
             }
 
@@ -247,7 +247,7 @@ namespace _3D_LayoutOpt
             }
 
         #if LOCATE
-            Console.WriteLine("Leavinging init_locations\n");
+            Console.WriteLine("Leavinging init_locations");
         #endif
 
         }
@@ -325,7 +325,7 @@ namespace _3D_LayoutOpt
               comp.dim[2] = comp.dim_initial[0];
               break;
             default:
-              Console.WriteLine("\nCase error in update_dim\n");
+              Console.WriteLine("\nCase error in update_dim");
               break;
           }
         }
@@ -339,7 +339,7 @@ namespace _3D_LayoutOpt
             char wait;
 
         #if LOCATE
-            Console.WriteLine("Entering update_bounds\n");
+            Console.WriteLine("Entering update_bounds");
         #endif
 
         /* First test to see if we are moving the min_comp.  If we are, not, we just update   */
@@ -354,7 +354,7 @@ namespace _3D_LayoutOpt
                     update_min_bounds(design, comp);
                 else
                 {
-                    /*	  Console.WriteLine("Min comp may have changed - recomputing min bounds\n");
+                    /*	  Console.WriteLine("Min comp may have changed - recomputing min bounds");
                     */
                     design.box_min[i] = comp.coord[i];
 
@@ -375,7 +375,7 @@ namespace _3D_LayoutOpt
                     update_max_bounds(design, comp);
                 else
                 {
-                    /*	  Console.WriteLine("Max comp may have changed - recomputing max bounds\n");
+                    /*	  Console.WriteLine("Max comp may have changed - recomputing max bounds");
                     */
                     design.box_max[i] = comp.coord[i];
                     for (int j = 0; j < design.comp_count; j++)
@@ -387,7 +387,7 @@ namespace _3D_LayoutOpt
             }
 
         #if LOCATE
-            Console.WriteLine("Leaving update_bounds\n");
+            Console.WriteLine("Leaving update_bounds");
         #endif
 
         }
@@ -400,10 +400,10 @@ namespace _3D_LayoutOpt
             double location;
 
         #if LOCATE
-            Console.WriteLine("Entering update_min_bounds\n");
+            Console.WriteLine("Entering update_min_bounds");
 #endif
 
-            /*  Console.WriteLine("updating min bounds %d for %s\n",i,comp.comp_name);
+            /*  Console.WriteLine("updating min bounds %d for %s",i,comp.comp_name);
             */
             for (int i = 0; i < 3; i++)
             {
@@ -417,7 +417,7 @@ namespace _3D_LayoutOpt
             
 
         #if LOCATE
-            Console.WriteLine("Leaving update_min_bounds\n");
+            Console.WriteLine("Leaving update_min_bounds");
         #endif
 
         }
@@ -430,7 +430,7 @@ namespace _3D_LayoutOpt
             double location;
 
 #if LOCATE
-            Console.WriteLine("Entering update_max_bounds\n");
+            Console.WriteLine("Entering update_max_bounds");
 #endif
 
             for (int i = 0; i < 3; i++)
@@ -444,7 +444,7 @@ namespace _3D_LayoutOpt
             }
 
         #if LOCATE
-            Console.WriteLine("Leaving update_max_bounds\n");
+            Console.WriteLine("Leaving update_max_bounds");
         #endif
 
         }
@@ -495,16 +495,16 @@ namespace _3D_LayoutOpt
             {
                 while (move_size <= 1.25)
                 {
-                    writetext.WriteLine("%lf", move_size);
+                    writetext.WriteLine(move_size);
                     readwrite.restore_design(design);
                     anneal_alg.downhill(design, move_size);
                     eval = obj_function.evaluate(design, 0, 0);
-                    writetext.WriteLine(" %lf\n", eval);
+                    writetext.WriteLine("{0}", eval);
                     if (eval < min_eval)
                         min_eval = eval;
                     move_size += .05;
                 }
-                writetext.WriteLine("THE MIN WAS %lf", min_eval);
+                writetext.WriteLine("THE MIN WAS {0}", min_eval);
             }
         }
     }

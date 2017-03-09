@@ -454,7 +454,7 @@ namespace _3D_LayoutOpt
                 }
 /* These two 'if' statements account for the chance that the node and the */
 /* neighboring node might be in the same component.                       */
-                /*Console.WriteLine("%f  %f  %f \n", x, xc, nx);*/
+                /*Console.WriteLine("%f  %f  %f ", x, xc, nx);*/
                 if (x + nx <= xc)
                 {
                     xc = x;
@@ -488,7 +488,7 @@ namespace _3D_LayoutOpt
             {
                 comp = design.components[i];
                 comp.temp = design.tfield[comp.node_center].temp;
-                /*Console.WriteLine("Component %d temperature = %.2f\n", ++i, comp.temp);*/
+                /*Console.WriteLine("Component %d temperature = %.2f", ++i, comp.temp);*/
             }
         }
 
@@ -592,10 +592,10 @@ namespace _3D_LayoutOpt
                     /* Absolute Tolerance tabulation. */
                     tol += Math.Abs(design.tfield[k].temp - design.tfield[k].prev_temp)/tot_nodes;
                 }
-                /*Console.WriteLine("Iteration %d: Component #1 temperature = %.2f  %f\n", iter, 
+                /*Console.WriteLine("Iteration %d: Component #1 temperature = %.2f  %f", iter, 
 	design.tfield[0].temp, tol);*/
             } while ((tol > design.tolerance) && (iter < design.max_iter));
-            /*Console.WriteLine("Iterations = %d: Component #1 temperature = %.2f  %f\n", iter, 
+            /*Console.WriteLine("Iterations = %d: Component #1 temperature = %.2f  %f", iter, 
 	design.tfield[design.first_comp.node_center].temp, tol);*/
         }
 

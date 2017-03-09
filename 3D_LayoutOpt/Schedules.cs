@@ -25,10 +25,10 @@ namespace _3D_LayoutOpt
                 reduce = Constants.T_RATIO_MIN;
             else if (reduce > Constants.T_RATIO_MAX)
                 reduce = Constants.T_RATIO_MAX;
-            Console.WriteLine("Reducing temperature by a factor of %lf\n", reduce);
+            Console.WriteLine("Reducing temperature by a factor of {0}", reduce);
             using (StreamWriter streamwriter = new StreamWriter(" / temperature.out"))
             {
-                streamwriter.WriteLine("Reducing temperature by a factor of %lf\n", reduce);
+                streamwriter.WriteLine("Reducing temperature by a factor of {0}", reduce);
             }
             t = reduce;
         }
@@ -67,12 +67,12 @@ namespace _3D_LayoutOpt
                 schedule.delta = Constants.RANGE * schedule.sigma;
                 /*fptr = fopen("sample.data","w");
       fclose(fptr);
-      Console.WriteLine("\nSigma, c_avg and delta for the previous sample are %lf, %lf, %lf\n",
+      Console.WriteLine("\nSigma, c_avg and delta for the previous sample are %lf, %lf, %lf",
 	     schedule.sigma, schedule.c_avg, schedule.delta); */
             }
             else if (i > 1)
             {
-                Console.WriteLine("There were not enough data points in the sample.data file\n");
+                Console.WriteLine("There were not enough data points in the sample.data file");
             }
             /* If we get past the above "else" we don't do anything.  This function gets called   */
             /* when we junk the 101st step at a given temperature because the annealing function  */
@@ -143,7 +143,7 @@ namespace _3D_LayoutOpt
                     {
                         anneal_alg.update_accept(design, 0, accept_flag, column, update, /* IN ANNEAL_ALG.C */
                             eval, dummy_eval, (eval + 1.0));
-                        streamwriter.WriteLine("%lf\n", eval);
+                        streamwriter.WriteLine("{0}", eval);
                     }
                     else
                     {

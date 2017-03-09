@@ -33,26 +33,25 @@ namespace _3D_LayoutOpt
                     comp = design.components[i];
 
 
-                writetext.WriteLine("\nComponent name is %s and the orientation is %d\n", comp.comp_name,
-                    comp.orientation);
+                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.comp_name, comp.orientation);
 
                 i = -1;
                 while (++i < 3)
-                    writetext.WriteLine("dim %d is %lf\n", i, comp.dim[i]);
+                    writetext.WriteLine("dim {0} is {1}", i, comp.dim[i]);
 
                 i = -1;
                 while (++i < 3)
-                    writetext.WriteLine("dim_initial %d is %lf\n", i, comp.dim_initial[i]);
+                    writetext.WriteLine("dim_initial {0} is {1}", i, comp.dim_initial[i]);
 
                 i = -1;
                 while (++i < 3)
-                    writetext.WriteLine("current dim %d is %lf\n", i, comp.dim[i]);
+                    writetext.WriteLine("current dim {0} is {1}", i, comp.dim[i]);
 
                 i = -1;
                 while (++i < 3)
-                    writetext.WriteLine("coord %d is %lf\n", i, comp.coord[i]);
+                    writetext.WriteLine("coord {0} is {1}", i, comp.coord[i]);
 
-                writetext.WriteLine("\n");
+                writetext.WriteLine("");
             }
         }
 
@@ -75,44 +74,44 @@ namespace _3D_LayoutOpt
                 if (flag != 0)
                 {
 
-                    F1.WriteLine("\n", iteration, design.new_obj_values[0]);
+                    F1.WriteLine("", iteration, design.new_obj_values[0]);
 
-                    F3.WriteLine("\n", iteration,
+                    F3.WriteLine("", iteration,
                         (design.new_obj_values[1]*design.weight[1]));
                 }
 
 /*      if (flag == 0)
 	{
-	  fprintf(fptr1,"%d %lf R\n",iteration, design.new_obj_values[0]);
-	  fprintf(fptr2,"%d %lf R\n",iteration, 
+	  fprintf(fptr1,"%d %lf R",iteration, design.new_obj_values[0]);
+	  fprintf(fptr2,"%d %lf R",iteration, 
 		  (design.new_obj_values[2]*design.coef[2]*design.weight[2]));
-	  fprintf(fptr3,"%d %lf R\n",iteration, (design.new_obj_values[1]*design.coef[1]));
+	  fprintf(fptr3,"%d %lf R",iteration, (design.new_obj_values[1]*design.coef[1]));
 
-	  fprintf(fptr5,"%d %lf R\n",iteration, design.new_obj_values[1]);
+	  fprintf(fptr5,"%d %lf R",iteration, design.new_obj_values[1]);
 
-	  fprintf(fptr4,"%d %lf R\n",iteration, design.coef[1]);
+	  fprintf(fptr4,"%d %lf R",iteration, design.coef[1]);
 	}
       else if (flag == 3)
 	{
-	  fprintf(fptr1,"%d %lf A  *\n",iteration, design.new_obj_values[0]);
-	  fprintf(fptr2,"%d %lf A  *\n",iteration, 
+	  fprintf(fptr1,"%d %lf A  *",iteration, design.new_obj_values[0]);
+	  fprintf(fptr2,"%d %lf A  *",iteration, 
 		  (design.new_obj_values[2]*design.coef[2]*design.weight[2]));
-	  fprintf(fptr3,"%d %lf A  *\n",iteration, (design.new_obj_values[1]*design.coef[1]));
+	  fprintf(fptr3,"%d %lf A  *",iteration, (design.new_obj_values[1]*design.coef[1]));
 
-	  fprintf(fptr5,"%d %lf A  *\n",iteration, design.new_obj_values[1]);
+	  fprintf(fptr5,"%d %lf A  *",iteration, design.new_obj_values[1]);
 
-	  fprintf(fptr4,"%d %lf A  *\n",iteration, design.coef[1]);
+	  fprintf(fptr4,"%d %lf A  *",iteration, design.coef[1]);
 	}
       else
 	{
-	  fprintf(fptr1,"%d %lf A\n",iteration, design.new_obj_values[0]);
-	  fprintf(fptr2,"%d %lf A\n",iteration, 
+	  fprintf(fptr1,"%d %lf A",iteration, design.new_obj_values[0]);
+	  fprintf(fptr2,"%d %lf A",iteration, 
 		  (design.new_obj_values[2]*design.coef[2]*design.weight[2]));
-	  fprintf(fptr3,"%d %lf A\n",iteration, (design.new_obj_values[1]*design.coef[1]));
+	  fprintf(fptr3,"%d %lf A",iteration, (design.new_obj_values[1]*design.coef[1]));
 
-	  fprintf(fptr5,"%d %lf A\n",iteration, design.new_obj_values[1]);
+	  fprintf(fptr5,"%d %lf A",iteration, design.new_obj_values[1]);
 
-	  fprintf(fptr4,"%d %lf A\n",iteration, design.coef[1]);
+	  fprintf(fptr4,"%d %lf A",iteration, design.coef[1]);
 	}
 */
 
@@ -134,22 +133,22 @@ namespace _3D_LayoutOpt
             {
                 if (flag == 1)
                 {
-                    writetext.WriteLine("Temperature set at %lf\n", t);
-                    writetext.WriteLine("At this temperature %d steps were taken.  %d were accepted\n",
+                    writetext.WriteLine("Temperature set at {0}", t);
+                    writetext.WriteLine("At this temperature {0} steps were taken.  {1} were accepted",
                         steps_at_t, accept_count);
-                    writetext.WriteLine("Of the accepted steps, %d were inferior steps\n", bad_accept_count);
+                    writetext.WriteLine("Of the accepted steps, {0} were inferior steps", bad_accept_count);
                     writetext.WriteLine("Equilibrium was ");
                     if (steps_at_t > gen_limit)
 
                         writetext.WriteLine("not ");
-                    writetext.WriteLine("reached at this temperature\n\n");
+                    writetext.WriteLine("reached at this temperature\n");
                 }
                 else if (flag == 2)
-                    writetext.WriteLine("Design is now frozen\n\n\n");
+                    writetext.WriteLine("Design is now frozen\n\n");
                 else if (flag == 3)
                 {
-                    writetext.WriteLine("Temperature set at infinity (Downhill search)\n");
-                    writetext.WriteLine("%d steps were taken.  %d were accepted\n\n\n", steps_at_t, accept_count);
+                    writetext.WriteLine("Temperature set at infinity (Downhill search)");
+                    writetext.WriteLine("{0} steps were taken.  {1} were accepted\n\n", steps_at_t, accept_count);
                 }
             }
         }
@@ -169,20 +168,20 @@ namespace _3D_LayoutOpt
                 comp = design.components[i];
 
 
-            Console.WriteLine("\nComponent name is %s and the orientation is %d\n", comp.comp_name, comp.orientation);
+            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.comp_name, comp.orientation);
 
             i = -1;
             while (++i < 3)
-                Console.WriteLine("dim %d is %lf\n", i, comp.dim[i]);
+                Console.WriteLine("dim {0} is {1}", i, comp.dim[i]);
 
             i = -1;
             while (++i < 3)
-                Console.WriteLine("dim_initial %d is %lf\n", i, comp.dim_initial[i]);
+                Console.WriteLine("dim_initial {0} is {1}", i, comp.dim_initial[i]);
 
             i = -1;
             while (++i < 3)
-                Console.WriteLine("coord %d is %lf\n", i, comp.coord[i]);
-            Console.WriteLine("\n");
+                Console.WriteLine("coord {0} is {1}", i, comp.coord[i]);
+            Console.WriteLine("");
         }
 
 /* ---------------------------------------------------------------------------------- */
@@ -211,8 +210,8 @@ namespace _3D_LayoutOpt
             {
                 j = -1;
                 while (++j <= i)
-                    Console.WriteLine("%lf ", design.overlap[i, j]);
-                Console.WriteLine("\n");
+                    Console.WriteLine("{0} ", design.overlap[i, j]);
+                Console.WriteLine("");
             }
         }
 
@@ -226,7 +225,7 @@ namespace _3D_LayoutOpt
             double avg_old_value;
             Component comp;
 
-            Console.WriteLine("Saving current design\n");
+            Console.WriteLine("Saving current design");
 
             i = -1;
             avg_old_value = 0.0;
@@ -240,16 +239,16 @@ namespace _3D_LayoutOpt
                 comp = design.components[0];
                 while (++i <= Constants.COMP_NUM)
                 {
-                    writetext.WriteLine("%s %s %d\n", comp.comp_name, comp.shape_type, comp.orientation);
-                    writetext.WriteLine("%lf %lf %lf\n", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
-                    writetext.WriteLine("%lf %lf %lf\n", comp.dim[0], comp.dim[1], comp.dim[2]);
-                    writetext.WriteLine("%lf %lf %lf\n", comp.coord[0], comp.coord[1], comp.coord[2]);
-                    writetext.WriteLine("%lf %lf   %lf\n", comp.half_area, comp.mass, comp.temp);
+                    writetext.WriteLine("{0} {1} {2}", comp.comp_name, comp.shape_type, comp.orientation);
+                    writetext.WriteLine("{0} {1} {2}", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
+                    writetext.WriteLine("{0} {1} {2}", comp.dim[0], comp.dim[1], comp.dim[2]);
+                    writetext.WriteLine("{0} {1} {2}", comp.coord[0], comp.coord[1], comp.coord[2]);
+                    writetext.WriteLine("{0} {1}  {2}", comp.half_area, comp.mass, comp.temp);
                     if (i < Constants.COMP_NUM)
 
                         comp = design.components[i];
                 }
-                writetext.WriteLine("%lf %lf %lf %lf\n", design.new_obj_values[1], design.coef[1],
+                writetext.WriteLine("{0} {1} {2} {3}", design.new_obj_values[1], design.coef[1],
                     design.weight[1], avg_old_value);
 
             }
@@ -267,7 +266,7 @@ namespace _3D_LayoutOpt
             double[] box_dim = new double[3];
             Component comp;
 
-            Console.WriteLine("Saving current container\n");
+            Console.WriteLine("Saving current container");
 
             using (StreamWriter writetext = new StreamWriter("/container.data"))
             {
@@ -275,10 +274,10 @@ namespace _3D_LayoutOpt
                 box_dim[1] = design.box_max[1] - design.box_min[1];
                 box_dim[2] = design.box_max[2] - design.box_min[2];
 
-                writetext.WriteLine("container B %d\n", 1);
-                writetext.WriteLine("%lf %lf %lf\n", box_dim[0], box_dim[1], box_dim[2]);
-                writetext.WriteLine("%lf %lf %lf\n", box_dim[0], box_dim[1], box_dim[2]);
-                writetext.WriteLine("%lf %lf %lf\n", (design.box_min[0] + box_dim[0]/2),
+                writetext.WriteLine("container B {0}", 1);
+                writetext.WriteLine("{0} {1} {2}", box_dim[0], box_dim[1], box_dim[2]);
+                writetext.WriteLine("{0} {1} {2}", box_dim[0], box_dim[1], box_dim[2]);
+                writetext.WriteLine("{0} {1} {2}", (design.box_min[0] + box_dim[0]/2),
                     (design.box_min[1] + box_dim[1]/2),
                     (design.box_min[2] + box_dim[2]/2));
             }
@@ -294,7 +293,7 @@ namespace _3D_LayoutOpt
             double avg_old_value;
             Component comp;
 
-            Console.WriteLine("Restoring saved design\n");
+            Console.WriteLine("Restoring saved design");
 
             using (StreamReader readtext = new StreamReader("/design.data"))
             {
@@ -390,9 +389,9 @@ namespace _3D_LayoutOpt
                 F2.WriteLine(hustin.delta_c[i]/total_delta_c);
                 F3.WriteLine(1*hustin.attempts[i]/total_attempts);
             }
-            F1.WriteLine("\n");
-            F2.WriteLine("\n");
-            F3.WriteLine("\n");
+            F1.WriteLine("");
+            F2.WriteLine("");
+            F3.WriteLine("");
             F1.Close();
             F2.Close();
             F3.Close();
@@ -405,16 +404,16 @@ namespace _3D_LayoutOpt
         public static void save_tfield(Design design)
         {
             int k = 0;
-            Console.WriteLine("Saving current tfield\n");
+            Console.WriteLine("Saving current tfield");
             StreamWriter F1 = new StreamWriter("/tfield.data");
 
             while (design.tfield[k].temp != 0.0)
             {
-                F1.WriteLine("\n", design.tfield[k].coord[0],
+                F1.WriteLine("", design.tfield[k].coord[0],
                     design.tfield[k].coord[1], design.tfield[k].coord[2],
                     design.tfield[k].temp);
                 /*if (design.tfield[k].coord[2] == 0.0) 
-	fprintf(fptr, "%lf %lf %lf\n", design.tfield[k].coord[0], 
+	fprintf(fptr, "%lf %lf %lf", design.tfield[k].coord[0], 
 	design.tfield[k].coord[1], design.tfield[k].temp);*/
                 ++k;
             }
@@ -428,7 +427,7 @@ namespace _3D_LayoutOpt
         static void restore_tfield(Design design)
         {
             int k = 0;
-            Console.WriteLine("Restoring tfield\n");
+            Console.WriteLine("Restoring tfield");
 
             using (StreamReader readtext = new StreamReader("datafile1"))
             {

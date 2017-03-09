@@ -36,7 +36,7 @@ namespace _3D_LayoutOpt
                     heatMM.thermal_analysis_MM(design);
 	                break;
 	            default:
-                    Console.WriteLine("ERROR in Thermal Analysis Choice.\n");
+                    Console.WriteLine("ERROR in Thermal Analysis Choice.");
                     break;
             }
 
@@ -162,20 +162,20 @@ namespace _3D_LayoutOpt
         public static void establish_thermal_changes(Design design)
         {
             int i;
-            Console.WriteLine("\nPlease define thermal anaylses changes.\n\n");
-            Console.WriteLine("After how many temperature drops should switch to more exact Lumped Method?\n");
+            Console.WriteLine("\nPlease define thermal anaylses changes.\n");
+            Console.WriteLine("After how many temperature drops should switch to more exact Lumped Method?");
             i = Convert.ToInt16(Console.ReadLine());
             design.analysis_switch[0] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch from Lumped Method to Sub-Space Method?\n");
+            Console.WriteLine("After how many temperature drops should switch from Lumped Method to Sub-Space Method?");
             i = Convert.ToInt16(Console.ReadLine());
             design.analysis_switch[1] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch to more exact Sub-Space Method?\n");
+            Console.WriteLine("After how many temperature drops should switch to more exact Sub-Space Method?");
             i = Convert.ToInt16(Console.ReadLine());
             design.analysis_switch[2] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch from Sub-Space Method to Matrix Method?\n");
+            Console.WriteLine("After how many temperature drops should switch from Sub-Space Method to Matrix Method?");
             i = Convert.ToInt16(Console.ReadLine());
             design.analysis_switch[3] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch to more exact Matrix Method?\n");
+            Console.WriteLine("After how many temperature drops should switch to more exact Matrix Method?");
             i = Convert.ToInt16(Console.ReadLine());
             design.analysis_switch[4] = Math.Pow(0.95, i);
         }

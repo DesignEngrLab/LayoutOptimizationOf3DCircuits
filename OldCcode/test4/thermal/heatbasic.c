@@ -45,7 +45,7 @@ int steps_at_t, gen_limit;
 	    thermal_analysis_MM(design);
 	    break;
 	default:
-	    printf("ERROR in Thermal Analysis Choice.\n");
+	    printf("ERROR in Thermal Analysis Choice.");
 	    exit();
     }
 	
@@ -173,20 +173,20 @@ struct Design *design;
 {
   int i;
   
-  printf("\nPlease define thermal anaylses changes.\n\n");
-  printf("After how many temperature drops should switch to more exact Lumped Method?\n");
+  printf("\nPlease define thermal anaylses changes.\n");
+  printf("After how many temperature drops should switch to more exact Lumped Method?");
   scanf("%d", &i);
   design->analysis_switch[0] = pow(0.95, i);
-  printf("After how many temperature drops should switch from Lumped Method to Sub-Space Method?\n");
+  printf("After how many temperature drops should switch from Lumped Method to Sub-Space Method?");
   scanf("%d", &i);
   design->analysis_switch[1] = pow(0.95, i);
-  printf("After how many temperature drops should switch to more exact Sub-Space Method?\n");
+  printf("After how many temperature drops should switch to more exact Sub-Space Method?");
   scanf("%d", &i);
   design->analysis_switch[2] = pow(0.95, i);
-  printf("After how many temperature drops should switch from Sub-Space Method to Matrix Method?\n");
+  printf("After how many temperature drops should switch from Sub-Space Method to Matrix Method?");
   scanf("%d", &i);
   design->analysis_switch[3] = pow(0.95, i);
-  printf("After how many temperature drops should switch to more exact Matrix Method?\n");
+  printf("After how many temperature drops should switch to more exact Matrix Method?");
   scanf("%d", &i);
   design->analysis_switch[4] = pow(0.95, i);
 }

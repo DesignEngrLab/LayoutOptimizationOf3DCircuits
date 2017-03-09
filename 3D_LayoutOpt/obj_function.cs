@@ -25,7 +25,7 @@ namespace _3D_LayoutOpt
             char wait;
 
 #if LOCATE
-            Console.WriteLine("Entering evaluate\n");
+            Console.WriteLine("Entering evaluate");
 #endif
 
             /* Evaluate the four components of the objective function. */
@@ -43,7 +43,7 @@ namespace _3D_LayoutOpt
             }
   
             if ((design.choice != 0) && (design.choice != 1))
-                Console.WriteLine("{0}{1}{2}{3}{4}{5}{6}", design.choice,
+                Console.WriteLine("{0} {1} {2} {3} {4} {5} {6}", design.choice,
                 design.weight[0]*design.new_obj_values[0],
                 design.weight[1]*design.new_obj_values[1],
                 design.weight[2]*design.new_obj_values[2],
@@ -51,11 +51,11 @@ namespace _3D_LayoutOpt
                 design.weight[4]*design.new_obj_values[4],
                 eval);
 /*  fptr = fopen("/eval.out","a");
-  fConsole.WriteLine(fptr,"%.2f %.2f %.2f %.2f\n", (design.coef[0] * design.weight[0] * design.new_obj_values[0]), (design.coef[1] * design.weight[1] * design.new_obj_values[1]), (design.coef[2] * design.weight[2] * design.new_obj_values[2]), (design.coef[3] * design.weight[3] * design.new_obj_values[3]));
+  fConsole.WriteLine(fptr,"%.2f %.2f %.2f %.2f", (design.coef[0] * design.weight[0] * design.new_obj_values[0]), (design.coef[1] * design.weight[1] * design.new_obj_values[1]), (design.coef[2] * design.weight[2] * design.new_obj_values[2]), (design.coef[3] * design.weight[3] * design.new_obj_values[3]));
   fclose(fptr);*/
 
 #if LOCATE
-            Console.WriteLine("Leaving evaluate\n");
+            Console.WriteLine("Leaving evaluate");
 #endif
   
             return(eval);
@@ -92,9 +92,9 @@ namespace _3D_LayoutOpt
             double sum;
             sum = 0.0;
 
-            for (int i = 0; i < Constants.COMP_NUM; i++)
+            for (int i = 0; i < design.comp_count; i++)
             {
-                for (int j = i; j < Constants.COMP_NUM; j++)
+                for (int j = i; j < design.comp_count; j++)
                 {
                     sum += design.overlap[j, i];
                 }
@@ -120,7 +120,7 @@ namespace _3D_LayoutOpt
                 if (difference > 0.0)
                     box_penalty += difference;
             }
-            design.new_obj_values[2] = box_penalty * box_penalty;
+            design.new_obj_values[2] = box_penalty * box_penalty;               //THIS ALWAYS PRODUCES POSITIVE VALUES EVEN WHEN THE BOX IS SMALLER THAN THE CONTAINER
         }  
 
 /* ---------------------------------------------------------------------------------- */
@@ -213,7 +213,7 @@ namespace _3D_LayoutOpt
             Component temp2;
 
 #if LOCATE
-            Console.WriteLine("Entering update_overlaps\n");
+            Console.WriteLine("Entering update_overlaps");
 #endif
 
             /* Check overlap with components.  Since we are only using the top half of a symmetric */
@@ -272,7 +272,7 @@ namespace _3D_LayoutOpt
             }
 
 #if LOCATE
-            Console.WriteLine("Leaving update_overlaps\n");
+            Console.WriteLine("Leaving update_overlaps");
 #endif
 
 

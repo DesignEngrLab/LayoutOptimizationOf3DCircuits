@@ -38,7 +38,7 @@ namespace _3D_LayoutOpt
             /* temperature.                                                                       */
 
 #if LOCATE
-            Console.WriteLine("Entering anneal\n");
+            Console.WriteLine("Entering anneal");
 #endif
 
             /* Memory allocation. */
@@ -52,9 +52,9 @@ namespace _3D_LayoutOpt
             Schedules.calc_statistics(schedule);                       /* IN SCHEDULE.C */
             Schedules.init_schedule(schedule);                         /* IN SCHEDULE.C */
 
-            Console.WriteLine("The initial evaluation value is %lf\n", current_eval);
-            Console.WriteLine("sigma and c_avg are %lf and %lf\n", schedule.sigma, schedule.c_avg);
-            Console.WriteLine("The initial temperature is %lf\n", schedule.t_initial);
+            Console.WriteLine("The initial evaluation value is {0}", current_eval);
+            Console.WriteLine("sigma and c_avg are {0} and {1}", schedule.sigma, schedule.c_avg);
+            Console.WriteLine("The initial temperature is {0}", schedule.t_initial);
 
             /* Initialize the hustin structure. */
             Chustin.init_hustin(hustin);           
@@ -92,10 +92,10 @@ namespace _3D_LayoutOpt
                     schedule.c_min = 10.0;
                     last_best = best_eval;
 
-                    Console.WriteLine("Temperature is now %lf\n", t);
-                    Console.WriteLine("best_eval is %lf\n", best_eval);
-                    Console.WriteLine("current_eval is %lf\n", current_eval);
-                    Console.WriteLine("The box dimensions are %lf %lf %lf\n",(design.box_max[0] - design.box_min[0]),
+                    Console.WriteLine("Temperature is now {0}", t);
+                    Console.WriteLine("best_eval is {0}", best_eval);
+                    Console.WriteLine("current_eval is{0}", current_eval);
+                    Console.WriteLine("The box dimensions are {0} {1} {2}", (design.box_max[0] - design.box_min[0]),
 	                (design.box_max[1] - design.box_min[1]),(design.box_max[2] - design.box_min[2]));
 
                     /* INNER LOOP (steps taken at constant temp. in this loop */
@@ -118,7 +118,7 @@ namespace _3D_LayoutOpt
                             /* Write evaluation to file. */
 	                        using (StreamWriter streamwriter = new StreamWriter("sample.data"))
 	                        {
-	                            streamwriter.WriteLine("%lf\n", step_eval);
+	                            streamwriter.WriteLine("{0}", step_eval);
 	                        }
 
 
@@ -159,7 +159,7 @@ namespace _3D_LayoutOpt
                                 /* Write evaluation to file. */
                                 using (StreamWriter streamwriter = new StreamWriter("sample.data"))
                                 {
-                                    streamwriter.WriteLine("%lf\n", step_eval);
+                                    streamwriter.WriteLine("{0}", step_eval);
                                 }
                             
 		                    }
@@ -183,9 +183,9 @@ namespace _3D_LayoutOpt
 	                        hold_temp = 0;
 	                }                         /* END INNER LOOP */
 
-                    Console.WriteLine("\nReducing temperature after %d steps at this temperature.  (%d iterations)\n", steps_at_t, iteration);
-                    Console.WriteLine("%d steps were accepted\n", accept_count);
-                    Console.WriteLine("%d of them were inferior steps\n", bad_accept_count);
+                    Console.WriteLine("\nReducing temperature after {0} steps at this temperature.  ({1} iterations)", steps_at_t, iteration);
+                    Console.WriteLine("{0} steps were accepted", accept_count);
+                    Console.WriteLine("{0} of them were inferior steps", bad_accept_count);
 
                     readwrite.write_loop_data(t, steps_at_t, accept_count, bad_accept_count, gen_limit, 1);
 
@@ -211,7 +211,7 @@ namespace _3D_LayoutOpt
                         readwrite.write_probs(hustin, t);             /* IN READWRITE.C */
 
                         Chustin.reset_hustin(hustin);
-                        /*		  Console.WriteLine("\nHit return to continue\n\n");
+                        /*		  Console.WriteLine("\nHit return to continue\n");
 		                          getchar(wait);
                         */
 	                }
@@ -223,27 +223,27 @@ namespace _3D_LayoutOpt
                 /* Print out evaluation information about the last design. */
                 design.choice = 3;
                 step_eval = obj_function.evaluate(design, 0, 1000);
-                Console.WriteLine("%d iterations were junked\n", junk);
-                Console.WriteLine("The best eval was %lf\n", best_eval);
-                Console.WriteLine("The final eval was %lf (%lf percent density)\n", step_eval,(100/design.new_obj_values[0]));
+                Console.WriteLine("{0} iterations were junked", junk);
+                Console.WriteLine("The best eval was {0}", best_eval);
+                Console.WriteLine("The final eval was {0} ({1} percent density)", step_eval,(100/design.new_obj_values[0]));
 
-                if (design.new_obj_values[3] > 0.001) Console.WriteLine("*****Still a thermal violation!***** %.3f\n", design.new_obj_values[3]);
+                if (design.new_obj_values[3] > 0.001) Console.WriteLine("*****Still a thermal violation!***** {0}", design.new_obj_values[3]);
 
                 using (StreamWriter streamwriter = new StreamWriter("results"))
                 {
-                    streamwriter.WriteLine("%d iterations were taken (junked iterations not counted\n", iteration);
-                    streamwriter.WriteLine("%d iterations were junked\n", junk);
-                    streamwriter.WriteLine("The best eval was %lf\n", best_eval);
-                    streamwriter.WriteLine("The final eval was %lf\n", step_eval);
-                    streamwriter.WriteLine("The container dimensions are %lf %lf %lf\n", design.container[0],
+                    streamwriter.WriteLine("{0} iterations were taken (junked iterations not counted", iteration);
+                    streamwriter.WriteLine("{0} iterations were junked", junk);
+                    streamwriter.WriteLine("The best eval was {0}", best_eval);
+                    streamwriter.WriteLine("The final eval was {0}", step_eval);
+                    streamwriter.WriteLine("The container dimensions are {0} {1} {2}", design.container[0],
                     design.container[1], design.container[2]);
-                    streamwriter.WriteLine("The box dimensions are %lf X %lf X %lf\n", (design.box_max[0] - design.box_min[0]),
+                    streamwriter.WriteLine("The box dimensions are {0} X {1} X {2}", (design.box_max[0] - design.box_min[0]),
                     (design.box_max[1] - design.box_min[1]), (design.box_max[2] - design.box_min[2]));
                 }
 
 
 #if LOCATE
-                Console.WriteLine("Leaving anneal\n");
+                Console.WriteLine("Leaving anneal");
 #endif
 }
  
@@ -261,7 +261,7 @@ namespace _3D_LayoutOpt
                     double prob;
 
                     /* Pick a component to move */
-                    which1 = Program.my_random(1, Constants.COMP_NUM);
+                    which1 = Program.my_random(1, design.comp_count - 1);
 
                     /* Generate a random number to pick a move.  Then, step through the move probabilites */
                     /* to find the appropriate move. 
@@ -275,7 +275,7 @@ namespace _3D_LayoutOpt
                     i = -1;
                     while(++i<Constants.MOVE_NUM)
                     {
-                        prob -= hustin.prob[i];
+                        prob -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OG THE ALGORITHM
                         if (prob< 0)
 	                    {
 	                        ++(hustin.attempts[i]);
@@ -296,9 +296,9 @@ namespace _3D_LayoutOpt
 	                        else                   /* If we reach this, we are at the last move (swap) */
 	                        {
 /* Pick at random a second component (different from the first) to swap.              */
-                                which2 = Program.my_random(1, (Constants.COMP_NUM - 1));
-	                            if (which2 >= which1)
-		                            ++(which2);
+                                which2 = Program.my_random(1, (Constants.COMP_NUM - 1));                    //IMPLEMENT WHICH2 != WHICH1
+	                            //if (which2 >= which1)
+		                           // ++(which2);
 
                                 swap(design,which1, which2);
 	      /*design.gauss = 1;*/
@@ -322,7 +322,7 @@ namespace _3D_LayoutOpt
             Component comp = null;
 
 #if LOCATE
-            Console.WriteLine("Entering move\n");
+            Console.WriteLine("Entering move");
 #endif
 
             /* Find the correct component and back up the component information in case we reject */
@@ -337,7 +337,7 @@ namespace _3D_LayoutOpt
 
             /* Pick a random direction and distance, and move the component.                      */
 #if DEBUG
-            Console.WriteLine("Moving %s\n", comp.comp_name);
+            Console.WriteLine("Moving {0}", comp.comp_name);
 #endif
           
             for (int j = 0; j < 3; j++)
@@ -361,7 +361,7 @@ namespace _3D_LayoutOpt
             update_state(design, comp, which);
 
 #if LOCATE
-            Console.WriteLine("Leaving move\n");
+            Console.WriteLine("Leaving move");
 #endif
 }
 
@@ -389,7 +389,7 @@ namespace _3D_LayoutOpt
             Component comp = null;
 
 #if LOCATE
-            Console.WriteLine("Entering rotate\n");
+            Console.WriteLine("Entering rotate");
 #endif
 
 /* Find the correct component and back up the component information in case we reject */
@@ -402,7 +402,7 @@ namespace _3D_LayoutOpt
 
 /* Pick a random orientation different from the current one and rotate the component. */
 #if DEBUG
-            Console.WriteLine("Rotating %s\n", comp.comp_name);
+            Console.WriteLine("Rotating {0}", comp.comp_name);
 #endif
 
             if (Constants.DIMENSION == 3)
@@ -425,7 +425,7 @@ namespace _3D_LayoutOpt
             update_state(design, comp, which);
 
 #if LOCATE
-            Console.WriteLine("Leaving rotate\n");
+            Console.WriteLine("Leaving rotate");
 #endif
 }
 
@@ -440,7 +440,7 @@ namespace _3D_LayoutOpt
                 Component comp1 = null, comp2 = null;
 
 #if LOCATE
-                Console.WriteLine("Entering swap\n");
+                Console.WriteLine("Entering swap");
 #endif
 
 /* Find the correct components.  We don't need to back up component in case we reject */
@@ -460,7 +460,7 @@ namespace _3D_LayoutOpt
 
             /* Swap the components by switching their coordinates.                                */
 #if DEBUG
-                Console.WriteLine("Swapping %s and %s\n", comp1.comp_name, comp2.comp_name);
+                Console.WriteLine("Swapping {0} and {1}", comp1.comp_name, comp2.comp_name);
     #endif
                 for (int j = 0; j < 3; j++)
                 {
@@ -475,7 +475,7 @@ namespace _3D_LayoutOpt
                 update_state(design, comp2, which2);
 
     #if LOCATE
-                Console.WriteLine("Leaving swap\n");
+                Console.WriteLine("Leaving swap");
     #endif
             }
 
@@ -492,11 +492,11 @@ namespace _3D_LayoutOpt
             Component comp1;
 
 #if LOCATE
-            Console.WriteLine("Entering back_up\n");
+            Console.WriteLine("Entering back_up");
 #endif
 
 /* Back up coordinates and dimensions. */
-/*  Console.WriteLine("The component being backed up is %s\n",comp.comp_name);
+/*  Console.WriteLine("The component being backed up is %s",comp.comp_name);
 */
             design.old_orientation = comp.orientation;
 
@@ -515,7 +515,7 @@ namespace _3D_LayoutOpt
 
 
 #if LOCATE
-            Console.WriteLine("Leaving back_up\n");
+            Console.WriteLine("Leaving back_up");
 #endif
 }
 
@@ -530,12 +530,12 @@ namespace _3D_LayoutOpt
             if (accept_flag == 2)
             {
 #if DEBUG
-                Console.WriteLine("*** Improved step\n");
+                Console.WriteLine("*** Improved step");
 #endif
             }
 
 #if DEBUG
-            Console.WriteLine("Accepting step\n\n");
+            Console.WriteLine("Accepting step\n");
 #endif
 	      
 /* Update best evaluation function. */
@@ -562,7 +562,7 @@ namespace _3D_LayoutOpt
    public static     void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
         {
 #if DEBUG
-            Console.WriteLine("Rejecting step\n\n");
+            Console.WriteLine("Rejecting step\n");
 #endif
 	      
 #if OBJ_DATA
@@ -587,7 +587,7 @@ namespace _3D_LayoutOpt
             Component comp1 = null, comp2 = null;
 
 #if LOCATE
-            Console.WriteLine("Entering revert\n");
+            Console.WriteLine("Entering revert");
 #endif
 
             /* Find the first component. */
@@ -598,7 +598,7 @@ namespace _3D_LayoutOpt
             }
 
 
-            if (which2 > 0)
+            if (which2 == 0)
             {
                 comp1.orientation = design.old_orientation;
 
@@ -609,13 +609,13 @@ namespace _3D_LayoutOpt
                 }
 
 
-/* Update the overlaps and bounding box dimensions back to how they were since we reverted */
-            update_state(design, comp1, which1);    
+                /* Update the overlaps and bounding box dimensions back to how they were since we reverted */
+                update_state(design, comp1, which1);    
             }
 
             else
             {
-/* Find the second component. */
+                /* Find the second component. */
 
                 for (int i = 0; i < which2; i++)
                 {
@@ -644,7 +644,7 @@ namespace _3D_LayoutOpt
             
 
 #if LOCATE
-            Console.WriteLine("Leaving revert\n");
+            Console.WriteLine("Leaving revert");
 #endif
 }
 
@@ -735,7 +735,7 @@ namespace _3D_LayoutOpt
                         (design.min_comp[i] != comp))
                     {
 
-                        Console.WriteLine("\n\nERROR in test_it - box_min.\n\n");
+                        Console.WriteLine("\n\nERROR in test_it - box_min.\n");
 
                         return;
                     }
@@ -743,7 +743,7 @@ namespace _3D_LayoutOpt
                         (design.max_comp[i] != comp))
                     {
 
-                        Console.WriteLine("\n\nERROR in test_it - box_max.\n\n");
+                        Console.WriteLine("\n\nERROR in test_it - box_max.\n");
 
                         return;
                     }
@@ -754,7 +754,7 @@ namespace _3D_LayoutOpt
             /* Test to see if value reverted to is same as value before taking step. */
             /*  if (!(accept_flag) && (current_eval != obj_function.evaluate(design, iteration)))
                 {
-                  Console.WriteLine("\n\nERROR in test_it - didn't revert correctly\7\n\n");
+                  Console.WriteLine("\n\nERROR in test_it - didn't revert correctly\7\n");
                   exit();
                 }*/
 
@@ -775,7 +775,7 @@ namespace _3D_LayoutOpt
             obj_balance.init_obj_values(design);                /* In obj_balance.c */
 
             Program.calc_c_grav(design);
-            Console.WriteLine("The center of gravity is %lf %lf %lf\n", design.c_grav[0],
+            Console.WriteLine("The center of gravity is {0}{1}{2}", design.c_grav[0],
             design.c_grav[1], design.c_grav[2]);
         }
 
@@ -786,10 +786,10 @@ namespace _3D_LayoutOpt
               if (iteration > 4000) ||
                   ((design.overlap[6][5] > 12.809)&&(design.overlap[6][5] < 12.81)))	   
                 {
-              Console.WriteLine("*******THIS IS AT THE TOP OF THE LOOP\n");
-              Console.WriteLine("*******CURRENT EVAL IS %lf.  EVAL IS %lf\n",current_eval, obj_function.evaluate(design));
+              Console.WriteLine("*******THIS IS AT THE TOP OF THE LOOP");
+              Console.WriteLine("*******CURRENT EVAL IS %lf.  EVAL IS %lf",current_eval, obj_function.evaluate(design));
                   fptr = fopen("/comp.out","a");
-                  fConsole.WriteLine(fptr, "Starting iteration #%d\n",iteration);
+                  fConsole.WriteLine(fptr, "Starting iteration #%d",iteration);
                   fclose(fptr);
                   print_overlaps(design);
                   fprint_data(design, 9);
@@ -809,10 +809,10 @@ namespace _3D_LayoutOpt
             char wait;
 
 #if LOCATE
-            Console.WriteLine("Entering downhill\n");
+            Console.WriteLine("Entering downhill");
 #endif
 
-/*  Console.WriteLine("\nHit return to continue\n\n");
+/*  Console.WriteLine("\nHit return to continue\n");
   getchar(wait);
 */
 
@@ -828,7 +828,7 @@ namespace _3D_LayoutOpt
             current_eval = obj_function.evaluate(design, max, 1000);
             best_eval = current_eval;
             step_eval = current_eval;
-            Console.WriteLine("current_eval is %lf\n", current_eval);
+            Console.WriteLine("current_eval is {0}", current_eval);
 
             while (improving)
             {
@@ -873,17 +873,17 @@ namespace _3D_LayoutOpt
             readwrite.write_loop_data(0.0, (1000*count), accept_count, 0, 0, 3);
 
             step_eval = obj_function.evaluate(design, max, 1000);
-            Console.WriteLine("The best eval was %lf\n", best_eval);
-            Console.WriteLine("The final eval was %lf\n", step_eval);
+            Console.WriteLine("The best eval was {0}", best_eval);
+            Console.WriteLine("The final eval was {0}", step_eval);
 
             using (StreamWriter writetext = new StreamWriter("results"))
             {
-                writetext.WriteLine("After the downhill search:\n");
-                writetext.WriteLine("The best eval was %lf\n", best_eval);
-                writetext.WriteLine("The final eval was %lf\n", step_eval);
+                writetext.WriteLine("After the downhill search:");
+                writetext.WriteLine("The best eval was {0}", best_eval);
+                writetext.WriteLine("The final eval was {0}", step_eval);
             }
 #if LOCATE
-            Console.WriteLine("Leaving downhill\n");
+            Console.WriteLine("Leaving downhill");
 #endif
         }
 
@@ -900,7 +900,7 @@ namespace _3D_LayoutOpt
             Component comp = null;
 
 #if LOCATE
-            Console.WriteLine("Entering downhill_move\n");
+            Console.WriteLine("Entering downhill_move");
 #endif
 
             which = Program.my_random(1, Constants.COMP_NUM);
@@ -919,7 +919,7 @@ namespace _3D_LayoutOpt
 /* by a vector from the center of the component to the center of gravity, to imrove   */
 /* chances of having an improvement step (i.e. never move away from c_grav).          */
 #if DEBUG
-            Console.WriteLine("Moving %s\n", comp.comp_name);
+            Console.WriteLine("Moving {0}", comp.comp_name);
 #endif
 
             for (int j = 0; j < 3; j++)
@@ -942,7 +942,7 @@ namespace _3D_LayoutOpt
             update_state(design, comp, which);
 
 #if LOCATE
-            Console.WriteLine("Leaving downhill_move\n");
+            Console.WriteLine("Leaving downhill_move");
 #endif
         }
 
