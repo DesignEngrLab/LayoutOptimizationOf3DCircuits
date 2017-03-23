@@ -47,7 +47,6 @@ namespace _3D_LayoutOpt
             {
                 comp = design.components[i];
                 design.new_obj_values[3] += calc_temp_penalty(comp.temp, comp.tempcrit);
-                design.new_obj_values[4] += calc_cool_obj(comp.temp, comp.tempcrit);
             }
 
         }
@@ -103,16 +102,6 @@ namespace _3D_LayoutOpt
             return(value);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function returns the value of the objective function for coolest              */
-/* ---------------------------------------------------------------------------------- */
-        public static double calc_cool_obj(double temp, double tempcrit)
-        {
-            double value;
-
-            value = (temp* temp)/(tempcrit* tempcrit* Constants.COMP_NUM);
-            return(value);
-        }
 
 /* ---------------------------------------------------------------------------------- */
 /* This function reverts to  the previous node temperatures if the new move was       */

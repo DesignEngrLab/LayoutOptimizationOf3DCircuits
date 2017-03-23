@@ -1,21 +1,68 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TVGL;
+
 
 namespace _3D_LayoutOpt
 {
  
     public class Component
     {
-
-        public int orientation, node_center, nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
-        public double[] coord = new double[3];
+        public List<TessellatedSolid> ts = null;
+        public Footprint footprint = null;
+        public double[] orientation = new double[3];
+        public int node_center, nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
         public double[] dim = new double[3];
-        public double[] dim_initial = new double[3];
-        public double half_area, volume, mass;
         public double temp, tempcrit, q, k;
-        public string comp_name;
-        public string shape_type;                     
+        public string name;
 
+        public Component(string CmpName, Footprint FP)
+        {
+            name = CmpName;
+            footprint = FP;
+            for (int i = 0; i < orientation.Length; i++)
+            {
+                orientation[i] = 0;
+            }
+        }                    
+
+    }
+
+    public class Container
+    {
+        public string Name;
+        public List<TessellatedSolid> ts = null;
+
+        public Container(string containername, List<TessellatedSolid> tessellatedSolids)
+        {
+            Name = containername;
+            ts = tessellatedSolids;
+        }
+    }
+
+    public class Footprint
+    {
+        string name;
+        List<SMD> pads = null;
+
+        public Footprint(string FPname, List<SMD> SMDpads)
+        {
+            name = FPname;
+            pads = SMDpads;
+        }
+    }
+
+    public class SMD
+    {
+        string name;
+        double[] coord = new double[2];
+        double[] dim = new double[2];
+
+        public SMD(string SMDname, double[] coordinates, double[] dimensions)
+        {
+            name = SMDname;
+            coord = coordinates;
+            dim = dimensions;
+        }
     }
 
     
@@ -43,14 +90,15 @@ namespace _3D_LayoutOpt
         /* total of all the surface areas of the components.                                  */
 
         public int comp_count;
-        public int old_orientation;
+        public double[] old_orientation;
         public double[] box_min = new double[3];
         public double[] box_max = new double[3];
         public double[,] overlap = new double[Constants.COMP_NUM, Constants.COMP_NUM];
         public double[] old_coord = new double[3];
         public double[] old_dim = new double[3];
         public double[] c_grav = new double[3];
-        public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
+        //public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
+        public Container container;
         public double half_area, volume, mass;
 
         /* First comp is a pointer to the first component in the component list.  Min_comp    */
@@ -62,7 +110,6 @@ namespace _3D_LayoutOpt
         public Component[] min_comp = new Component[3];
         public Component[] max_comp = new Component[3];
         public List<Component> components = new List<Component>();
-        public Component first_comp;
 
         /* THESE HAVE BEEN ADDED FOR BALANCING THE COMPONENTS OF THE OBJECTIVE FUNCTION       */
         /* new_obj_values are the latest values of the components of the objective function.  */
@@ -109,13 +156,6 @@ namespace _3D_LayoutOpt
         public double[] analysis_switch = new double[Constants.SWITCH_NUM];
         public int hcf_per_temp, gauss, max_iter, choice;
 
-
-
-        public void store_component_cnt()
-        {
-            comp_count = components.Count;
-        }
-
         static T[] InitializeArray<T>(int length) where T : new()
         {
             T[] array = new T[length];
@@ -127,6 +167,10 @@ namespace _3D_LayoutOpt
             return array;
         }
 
+        public void add_comp(Component comp)
+        {
+            components.Add(comp);
+        }
 
     }
 

@@ -43,6 +43,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TessellationAndVoxelizationGeometryLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\TVGL.1.0.17.0226\lib\portable-net45+win8\TessellationAndVoxelizationGeometryLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="anneal_alg.cs" />
@@ -63,15 +67,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="datafile1" />
-    <None Include="datafile2" />
-    <None Include="makefile" />
-    <None Include="results" />
-    <None Include="sample.data" />
-    <None Include="test3" />
-    <None Include="test3.o" />
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TessellationAndVoxelizationGeometryLibrary.XML" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -29,9 +29,8 @@ namespace _3D_LayoutOpt
 #endif
 
             /* Evaluate the four components of the objective function. */
-            eval_part_1(design);
-            eval_part_2(design);
-            eval_part_3(design);
+            eval_overlap_comp(design);
+            eval_overlap_container(design);
             heatbasic.heat_eval(design, steps_at_t, gen_limit);
             obj_balance.update_coef(design);                            //WHAT DOES IT DO?
 
@@ -61,33 +60,13 @@ namespace _3D_LayoutOpt
             return(eval);
         }
 
-        /* ---------------------------------------------------------------------------------- */
-        /* This function sets the value of the first part of the objective function;          */
-        /* inverse density.                                                                   */
-        /* ---------------------------------------------------------------------------------- */
-        static void eval_part_1(Design design)
-        {
-            double box_x_dim, box_y_dim, box_z_dim, half_box_area, box_volume;
-
-            box_x_dim = design.box_max[0] - design.box_min[0];
-            box_y_dim = design.box_max[1] - design.box_min[1];
-            box_z_dim = design.box_max[2] - design.box_min[2];
-
-/*  half_box_area = (box_x_dim*box_y_dim) + (box_x_dim*box_z_dim) + (box_y_dim*box_z_dim);
-  design.new_obj_values[0] = half_box_area/design.half_area;*/
-
-            box_volume = box_x_dim * box_y_dim * box_z_dim;
-            design.new_obj_values[0] = box_volume/design.volume;
-            //design.new_obj_values[0] = 1.0;
-        }
-
 /* ---------------------------------------------------------------------------------- */
 /* This function sets the value of the second part of the objective function, which   */
 /* is the amount of overlap in a design.                                              */
 /* Note that only the top half of the overlap matrix is used.                         */
 /* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
 /* ---------------------------------------------------------------------------------- */
-        static void eval_part_2(Design design)
+        static void eval_overlap_comp(Design design)
         {
             double sum;
             sum = 0.0;
@@ -109,7 +88,7 @@ namespace _3D_LayoutOpt
 /* This function sets the value of the third part of the objective function, which    */
 /* is the amount of overlap with the container.                                       */
 /* ---------------------------------------------------------------------------------- */
-        static void eval_part_3(Design design)
+        static void eval_overlap_container(Design design)
         {
             double difference, box_penalty;
             box_penalty = 0.0;

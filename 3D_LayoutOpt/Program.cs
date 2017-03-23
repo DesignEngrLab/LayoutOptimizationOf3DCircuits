@@ -9,6 +9,14 @@ namespace _3D_LayoutOpt
 {
     class Program
     {
+
+        private static readonly string[] FileNames = {
+            "../../../TestFiles/ABF.ply"
+            // "../../../TestFiles/Beam_Boss.STL",
+            // //"../../../TestFiles/bigmotor.amf",
+            // //"../../../TestFiles/DxTopLevelPart2.shell",
+            };
+
         static void Main(string[] args)
         {
             int i, which, end_time;
@@ -16,36 +24,24 @@ namespace _3D_LayoutOpt
             char wait;
             Design design = new Design();
             Component comp;
+
+
             Directory.SetCurrentDirectory("../../workspace");
-            int start_time = Program.get_time();
-            Program.setseed();
+            int start_time = get_time();
+            setseed();
+
+            
+
 
             /* The component data is read in from a file and the number of components is returned */
-            getdata(design);
-            design.store_component_cnt();
+            readwrite.ImportData(design);
             Console.WriteLine("{0} components were read in from the file.\n",design.comp_count);
 
 
-            Program.initializations(design);
-
+            initialize(design);
             Console.WriteLine("Sampling points in design space\n");
             Schedules.sample_space(design);  
 
-        #if WAIT
-            Console.WriteLine("\nHit return to continue.\n");
-            getchar(wait);
-        #endif
-
-        #if BOTH
-            Console.WriteLine("Problem set up as minimization of weighted sum of area_ratio and overlap.");
-        #endif
-
-            /*  Console.WriteLine("Ready to begin search using simulated annealing algorithm.\n");*/
-
-        #if WAIT
-            Console.WriteLine("\nHit return to continue.\n");
-            getchar(wait);
-        #endif
 
             anneal_alg.anneal(design);                        /* This function is in anneal_alg.c */
             readwrite.save_design(design);
@@ -94,94 +90,12 @@ namespace _3D_LayoutOpt
             return seconds;
         }
 
-        /* ---------------------------------------------------------------------------------- */
-        /* This function gets component data from a file.                                     */
-        /* ---------------------------------------------------------------------------------- */
-        public static void getdata(Design design)
-        {
-            int i;
-            double x_dim, y_dim, z_dim, tempcrit, q, k, pi;
-            string name;
-            string type;
-            string shape;
-            
-            try
-            {
-                using (StreamReader readtext = new StreamReader("datafile2"))
-                {
-                    Console.WriteLine("Reading container dimensions from file.");
-                    string line;
-                    while ((line = readtext.ReadLine()) != null)
-                    {
-                        string[] items = line.Split(' ');
-                        design.container[0] = Convert.ToDouble(items[0]);
-                        design.container[1] = Convert.ToDouble(items[1]);
-                        design.container[2] = Convert.ToDouble(items[2]);
-                        design.kb = Convert.ToDouble(items[3]);
-                        design.h[0] = Convert.ToDouble(items[4]);
-                        design.h[1] = Convert.ToDouble(items[5]);
-                        design.h[2] = Convert.ToDouble(items[6]);
-                        design.tamb = Convert.ToDouble(items[7]);
-                    }
-                }
-            }
-            catch (IOException ex)
-            {
-                
-            }
-
-            try
-            {
-                using (StreamReader readtext = new StreamReader("datafile1"))
-                {
-                    Console.WriteLine("Reading component data from file.");
-                    design.half_area = 0;
-                    design.volume = 0.0;
-                    design.mass = 0.0;
-                    i = 0;
-                    string line;
-                    while ((line = readtext.ReadLine()) != null)
-                    {
-                        string[] items = line.Split(new char[]{ ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                        Component comp_ptr = new Component();                   //TO DO: change comp_ptr to comp
-                        comp_ptr.comp_name = items[0];
-                        comp_ptr.shape_type = items[1];
-                        comp_ptr.dim_initial[0] = Convert.ToDouble(items[2]);
-                        comp_ptr.dim_initial[1] = Convert.ToDouble(items[3]);
-                        comp_ptr.dim_initial[2] = Convert.ToDouble(items[4]);
-                        comp_ptr.tempcrit = Convert.ToDouble(items[5]);
-                        comp_ptr.q = Convert.ToDouble(items[6]);
-                        comp_ptr.k = Convert.ToDouble(items[7]);
-                        comp_ptr.orientation = 0;
-                        if (comp_ptr.shape_type[0] == 'B')
-                        {
-                            comp_ptr.half_area = (comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1]) + (comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2]) + (comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2]);
-                            comp_ptr.volume = comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2];
-                            comp_ptr.mass = comp_ptr.dim_initial[0] * comp_ptr.dim_initial[1] * comp_ptr.dim_initial[2];                    // TO DO: add density so that mass = density * volume
-                        }
-                        else
-                        {
-                            comp_ptr.half_area = (Math.PI * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] / 4.0) + (Math.PI * comp_ptr.dim_initial[2] * comp_ptr.dim_initial[0] / 2.0);
-                            comp_ptr.volume = Math.PI * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2] / 4.0;
-                            comp_ptr.mass = Math.PI * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[0] * comp_ptr.dim_initial[2] / 4.0;
-                        }
-                        design.half_area += comp_ptr.half_area;
-                        design.volume += comp_ptr.volume;
-                        design.mass += comp_ptr.mass;
-                        design.components.Add(comp_ptr);
-                    }
-                    Console.WriteLine("EOF reached in the input file.\n");
-                }
-            }
-            catch (IOException ex)
-            {
-            }
-        }
+        
 
         /* ---------------------------------------------------------------------------------- */
         /* This function calls several other initialization functions.                        */
         /* ---------------------------------------------------------------------------------- */
-        public static void initializations(Design design)
+        public static void initialize(Design design)
         {
           Console.WriteLine("Initializing locations.\n");
           init_locations(design);
@@ -218,10 +132,12 @@ namespace _3D_LayoutOpt
         static void init_locations(Design design)
         {
             Component temp_comp = null;
+            Console.WriteLine("Placing components in randomly in 3D space");
 
-        #if LOCATE
-            Console.WriteLine("Entering init_locations");
-        #endif
+            foreach (var comp in design.components)
+            {
+
+            }
    
             for (int i = 0; i < design.comp_count; i++)
             {

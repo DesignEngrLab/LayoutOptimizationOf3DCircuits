@@ -321,9 +321,7 @@ namespace _3D_LayoutOpt
             double[] dir_vect = new double[3];
             Component comp = null;
 
-#if LOCATE
             Console.WriteLine("Entering move");
-#endif
 
             /* Find the correct component and back up the component information in case we reject */
             /* the step.                                                                          */
@@ -336,9 +334,7 @@ namespace _3D_LayoutOpt
             back_up(design, comp);
 
             /* Pick a random direction and distance, and move the component.                      */
-#if DEBUG
-            Console.WriteLine("Moving {0}", comp.comp_name);
-#endif
+            Console.WriteLine("Moving {0}", comp.name);
           
             for (int j = 0; j < 3; j++)
             {
@@ -360,10 +356,16 @@ namespace _3D_LayoutOpt
             /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);
 
-#if LOCATE
             Console.WriteLine("Leaving move");
-#endif
-}
+        }
+
+        static void translate(Component comp, double move_size, double[] dir_vect)
+        {
+            foreach (var tsolid in comp.ts)
+            {
+               //tsolid.transfer(move_size * dir_vect)
+            }
+        }
 
 /* ---------------------------------------------------------------------------------- */
 /* This function takes a delta_vector, normalizes it, and puts the result in the      */
@@ -402,7 +404,7 @@ namespace _3D_LayoutOpt
 
 /* Pick a random orientation different from the current one and rotate the component. */
 #if DEBUG
-            Console.WriteLine("Rotating {0}", comp.comp_name);
+            Console.WriteLine("Rotating {0}", comp.name);
 #endif
 
             if (Constants.DIMENSION == 3)
@@ -460,7 +462,7 @@ namespace _3D_LayoutOpt
 
             /* Swap the components by switching their coordinates.                                */
 #if DEBUG
-                Console.WriteLine("Swapping {0} and {1}", comp1.comp_name, comp2.comp_name);
+                Console.WriteLine("Swapping {0} and {1}", comp1.name, comp2.name);
     #endif
                 for (int j = 0; j < 3; j++)
                 {
@@ -919,7 +921,7 @@ namespace _3D_LayoutOpt
 /* by a vector from the center of the component to the center of gravity, to imrove   */
 /* chances of having an improvement step (i.e. never move away from c_grav).          */
 #if DEBUG
-            Console.WriteLine("Moving {0}", comp.comp_name);
+            Console.WriteLine("Moving {0}", comp.name);
 #endif
 
             for (int j = 0; j < 3; j++)

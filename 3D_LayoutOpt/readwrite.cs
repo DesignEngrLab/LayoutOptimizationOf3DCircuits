@@ -4,11 +4,192 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using TVGL;
+using TVGL.IOFunctions;
 
 namespace _3D_LayoutOpt
 {
     static class readwrite
     {
+        private static readonly string[] CompNames =
+        {
+            "../../TestFiles/DxTopLevelPart2.shell"
+        };
+        private static readonly string ContainerName =
+            "../../TestFiles/DxTopLevelPart2.shell";
+
+
+        public static void ImportData(Design design)
+        {
+            ImportComponents(design);
+            ImportContainer(design);
+        }
+
+        static void ImportComponents(Design design)
+        {
+            ImportFootprints(design);
+            ImportCompModels(design);
+            ImportCompFeatures(design);
+        }
+
+        static void ImportContainer(Design design)
+        {
+            ImportContModel(design);
+            ImportContFeatures(design);
+        }
+
+        static void ImportContModel(Design design)
+        {
+            var filename = ContainerName;
+            Console.WriteLine("Attempting: " + filename);
+            Stream fileStream;
+            List<TessellatedSolid> ts;
+            using (fileStream = File.OpenRead(filename))
+                ts = IO.Open(fileStream, filename);
+            string name = GetNameFromFileName(filename);
+            var container = new Container(name, ts);
+            design.container = container;
+        }
+
+        static void ImportCompFeatures(Design design)
+        {
+            try
+            {
+                using (StreamReader readtext = new StreamReader("datafile1"))
+                {
+                    Console.WriteLine("Reading component data from file.");
+                    string line;
+                    while ((line = readtext.ReadLine()) != null)
+                    {
+                        string[] items = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                        var compname = items[0];
+                        var tempcrit = Convert.ToDouble(items[1]);
+                        var q = Convert.ToDouble(items[2]);
+                        var k = Convert.ToDouble(items[3]);
+                        var comp = design.components.Find(x => x.name == compname);             
+                        comp.tempcrit = tempcrit;
+                        comp.q = q;
+                        comp.k = k;
+                    }
+                    Console.WriteLine("EOF reached in the input file.\n");
+                }
+            }
+            catch (IOException ex)
+            {
+            }
+
+        }
+
+        static void ImportContFeatures(Design design)
+        {
+            try
+            {
+                using (StreamReader readtext = new StreamReader("datafile2"))
+                {
+                    Console.WriteLine("Reading container dimensions from file.");
+                    string line;
+                    while ((line = readtext.ReadLine()) != null)
+                    {
+                        string[] items = line.Split(' ');
+                        var kb = Convert.ToDouble(items[0]);
+                        var h0 = Convert.ToDouble(items[1]);
+                        var h1 = Convert.ToDouble(items[2]);
+                        var h2 = Convert.ToDouble(items[3]);
+                        var tamb = Convert.ToDouble(items[4]);
+
+                        design.kb = kb;
+                        design.h[0] = h0;
+                        design.h[1] = h1;
+                        design.h[2] = h2;
+                        design.tamb = tamb;
+
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+
+            }
+
+        }
+
+
+        static void ImportFootprints(Design design)
+        {
+            XDocument doc = XDocument.Parse(INPUT_DATA);
+            XElement Sheets = doc.Element("schematic").Element("sheets");
+            XElement Parts = doc.Element("parts");
+            IEnumerable<XElement> parts = Parts.Elements("part");
+            if (Sheets != null)
+            {
+                IEnumerable<XElement> sheets = Sheets.Elements("sheet");
+                var sheet = sheets.First();
+                IEnumerable<XElement> instances = sheet.Element("instances").Elements("instance");
+                int compcount = instances.Count();
+                foreach (var instance in instances) 
+                {
+                    string PartName = instance.FirstAttribute.Value;
+                    var part = (doc.Element("schematic").Element("parts").Elements("part").Where(n => n.Attribute("name").Value == PartName)).First();
+                    var library = (doc.Element("schematic").Element("libraries").Elements("library").Where(n => n.Attribute("name").Value == part.Attribute("library").Value)).First();
+                    var deviceset = library.Element("devicesets").Elements("deviceset").Where(n => n.Attribute("name").Value == part.Attribute("deviceset").Value).First();
+                    var device = deviceset.Element("devices").Elements("device").Where(n => n.Attribute("name").Value == part.Attribute("device").Value).First();
+                    var package = library.Element("packages").Elements("package").Where(n => n.Attribute("name").Value == device.Attribute("package").Value).First();
+                    var SMDs = package.Elements("smd");
+                    List<SMD> SMDlsit = null;
+                    foreach (var smd in SMDs)
+                    {
+                        string SMDname = smd.Attribute("name").Value;
+                        double[] coords = new double[] { Convert.ToDouble(smd.Attribute("x").Value), Convert.ToDouble(smd.Attribute("y").Value) };
+                        double[] dims = new double[] { Convert.ToDouble(smd.Attribute("dx").Value), Convert.ToDouble(smd.Attribute("dy").Value) };
+                        var SMD = new SMD(SMDname, coords, dims);
+                        SMDlsit.Add(SMD);
+                    }
+
+                    string FPname = package.Attribute("name").Value;
+                    var Footprint = new Footprint(FPname, SMDlsit);
+
+                    var comp = new Component(PartName, Footprint);
+                    design.add_comp(comp); 
+                }
+                design.comp_count = compcount;
+            }
+
+        }
+
+        static void ImportCompModels(Design design)
+        {
+            for (var i = 0; i < CompNames.Count(); i++)
+            {
+                var filename = CompNames[i];
+                Console.WriteLine("Attempting: " + filename);
+                Stream fileStream;
+                List<TessellatedSolid> ts;
+                using (fileStream = File.OpenRead(filename))
+                    ts = IO.Open(fileStream, filename);
+                string name = GetNameFromFileName(filename);
+                var comp = design.components.Find(x => x.name == name);
+                comp.ts = ts;  
+            }
+        }
+
+        static string GetNameFromFileName(string filename)
+        {
+            var startIndex = filename.LastIndexOf('/') + 1;
+            if (startIndex == -1) startIndex = filename.LastIndexOf('\\') + 1;
+            var endIndex = filename.IndexOf('.', startIndex);
+            if (endIndex == -1) endIndex = filename.Length - 1;
+            return filename.Substring(startIndex, endIndex - startIndex);
+        }
+
+
+        /* ---------------------------------------------------------------------------------- */
+        /* This function gets component data from a file.                                     */
+        /* ---------------------------------------------------------------------------------- */
+        
+
+
 
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -33,7 +214,7 @@ namespace _3D_LayoutOpt
                     comp = design.components[i];
 
 
-                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.comp_name, comp.orientation);
+                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name, comp.orientation);
 
                 i = -1;
                 while (++i < 3)
@@ -79,41 +260,6 @@ namespace _3D_LayoutOpt
                     F3.WriteLine("", iteration,
                         (design.new_obj_values[1]*design.weight[1]));
                 }
-
-/*      if (flag == 0)
-	{
-	  fprintf(fptr1,"%d %lf R",iteration, design.new_obj_values[0]);
-	  fprintf(fptr2,"%d %lf R",iteration, 
-		  (design.new_obj_values[2]*design.coef[2]*design.weight[2]));
-	  fprintf(fptr3,"%d %lf R",iteration, (design.new_obj_values[1]*design.coef[1]));
-
-	  fprintf(fptr5,"%d %lf R",iteration, design.new_obj_values[1]);
-
-	  fprintf(fptr4,"%d %lf R",iteration, design.coef[1]);
-	}
-      else if (flag == 3)
-	{
-	  fprintf(fptr1,"%d %lf A  *",iteration, design.new_obj_values[0]);
-	  fprintf(fptr2,"%d %lf A  *",iteration, 
-		  (design.new_obj_values[2]*design.coef[2]*design.weight[2]));
-	  fprintf(fptr3,"%d %lf A  *",iteration, (design.new_obj_values[1]*design.coef[1]));
-
-	  fprintf(fptr5,"%d %lf A  *",iteration, design.new_obj_values[1]);
-
-	  fprintf(fptr4,"%d %lf A  *",iteration, design.coef[1]);
-	}
-      else
-	{
-	  fprintf(fptr1,"%d %lf A",iteration, design.new_obj_values[0]);
-	  fprintf(fptr2,"%d %lf A",iteration, 
-		  (design.new_obj_values[2]*design.coef[2]*design.weight[2]));
-	  fprintf(fptr3,"%d %lf A",iteration, (design.new_obj_values[1]*design.coef[1]));
-
-	  fprintf(fptr5,"%d %lf A",iteration, design.new_obj_values[1]);
-
-	  fprintf(fptr4,"%d %lf A",iteration, design.coef[1]);
-	}
-*/
 
                 F1.Close();
                 F2.Close();
@@ -168,7 +314,7 @@ namespace _3D_LayoutOpt
                 comp = design.components[i];
 
 
-            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.comp_name, comp.orientation);
+            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name, comp.orientation);
 
             i = -1;
             while (++i < 3)
@@ -239,11 +385,11 @@ namespace _3D_LayoutOpt
                 comp = design.components[0];
                 while (++i <= Constants.COMP_NUM)
                 {
-                    writetext.WriteLine("{0} {1} {2}", comp.comp_name, comp.shape_type, comp.orientation);
-                    writetext.WriteLine("{0} {1} {2}", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
-                    writetext.WriteLine("{0} {1} {2}", comp.dim[0], comp.dim[1], comp.dim[2]);
-                    writetext.WriteLine("{0} {1} {2}", comp.coord[0], comp.coord[1], comp.coord[2]);
-                    writetext.WriteLine("{0} {1}  {2}", comp.half_area, comp.mass, comp.temp);
+                    //writetext.WriteLine("{0} {1} {2}", comp.name, comp.shape_type, comp.orientation);
+                    //writetext.WriteLine("{0} {1} {2}", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
+                    //writetext.WriteLine("{0} {1} {2}", comp.dim[0], comp.dim[1], comp.dim[2]);
+                    //writetext.WriteLine("{0} {1} {2}", comp.coord[0], comp.coord[1], comp.coord[2]);
+                    //writetext.WriteLine("{0} {1}  {2}", comp.half_area, comp.mass, comp.temp);
                     if (i < Constants.COMP_NUM)
 
                         comp = design.components[i];
@@ -304,7 +450,7 @@ namespace _3D_LayoutOpt
                 {
                     line = readtext.ReadLine();
                     string[] items = line.Split(' ');
-                    comp.comp_name = items[0];
+                    comp.name = items[0];
                     comp.shape_type = items[1];
                     comp.orientation = Convert.ToInt16(items[2]);
 
