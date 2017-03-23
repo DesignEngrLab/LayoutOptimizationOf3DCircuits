@@ -4,7 +4,7 @@ using TVGL;
 
 namespace _3D_LayoutOpt
 {
- 
+
     public class Component
     {
         public List<TessellatedSolid> ts = null;
@@ -23,7 +23,7 @@ namespace _3D_LayoutOpt
             {
                 orientation[i] = 0;
             }
-        }                    
+        }
 
     }
 
