@@ -65,6 +65,24 @@ namespace _3D_LayoutOpt
         }
     }
 
+    public class PinRef
+    {
+        public string CompName;
+        public string PinName;
+
+        public PinRef(string Component, string Pin)
+        {
+            CompName = Component;
+            PinName = Pin;
+        }
+    }
+
+    public class Net
+    {
+        public string Netname;
+        public List<PinRef> PinRefs = null;
+    }
+
     
 
     public class Temperature_field
@@ -82,6 +100,9 @@ namespace _3D_LayoutOpt
 
     public class Design
     {
+
+        public double[,] DesignVars;
+        public List<Net> Netlist = null;
 
 
         /* Box_min and box_max are the x, y, z bounds for the bounding box.  Overlap is a     */
