@@ -8,6 +8,9 @@ namespace _3D_LayoutOpt
 {
     public static class Constants
     {
+
+        public const int DESGIN_VAR_NUM = 6;
+
         /* ---------------------------------------------------------------------------------- */
         /*                                    CONSTANTS.C                                     */
         /* ---------------------------------------------------------------------------------- */
@@ -26,7 +29,6 @@ namespace _3D_LayoutOpt
         /* BOX_LIMIT: The value that the bounding box dimensions are not allowed to exceed.   */
         /* ---------------------------------------------------------------------------------- */
         public const int MAX_NAME_LENGTH = 25;
-        public const int COMP_NUM = 7;
         public const double INITIAL_BOX_SIZE = 10.0;
         public const int OBJ_NUM = 5;
         public const int BALANCE_AVG = 45;
