@@ -24,6 +24,12 @@ namespace _3D_LayoutOpt
             index = CmpIndex;
         }
 
+        public void BackupComponent()
+        {
+            backup_ts = ts;
+            backup_footprint = footprint;
+        }
+
     }
 
     public class Container

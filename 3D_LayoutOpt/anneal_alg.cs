@@ -350,10 +350,8 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp.backup_ts = comp.ts;
+            comp.BackupComponent();
             comp.ts[0].Transform(TranslateMatrix);
-
-            comp.backup_footprint = comp.footprint;
 
             //UPDATING THE PIN COORDINATES
             foreach (SMD smd in comp.footprint.pads)
@@ -418,10 +416,8 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp.backup_ts = comp.ts;
+            comp.BackupComponent();
             comp.ts[0].Transform(TransformMatrix);
-
-            comp.backup_footprint = comp.footprint;
 
             //UPDATING THE PIN COORDINATES
             foreach (SMD smd in comp.footprint.pads)
@@ -479,13 +475,11 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp1.backup_ts = comp1.ts;
-            comp2.backup_ts = comp2.ts;
+            comp1.BackupComponent();
+            comp2.BackupComponent();
 
             comp1.ts[0].Transform(TranslateMatrix1);
             comp2.ts[0].Transform(TranslateMatrix2);
-
-            comp1.backup_footprint = comp1.footprint;
 
             //UPDATING THE PIN COORDINATES
             foreach (SMD smd in comp1.footprint.pads)
@@ -493,7 +487,6 @@ namespace _3D_LayoutOpt
                 smd.coord = TranslateMatrix1.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
-            comp2.backup_footprint = comp2.footprint;
 
             //UPDATING THE PIN COORDINATES
             foreach (SMD smd in comp2.footprint.pads)
@@ -521,9 +514,6 @@ namespace _3D_LayoutOpt
             Component comp1;
             Console.WriteLine("Entering back_up");
 
-/* Back up coordinates and dimensions. */
-/*  Console.WriteLine("The component being backed up is %s",comp.comp_name);
-*/
             design.old_orientation = comp.orientation;
 
             for (int j = 0; j < 3; j++)
