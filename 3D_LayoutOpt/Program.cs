@@ -136,8 +136,6 @@ namespace _3D_LayoutOpt
             Component temp_comp = null;
             Console.WriteLine("Placing components in randomly in 3D space");
 
-            design.DesignVars = new double[design.comp_count, Constants.DESGIN_VAR_NUM];
-
             foreach (var comp in design.components)
             {
                 var TessellatedSolids = comp.ts;
@@ -150,6 +148,7 @@ namespace _3D_LayoutOpt
                 }
                 comp.ts = TessellatedSolids;
                 temp_comp = comp;
+                design.DesignVars[comp.index] = new double[] { 0, 0, 0, 0, 0, 0 };
             }
    
             //for (int i = 0; i < design.comp_count; i++)

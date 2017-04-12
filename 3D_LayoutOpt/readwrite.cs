@@ -129,7 +129,7 @@ namespace _3D_LayoutOpt
                 IEnumerable<XElement> sheets = Sheets.Elements("sheet");
                 var sheet = sheets.First();
                 IEnumerable<XElement> instances = sheet.Element("instances").Elements("instance");
-                int compcount = 0;
+                int index = 0;
                 foreach (var instance in instances) 
                 {
                     string PartName = instance.FirstAttribute.Value;
@@ -151,7 +151,7 @@ namespace _3D_LayoutOpt
                                 foreach (var smd in SMDs)
                                 {
                                     string SMDname = smd.Attribute("name").Value;
-                                    double[] coords = new double[] { Convert.ToDouble(smd.Attribute("x").Value), Convert.ToDouble(smd.Attribute("y").Value) };
+                                    double[] coords = new double[] { Convert.ToDouble(smd.Attribute("x").Value), Convert.ToDouble(smd.Attribute("y").Value),  };
                                     double[] dims = new double[] { Convert.ToDouble(smd.Attribute("dx").Value), Convert.ToDouble(smd.Attribute("dy").Value) };
                                     var SMD = new SMD(SMDname, coords, dims);
                                     SMDlsit.Add(SMD);
@@ -160,16 +160,16 @@ namespace _3D_LayoutOpt
                                 string FPname = package.Attribute("name").Value;
                                 var Footprint = new Footprint(FPname, SMDlsit);
 
-                                var comp = new Component(PartName, Footprint);
+                                var comp = new Component(PartName, Footprint, index);
                                 design.add_comp(comp);
-                                compcount++;
+                                index++;
                             }
                         }
                                                
                     }
                     
                 }
-                design.comp_count = compcount;
+                design.comp_count = index;
             }
 
         }
@@ -187,6 +187,10 @@ namespace _3D_LayoutOpt
                 string name = GetNameFromFileName(filename);
                 var comp = design.components.Find(x => x.name == name);
                 comp.ts = ts;
+                foreach (var smd in comp.footprint.pads)
+                {
+                    smd.coord[2] = comp.ts[0].ZMin;
+                }
             }
         }
 

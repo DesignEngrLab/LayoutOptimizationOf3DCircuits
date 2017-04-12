@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarMathLib;
 
 namespace _3D_LayoutOpt
 {
@@ -255,59 +256,57 @@ namespace _3D_LayoutOpt
         /* rotates a component 90 degrees along a random axis.  "Swap" switches the location  */
         /* of two components.                                                                 */
         /* ---------------------------------------------------------------------------------- */
-        public static void take_step(Design design, Hustin hustin, out int which1, out int which2)
-                {
-                    int i;
-                    double prob;
+        public static void take_step(Design design, Hustin hustin, out int comp1, out int comp2)
+        {
+            int i;
+            double prob;
 
-                    /* Pick a component to move */
-                    which1 = Program.my_random(1, design.comp_count - 1);
+            /* Pick a component to move */
+            comp1 = Program.my_random(1, design.comp_count - 1);
 
-                    /* Generate a random number to pick a move.  Then, step through the move probabilites */
-                    /* to find the appropriate move. 
-                                                     */
-                    Random random = new Random();
-                    prob = random.NextDouble();
+            /* Generate a random number to pick a move.  Then, step through the move probabilites */
+            /* to find the appropriate move. 
+                                                */
+            Random random = new Random();
+            prob = random.NextDouble();
+            comp2 = 0;
 
-                    i = -1;
-                    which2 = 0;
-
-                    i = -1;
-                    while(++i<Constants.MOVE_NUM)
+            i = -1;
+            while(++i<Constants.MOVE_NUM)
+            {
+                prob -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OF THE ALGORITHM
+                if (prob< 0)
+	            {
+	                ++(hustin.attempts[i]);
+	                hustin.which_move = i;
+	                if (i<Constants.TRANS_NUM)
                     {
-                        prob -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OG THE ALGORITHM
-                        if (prob< 0)
-	                    {
-	                        ++(hustin.attempts[i]);
-	                        hustin.which_move = i;
-	                        if (i<Constants.TRANS_NUM)
-                            {
 
-                                move(design, which1, hustin.move_size[i]);
-	                            if (hustin.move_size[i] < design.gaussmove) 
-		                            design.gauss = 1;
-	                        }
-	                        else if (i == Constants.TRANS_NUM)
-                            {   /* i.e. if (i < (TRANS_NUM + 1)) */
+                        move(design, comp1, hustin.move_size[i]);
+	                    if (hustin.move_size[i] < design.gaussmove) 
+		                    design.gauss = 1;
+	                }
+	                else if (i == Constants.TRANS_NUM)
+                    {   /* i.e. if (i < (TRANS_NUM + 1)) */
 
-                                rotate(design, which1);
-                                design.gauss = 1;
-	                        }
-	                        else                   /* If we reach this, we are at the last move (swap) */
-	                        {
+                        rotate(design, comp1);
+                        design.gauss = 1;
+	                }
+	                else                   /* If we reach this, we are at the last move (swap) */
+	                {
 /* Pick at random a second component (different from the first) to swap.              */
-                                which2 = Program.my_random(1, (Constants.COMP_NUM - 1));                    //IMPLEMENT WHICH2 != WHICH1
-	                            //if (which2 >= which1)
-		                           // ++(which2);
+                        comp2 = Program.my_random(1, (design.comp_count - 1));                    //IMPLEMENT WHICH2 != WHICH1
+	                    //if (which2 >= which1)
+		                    // ++(which2);
 
-                                swap(design,which1, which2);
-	      /*design.gauss = 1;*/
-	                        }
+                        swap(design,comp1, comp2);
+	/*design.gauss = 1;*/
+	                }
 /* Set i to MOVE_NUM to break out of the loop since we took a step */
-	                        i = Constants.MOVE_NUM;
-	                    }
-                    }
-                }
+	                i = Constants.MOVE_NUM;
+	            }
+            }
+        }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function takes a move step, moving a component along a random direction for   */
@@ -325,12 +324,8 @@ namespace _3D_LayoutOpt
 
             /* Find the correct component and back up the component information in case we reject */
             /* the step.                                                                          */
-            
-            for (int i = 0; i < which; i++)
-            {
-                comp = design.components[i];
-            }
 
+            comp = design.components[which];
             back_up(design, comp);
 
             /* Pick a random direction and distance, and move the component.                      */
@@ -340,37 +335,37 @@ namespace _3D_LayoutOpt
             {
                 dir_vect[j] = Program.my_double_random(-1.0, 1.0);
             }
-            if (Constants.DIMENSION == 2)
-                dir_vect[2] = 0.0;
             normalize(dir_vect);
 
             /*  d = move_size*my_double_random(0.5,1.0); */
 
-            for (int i = 0; i < 3; i++)
+            var TranslateMatrix = new double[,]
+                {
+                    {1.0, 0.0, 0.0, move_size*dir_vect[0]},
+                    {0.0, 1.0, 0.0, move_size*dir_vect[1]},
+                    {0.0, 0.0, 1.0, move_size*dir_vect[2]},
+                    {0.0, 0.0, 0.0, 1.0}
+                };
+
+            comp.ts[0].Transform(TranslateMatrix);
+
+            //UPDATING THE PIN COORDINATES
+
+            foreach (SMD smd in comp.footprint.pads)
             {
-                comp.coord[i] += (move_size * dir_vect[i]);
+                smd.coord = TranslateMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
-            /*      comp.coord[i] += (d * dir_vect[i]);*/
-
-            /* Update the overlaps and the bounding box dimensions for the changed component.     */
             update_state(design, comp, which);
 
             Console.WriteLine("Leaving move");
         }
 
-        static void translate(Component comp, double move_size, double[] dir_vect)
-        {
-            foreach (var tsolid in comp.ts)
-            {
-               //tsolid.transfer(move_size * dir_vect)
-            }
-        }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function takes a delta_vector, normalizes it, and puts the result in the      */
-/* normalized vector.                                                                 */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function takes a delta_vector, normalizes it, and puts the result in the      */
+        /* normalized vector.                                                                 */
+        /* ---------------------------------------------------------------------------------- */
         static void normalize(double[] dir_vect)
         {
             double sum;
@@ -394,8 +389,8 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Entering rotate");
 #endif
 
-/* Find the correct component and back up the component information in case we reject */
-/* the step.                                                                          */
+            /* Find the correct component and back up the component information in case we reject */
+            /* the step.                                                                          */
             for (int i = 0; i < which; i++)
             {
                 comp = design.components[i];
@@ -657,8 +652,8 @@ namespace _3D_LayoutOpt
         static void update_state(Design design, Component comp, int which)
         {
 
-            obj_function.update_overlaps(design, comp, which);  /* THIS FUNCTION IS IN OBJ.FUNCTION.C */
-            Program.update_bounds(design, comp);
+            obj_function.update_overlaps(design, comp, which);  
+            obj_function.eval_overlap_container(design);
         }
 
         /* ---------------------------------------------------------------------------------- */

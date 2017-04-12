@@ -89,7 +89,7 @@ namespace _3D_LayoutOpt
         /* This function sets the value of the third part of the objective function, which    */
         /* is the amount of overlap with the container.                                       */
         /* ---------------------------------------------------------------------------------- */
-        static void eval_overlap_container(Design design)
+        public static void eval_overlap_container(Design design)
         {
             double box_penalty;
             box_penalty = 0.0;
@@ -107,7 +107,6 @@ namespace _3D_LayoutOpt
                 box_penalty += vol;
             }
             design.new_obj_values[2] = box_penalty;
-
         }
 
         ///* ---------------------------------------------------------------------------------- */
@@ -183,7 +182,6 @@ namespace _3D_LayoutOpt
                 {
                     comp1 = design.components[j];
                     var ts1 = comp1.ts;
-                    //TO DO: FIND INTERSECTION BETWEEN SOLIDS
                     List<Vertex> ts1VertsInts0, ts0VertsInts1;
                     List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
                     TVGL.MiscFunctions.FindSolidIntersections(ts0[0], ts1[0], out ts0VertsInts1,
@@ -231,16 +229,10 @@ namespace _3D_LayoutOpt
 
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the overlap matrix for the components.                       */
-        /* The variable which determines which component to update.                           */
-        /* The overlap calculated is the Manhattan distance between near corners.             */
-        /* Note that only the top half of the overlap matrix is used.                         */
-        /* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
         /* ---------------------------------------------------------------------------------- */
         public static void update_overlaps(Design design, Component comp0, int which)
         {
             int index;
-            double dx, dy, dz, d1, d2;
-            char wait;
             Component comp1;
 
 #if LOCATE
@@ -283,84 +275,85 @@ namespace _3D_LayoutOpt
 #endif
         }
 
-//        /* ---------------------------------------------------------------------------------- */
-//        /* This function updates the overlap matrix for the components.                       */
-//        /* The variable which determines which component to update.                           */
-//        /* The overlap calculated is the Manhattan distance between near corners.             */
-//        /* Note that only the top half of the overlap matrix is used.                         */
-//        /* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
-//        /* ---------------------------------------------------------------------------------- */
-//        public static void update_overlaps(Design design, Component temp1, int which)
-//        {
-//            int index;
-//            double dx, dy, dz, d1, d2;
-//            char wait;
-//            Component temp2;
 
-//#if LOCATE
-//            Console.WriteLine("Entering update_overlaps");
-//#endif
+        //        /* ---------------------------------------------------------------------------------- */
+        //        /* This function updates the overlap matrix for the components.                       */
+        //        /* The variable which determines which component to update.                           */
+        //        /* The overlap calculated is the Manhattan distance between near corners.             */
+        //        /* Note that only the top half of the overlap matrix is used.                         */
+        //        /* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
+        //        /* ---------------------------------------------------------------------------------- */
+        //        public static void update_overlaps(Design design, Component temp1, int which)
+        //        {
+        //            int index;
+        //            double dx, dy, dz, d1, d2;
+        //            char wait;
+        //            Component temp2;
 
-//            /* Check overlap with components.  Since we are only using the top half of a symmetric */
-//            /* matrix, there is an if statement which switches the indices of the matrix elements. */
+        //#if LOCATE
+        //            Console.WriteLine("Entering update_overlaps");
+        //#endif
 
-//            index = which - 1;
+        //            /* Check overlap with components.  Since we are only using the top half of a symmetric */
+        //            /* matrix, there is an if statement which switches the indices of the matrix elements. */
 
-//            for (int i = 0; i < design.comp_count; i++)
-//            {
-//                temp2 = design.components[i];
+        //            index = which - 1;
 
-//                dx = (temp1.dim[0] + temp2.dim[0]) / 2.0 - Math.Abs(temp1.coord[0] - temp2.coord[0]);
-//                dy = (temp1.dim[1] + temp2.dim[1]) / 2.0 - Math.Abs(temp1.coord[1] - temp2.coord[1]);
-//                dz = (temp1.dim[2] + temp2.dim[2]) / 2.0 - Math.Abs(temp1.coord[2] - temp2.coord[2]);
+        //            for (int i = 0; i < design.comp_count; i++)
+        //            {
+        //                temp2 = design.components[i];
 
-//                if ((temp1.shape_type[0] == 'C') && (temp2.shape_type[0] == 'C'))
-//                {
-//                    if (((temp1.orientation * temp2.orientation) == 3) && (dz > 0.0))
-//                    {
-//                        d1 = temp1.coord[0] - temp2.coord[0];
-//                        d2 = temp1.coord[1] - temp2.coord[1];
-//                        dx = (temp1.dim[0] + temp2.dim[0]) / 2.0 - Math.Sqrt(d1 * d1 + d2 * d2);
-//                        dy = dx;
-//                    }
-//                    else if (((temp1.orientation * temp2.orientation) == 8) && (dy > 0.0))
-//                    {
-//                        d1 = temp1.coord[0] - temp2.coord[0];
-//                        d2 = temp1.coord[2] - temp2.coord[2];
-//                        dx = (temp1.dim[0] + temp2.dim[0]) / 2.0 - Math.Sqrt(d1 * d1 + d2 * d2);
-//                        dz = dx;
-//                    }
-//                    else if (((temp1.orientation * temp2.orientation) == 30) && (dx > 0.0))
-//                    {
-//                        d1 = temp1.coord[1] - temp2.coord[1];
-//                        d2 = temp1.coord[2] - temp2.coord[2];
-//                        dy = (temp1.dim[1] + temp2.dim[1]) / 2.0 - Math.Sqrt(d1 * d1 + d2 * d2);
-//                        dz = dy;
-//                    }
-//                }
+        //                dx = (temp1.dim[0] + temp2.dim[0]) / 2.0 - Math.Abs(temp1.coord[0] - temp2.coord[0]);
+        //                dy = (temp1.dim[1] + temp2.dim[1]) / 2.0 - Math.Abs(temp1.coord[1] - temp2.coord[1]);
+        //                dz = (temp1.dim[2] + temp2.dim[2]) / 2.0 - Math.Abs(temp1.coord[2] - temp2.coord[2]);
 
-//                /* Set overlap value in matrix. */
-//                if (i < index)
-//                {
-//                    if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
-//                        design.overlap[index, i] = 2 * dx * dy * dz / (temp1.volume + temp2.volume);
-//                    else
-//                        design.overlap[index, i] = 0.0;
-//                }
-//                else if (i > index)
-//                {
-//                    if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
-//                        design.overlap[i, index] = 2 * dx * dy * dz / (temp1.volume + temp2.volume);
-//                    else
-//                        design.overlap[i, index] = 0.0;
-//                }
-//            }
+        //                if ((temp1.shape_type[0] == 'C') && (temp2.shape_type[0] == 'C'))
+        //                {
+        //                    if (((temp1.orientation * temp2.orientation) == 3) && (dz > 0.0))
+        //                    {
+        //                        d1 = temp1.coord[0] - temp2.coord[0];
+        //                        d2 = temp1.coord[1] - temp2.coord[1];
+        //                        dx = (temp1.dim[0] + temp2.dim[0]) / 2.0 - Math.Sqrt(d1 * d1 + d2 * d2);
+        //                        dy = dx;
+        //                    }
+        //                    else if (((temp1.orientation * temp2.orientation) == 8) && (dy > 0.0))
+        //                    {
+        //                        d1 = temp1.coord[0] - temp2.coord[0];
+        //                        d2 = temp1.coord[2] - temp2.coord[2];
+        //                        dx = (temp1.dim[0] + temp2.dim[0]) / 2.0 - Math.Sqrt(d1 * d1 + d2 * d2);
+        //                        dz = dx;
+        //                    }
+        //                    else if (((temp1.orientation * temp2.orientation) == 30) && (dx > 0.0))
+        //                    {
+        //                        d1 = temp1.coord[1] - temp2.coord[1];
+        //                        d2 = temp1.coord[2] - temp2.coord[2];
+        //                        dy = (temp1.dim[1] + temp2.dim[1]) / 2.0 - Math.Sqrt(d1 * d1 + d2 * d2);
+        //                        dz = dy;
+        //                    }
+        //                }
 
-//#if LOCATE
-//            Console.WriteLine("Leaving update_overlaps");
-//#endif
+        //                /* Set overlap value in matrix. */
+        //                if (i < index)
+        //                {
+        //                    if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
+        //                        design.overlap[index, i] = 2 * dx * dy * dz / (temp1.volume + temp2.volume);
+        //                    else
+        //                        design.overlap[index, i] = 0.0;
+        //                }
+        //                else if (i > index)
+        //                {
+        //                    if ((dx > 0.0) && (dy > 0.0) && (dz > 0.0))
+        //                        design.overlap[i, index] = 2 * dx * dy * dz / (temp1.volume + temp2.volume);
+        //                    else
+        //                        design.overlap[i, index] = 0.0;
+        //                }
+        //            }
+
+        //#if LOCATE
+        //            Console.WriteLine("Leaving update_overlaps");
+        //#endif
 
 
-//        }
+        //        }
     }
 }

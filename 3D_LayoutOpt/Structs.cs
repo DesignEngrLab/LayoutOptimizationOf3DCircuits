@@ -14,15 +14,13 @@ namespace _3D_LayoutOpt
         public double[] dim = new double[3];
         public double temp, tempcrit, q, k;
         public string name;
+        public int index;
 
-        public Component(string CmpName, Footprint FP)
+        public Component(string CmpName, Footprint FP, int CmpIndex)
         {
             name = CmpName;
             footprint = FP;
-            for (int i = 0; i < orientation.Length; i++)
-            {
-                orientation[i] = 0;
-            }
+            index = CmpIndex;
         }
 
     }
@@ -41,8 +39,8 @@ namespace _3D_LayoutOpt
 
     public class Footprint
     {
-        string name;
-        List<SMD> pads = null;
+        public string name;
+        public List<SMD> pads = null;
 
         public Footprint(string FPname, List<SMD> SMDpads)
         {
@@ -53,9 +51,9 @@ namespace _3D_LayoutOpt
 
     public class SMD
     {
-        string name;
-        double[] coord = new double[2];
-        double[] dim = new double[2];
+        public string name;
+        public double[] coord = new double[2];
+        public double[] dim = new double[2];
 
         public SMD(string SMDname, double[] coordinates, double[] dimensions)
         {
@@ -101,7 +99,7 @@ namespace _3D_LayoutOpt
     public class Design
     {
 
-        public double[,] DesignVars;
+        public double[][] DesignVars;
         public List<Net> Netlist = null;
 
 
