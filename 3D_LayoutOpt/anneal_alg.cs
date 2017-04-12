@@ -361,9 +361,10 @@ namespace _3D_LayoutOpt
 
             design.OldDesignVars = design.DesignVars;
 
-            design.DesignVars[comp.index][0] = comp.ts[0].Center[0];
-            design.DesignVars[comp.index][1] = comp.ts[0].Center[1]; 
-            design.DesignVars[comp.index][2] = comp.ts[0].Center[2];
+            for (int i = 0; i < 3; i++)
+            {
+                design.DesignVars[comp.index][i] = comp.ts[0].Center[i];
+            }
 
             update_state(design, comp);
             Console.WriteLine("Leaving move");
@@ -427,9 +428,10 @@ namespace _3D_LayoutOpt
 
             design.OldDesignVars = design.DesignVars;
 
-            design.DesignVars[comp.index][3] += rot_angles[0];
-            design.DesignVars[comp.index][4] += rot_angles[1];
-            design.DesignVars[comp.index][5] += rot_angles[2];
+            for (int i = 0; i < 3; i++)
+            {
+                design.DesignVars[comp.index][i+3] += rot_angles[0];
+            }
 
             /* UPDATE THE OVERLAPS AND THE BOUNDING BOX DIMENSIONS FOR THE CHANGED COMPONENT.     */
             update_state(design, comp);
@@ -494,6 +496,14 @@ namespace _3D_LayoutOpt
                 smd.coord = TranslateMatrix2.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
+            for (int i = 0; i < 3; i++)
+            {
+                design.DesignVars[comp1.index][i] = comp1.ts[0].Center[i];
+                design.DesignVars[comp2.index][i] = comp2.ts[0].Center[i];
+            }
+
+
+
             /* UPDATE THE OVERLAPS AND THE BOUNDING BOX DIMENSIONS FOR THE CHANGED COMPONENTS.    */
             update_state(design, comp1);
             update_state(design, comp2);
@@ -508,11 +518,14 @@ namespace _3D_LayoutOpt
         /* ARE BACKED UP, SO THAT WE KNOW WHERE TO WHERE THE OLD INFORMATION SHOULD BE COPIED */
         /* WHEN WE REVERT.  WHICH TELLS US WHICH COMPONENT IS BEING BACKED UP (0 OR 1).       */
         /* ---------------------------------------------------------------------------------- */
-        static void back_up(Design design, Component comp)
+        static void Backup(Design design, Component comp)
         {
             int i;
             Component comp1;
             Console.WriteLine("Entering back_up");
+
+            
+            
 
             design.old_orientation = comp.orientation;
 
