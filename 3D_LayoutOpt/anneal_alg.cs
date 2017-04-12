@@ -329,7 +329,7 @@ namespace _3D_LayoutOpt
             // FIND THE CORRECT COMPONENT AND BACK UP THE COMPONENT INFORMATION IN CASE WE REJECT THE STEP.
 
             comp = design.components[which];
-            back_up(design, comp);
+            Backup(design, comp);
 
             // PICK A RANDOM DIRECTION AND DISTANCE, AND MOVE THE COMPONENT. 
             Console.WriteLine("Moving {0}", comp.name);
@@ -350,7 +350,6 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp.BackupComponent();
             comp.ts[0].Transform(TranslateMatrix);
 
             //UPDATING THE PIN COORDINATES
@@ -359,8 +358,7 @@ namespace _3D_LayoutOpt
                 smd.coord = TranslateMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
-            design.OldDesignVars = design.DesignVars;
-
+            //UPDATING THE DESIGN VARIABLES
             for (int i = 0; i < 3; i++)
             {
                 design.DesignVars[comp.index][i] = comp.ts[0].Center[i];
@@ -397,8 +395,7 @@ namespace _3D_LayoutOpt
 
             // FIND THE CORRECT COMPONENT AND BACK UP THE COMPONENT INFORMATION IN CASE WE REJECT THE STEP.                                                                          */
             Component comp = design.components[which];
-            back_up(design, comp);
-
+            Backup(design, comp);
 
             Console.WriteLine("Rotating {0}", comp.name);
             for (int j = 0; j < 3; j++)
@@ -417,7 +414,6 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp.BackupComponent();
             comp.ts[0].Transform(TransformMatrix);
 
             //UPDATING THE PIN COORDINATES
@@ -426,8 +422,7 @@ namespace _3D_LayoutOpt
                 smd.coord = TransformMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
-            design.OldDesignVars = design.DesignVars;
-
+            //UPDATING THE DESIGN VARIABLES
             for (int i = 0; i < 3; i++)
             {
                 design.DesignVars[comp.index][i+3] += rot_angles[0];
@@ -456,6 +451,7 @@ namespace _3D_LayoutOpt
             comp1 = design.components[which1];
             comp2 = design.components[which2];
 
+            Backup(design, comp1, comp2);
 
             /* SWAP THE COMPONENTS BY SWITCHING THEIR COORDINATES.                                */
 
@@ -477,9 +473,6 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp1.BackupComponent();
-            comp2.BackupComponent();
-
             comp1.ts[0].Transform(TranslateMatrix1);
             comp2.ts[0].Transform(TranslateMatrix2);
 
@@ -496,13 +489,12 @@ namespace _3D_LayoutOpt
                 smd.coord = TranslateMatrix2.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
+            //UPDATING THE DESIGN VARIABLES
             for (int i = 0; i < 3; i++)
             {
                 design.DesignVars[comp1.index][i] = comp1.ts[0].Center[i];
                 design.DesignVars[comp2.index][i] = comp2.ts[0].Center[i];
             }
-
-
 
             /* UPDATE THE OVERLAPS AND THE BOUNDING BOX DIMENSIONS FOR THE CHANGED COMPONENTS.    */
             update_state(design, comp1);
@@ -518,45 +510,57 @@ namespace _3D_LayoutOpt
         /* ARE BACKED UP, SO THAT WE KNOW WHERE TO WHERE THE OLD INFORMATION SHOULD BE COPIED */
         /* WHEN WE REVERT.  WHICH TELLS US WHICH COMPONENT IS BEING BACKED UP (0 OR 1).       */
         /* ---------------------------------------------------------------------------------- */
-        static void Backup(Design design, Component comp)
+        //static void Backup(Design design, Component comp)
+        //{
+        //    Console.WriteLine("Entering back_up");
+
+        //    comp.BackupComponent();
+        //    design.OldDesignVars = design.DesignVars;
+
+        //    for (int j = 0; j < Constants.OBJ_NUM; j++)
+        //    {
+        //        design.backup_obj_values[j] = design.new_obj_values[j];
+        //    }
+        //    Console.WriteLine("Leaving back_up");
+        //}
+
+        static void Backup(Design design, Component comp1, Component comp2 = null)
         {
-            int i;
-            Component comp1;
             Console.WriteLine("Entering back_up");
-
-            
-            
-
-            design.old_orientation = comp.orientation;
-
-            for (int j = 0; j < 3; j++)
+            if (comp2 == null)
             {
-                design.old_coord[j] = comp.coord[j];
-                design.old_dim[j] = comp.dim[j];
+                comp1.BackupComponent();
+                design.OldDesignVars = design.DesignVars;
+
+                for (int j = 0; j < Constants.OBJ_NUM; j++)
+                {
+                    design.backup_obj_values[j] = design.new_obj_values[j];
+                } 
             }
-
-            /* Back up current objective_function values. */
-
-            for (int j = 0; j < Constants.OBJ_NUM; j++)
+            else
             {
-                design.backup_obj_values[j] = design.new_obj_values[j];
+                comp1.BackupComponent();
+                comp2.BackupComponent();
+                design.OldDesignVars = design.DesignVars;
+                for (int j = 0; j < Constants.OBJ_NUM; j++)
+                {
+                    design.backup_obj_values[j] = design.new_obj_values[j];
+                }
             }
             Console.WriteLine("Leaving back_up");
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function does all the stuff you want to do when a step is accepted.           */
-/* ---------------------------------------------------------------------------------- */
-   public static void update_accept(Design design, int iteration, int accept_flag, int column, int update, double step_eval, double best_eval, double current_eval)
-        {
+        
 
-  
-/* If accept_flag = 2 then the step is an improvement. */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION DOES ALL THE STUFF YOU WANT TO DO WHEN A STEP IS ACCEPTED.           */
+        /* ---------------------------------------------------------------------------------- */
+        public static void update_accept(Design design, int iteration, int accept_flag, int column, int update, double step_eval, double best_eval, double current_eval)
+        {
+            /* If accept_flag = 2 then the step is an improvement. */
             if (accept_flag == 2)
             {
-#if DEBUG
                 Console.WriteLine("*** Improved step");
-#endif
             }
 
 #if DEBUG
