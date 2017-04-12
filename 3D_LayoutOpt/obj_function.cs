@@ -230,7 +230,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the overlap matrix for the components.                       */
         /* ---------------------------------------------------------------------------------- */
-        public static void update_overlaps(Design design, Component comp0, int which)
+        public static void update_overlaps(Design design, Component comp0)
         {
             int index;
             Component comp1;
@@ -242,7 +242,7 @@ namespace _3D_LayoutOpt
             /* Check overlap with components.  Since we are only using the top half of a symmetric */
             /* matrix, there is an if statement which switches the indices of the matrix elements. */
 
-            index = which - 1;
+            index = comp0.index - 1;
             var ts0 = comp0.ts;
 
             for (int i = 0; i < design.comp_count; i++)

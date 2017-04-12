@@ -256,17 +256,17 @@ namespace _3D_LayoutOpt
         /* rotates a component 90 degrees along a random axis.  "Swap" switches the location  */
         /* of two components.                                                                 */
         /* ---------------------------------------------------------------------------------- */
-        public static void take_step(Design design, Hustin hustin, out int comp1, out int comp2)
+        public static void take_step(Design design, Hustin hustin, out int which_comp1, out int which_comp2)
         {
             /* Pick a component to move */
-            comp1 = Program.my_random(1, design.comp_count - 1);
+            which_comp1 = Program.my_random(1, design.comp_count - 1);
 
             /* Generate a random number to pick a move.  Then, step through the move probabilites */
             /* to find the appropriate move. 
                                                 */
             Random random = new Random();
             double prob = random.NextDouble();
-            comp2 = 0;
+            which_comp2 = 0;
 
             int i = -1;
             while(++i<Constants.MOVE_NUM)
@@ -279,7 +279,7 @@ namespace _3D_LayoutOpt
 	                if (i<Constants.TRANS_NUM)
                     {
 
-                        move(design, comp1, hustin.move_size[i]);
+                        move(design, which_comp1, hustin.move_size[i]);
 	                    if (hustin.move_size[i] < design.gaussmove) 
 		                    design.gauss = 1;
 	                }
@@ -293,7 +293,7 @@ namespace _3D_LayoutOpt
                             prob2 -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OF THE ALGORITHM
                             if (prob2 < 0)
                             {
-                                rotate(design, comp1, hustin.rot_size[j]);
+                                rotate(design, which_comp1, hustin.rot_size[j]);
                                 design.gauss = 1;
                             }
                         }
@@ -302,11 +302,11 @@ namespace _3D_LayoutOpt
 	            else                   /* If we reach this, we are at the last move (swap) */
 	            {
                     /* Pick at random a second component (different from the first) to swap.              */
-                    comp2 = Program.my_random(1, (design.comp_count - 1));                    //IMPLEMENT WHICH2 != WHICH1
+                    which_comp2 = Program.my_random(1, (design.comp_count - 1));                    //IMPLEMENT WHICH2 != WHICH1
 	                //if (which2 >= which1)
 		                // ++(which2);
 
-                    swap(design,comp1, comp2);
+                    swap(design,which_comp1, which_comp2);
 	            }
                 /* Set i to MOVE_NUM to break out of the loop since we took a step */
 	            i = Constants.MOVE_NUM;
@@ -329,13 +329,12 @@ namespace _3D_LayoutOpt
 
             Console.WriteLine("Entering move");
 
-            /* Find the correct component and back up the component information in case we reject */
-            /* the step.                                                                          */
+            // FIND THE CORRECT COMPONENT AND BACK UP THE COMPONENT INFORMATION IN CASE WE REJECT THE STEP.
 
             comp = design.components[which];
             back_up(design, comp);
 
-            /* Pick a random direction and distance, and move the component.                      */
+            // PICK A RANDOM DIRECTION AND DISTANCE, AND MOVE THE COMPONENT. 
             Console.WriteLine("Moving {0}", comp.name);
           
             for (int j = 0; j < 3; j++)
@@ -363,15 +362,18 @@ namespace _3D_LayoutOpt
                 smd.coord = TranslateMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
 
-            update_state(design, comp, which);
+            design.DesignVars[comp.index][0] = comp.ts[0].Center[0];
+            design.DesignVars[comp.index][1] = comp.ts[0].Center[1]; 
+            design.DesignVars[comp.index][2] = comp.ts[0].Center[2];
 
+            update_state(design, comp);
             Console.WriteLine("Leaving move");
         }
 
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function takes a delta_vector, normalizes it, and puts the result in the      */
-        /* normalized vector.                                                                 */
+        /* THIS FUNCTION TAKES A DELTA_VECTOR, NORMALIZES IT, AND PUTS THE RESULT IN THE      */
+        /* NORMALIZED VECTOR.                                                                 */
         /* ---------------------------------------------------------------------------------- */
         static void normalize(double[] dir_vect)
         {
@@ -383,10 +385,9 @@ namespace _3D_LayoutOpt
             dir_vect[2] /= sum;
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function takes a rotation step.  An orientation (different from the current   */
-/* one) is randomly selected and the component dimensions are updated accordingly.    */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION TAKES A ROTATION STEP. 
+        /* ---------------------------------------------------------------------------------- */
         static void rotate(Design design, int which, double rotation_size)
         {
             double[] rot_vect = new double[3];
@@ -394,12 +395,10 @@ namespace _3D_LayoutOpt
             double prob = random.NextDouble();
             Console.WriteLine("Entering rotate");
 
-            /* Find the correct component and back up the component information in case we reject */
-            /* the step.                                                                          */
+            // FIND THE CORRECT COMPONENT AND BACK UP THE COMPONENT INFORMATION IN CASE WE REJECT THE STEP.                                                                          */
             Component comp = design.components[which];
             back_up(design, comp);
 
-            /* Pick a random orientation different from the current one and rotate the component. */
 
             Console.WriteLine("Rotating {0}", comp.name);
             for (int j = 0; j < 3; j++)
@@ -410,73 +409,81 @@ namespace _3D_LayoutOpt
 
             double[] rot_angles = new double[] { Math.PI * rotation_size * rot_vect[0], Math.PI * rotation_size * rot_vect[1], Math.PI * rotation_size * rot_vect[2] };
 
-            var TranslateMatrix = new double[,]
+            var TransformMatrix = new double[,]
                 {
                     {Math.Cos(rot_angles[0]) * Math.Cos(rot_angles[1]), Math.Cos(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Sin(rot_angles[2]) - Math.Sin(rot_angles[0]) * Math.Cos(rot_angles[2]), Math.Cos(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Cos(rot_angles[2]) + Math.Sin(rot_angles[0]) * Math.Sin(rot_angles[2]), 0},
                     {Math.Sin(rot_angles[0]) * Math.Cos(rot_angles[1]), Math.Sin(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Sin(rot_angles[2]) + Math.Cos(rot_angles[0]) * Math.Cos(rot_angles[2]), Math.Sin(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Cos(rot_angles[2]) - Math.Cos(rot_angles[0]) * Math.Sin(rot_angles[2]), 0},
-                    {-1 * Math.Cos(rot_angles[1]), Math.Cos(rot_angles[1]) * Math.Sin(rot_angles[2]), Math.Cos(rot_angles[1]) * Math.Cos(rot_angles[2]), 0},
+                    {-1 * Math.Sin(rot_angles[1]), Math.Cos(rot_angles[1]) * Math.Sin(rot_angles[2]), Math.Cos(rot_angles[1]) * Math.Cos(rot_angles[2]), 0},
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            Program.update_dim(comp);    /* IN TEST3.C */
+            comp.ts[0].Transform(TransformMatrix);
 
-/* Update the overlaps and the bounding box dimensions for the changed component.     */
-            update_state(design, comp, which);
-
-#if LOCATE
-            Console.WriteLine("Leaving rotate");
-#endif
-}
-
-/* ---------------------------------------------------------------------------------- */
-/* This function takes a rotation step.  An orientation (different from the current   */
-/* one) is randomly selected and the component dimensions are updated accordingly.    */
-/* ---------------------------------------------------------------------------------- */
-            static void swap(Design design, int which1, int which2)
+            //UPDATING THE PIN COORDINATES
+            foreach (SMD smd in comp.footprint.pads)
             {
+                smd.coord = TransformMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
+            }
 
-                double temp_coord;
-                Component comp1 = null, comp2 = null;
+            design.DesignVars[comp.index][3] += rot_angles[0];
+            design.DesignVars[comp.index][4] += rot_angles[1];
+            design.DesignVars[comp.index][5] += rot_angles[2];
 
-#if LOCATE
-                Console.WriteLine("Entering swap");
-#endif
+            /* UPDATE THE OVERLAPS AND THE BOUNDING BOX DIMENSIONS FOR THE CHANGED COMPONENT.     */
+            update_state(design, comp);
+            Console.WriteLine("Leaving rotate");
 
-/* Find the correct components.  We don't need to back up component in case we reject */
-/* the step because we don't change dimensions or orientation when swapping.  We only */
-/* switch coordinates.                                                                */
+        }
 
-                for (int i = 0; i < which1; i++)
+        /* ---------------------------------------------------------------------------------- */
+        /* This function takes a rotation step.  An orientation (different from the current   */
+        /* one) is randomly selected and the component dimensions are updated accordingly.    */
+        /* ---------------------------------------------------------------------------------- */
+        static void swap(Design design, int which1, int which2)
+        {
+
+            Component comp1 = null, comp2 = null;
+            Console.WriteLine("Entering swap");
+
+            /* FIND THE CORRECT COMPONENTS.  WE DON'T NEED TO BACK UP COMPONENT IN CASE WE REJECT */
+            /* THE STEP BECAUSE WE DON'T CHANGE DIMENSIONS OR ORIENTATION WHEN SWAPPING.  WE ONLY */
+            /* SWITCH COORDINATES.                                                                */
+
+            comp1 = design.components[which1];
+            comp2 = design.components[which2];
+
+
+            /* SWAP THE COMPONENTS BY SWITCHING THEIR COORDINATES.                                */
+
+            Console.WriteLine("Swapping {0} and {1}", comp1.name, comp2.name);
+
+            var TranslateMatrix1 = new double[,]
                 {
-                    comp1 = design.components[i];
-                }
+                    {1.0, 0.0, 0.0, comp2.ts[0].Center[0] - comp1.ts[0].Center[0]},
+                    {0.0, 1.0, 0.0, comp2.ts[0].Center[1] - comp1.ts[0].Center[1]},
+                    {0.0, 0.0, 1.0, comp2.ts[0].Center[2] - comp1.ts[0].Center[2]},
+                    {0.0, 0.0, 0.0, 1.0}
+                };
 
-                for (int i = 0; i < which2; i++)
+            var TranslateMatrix2 = new double[,]
                 {
-                    comp2 = design.components[i];
-                }
+                    {1.0, 0.0, 0.0, comp1.ts[0].Center[0] - comp2.ts[0].Center[0]},
+                    {0.0, 1.0, 0.0, comp1.ts[0].Center[1] - comp2.ts[0].Center[1]},
+                    {0.0, 0.0, 1.0, comp1.ts[0].Center[2] - comp2.ts[0].Center[2]},
+                    {0.0, 0.0, 0.0, 1.0}
+                };
 
+            comp1.ts[0].Transform(TranslateMatrix1);
+            comp2.ts[0].Transform(TranslateMatrix2);    
 
-            /* Swap the components by switching their coordinates.                                */
-#if DEBUG
-                Console.WriteLine("Swapping {0} and {1}", comp1.name, comp2.name);
-    #endif
-                for (int j = 0; j < 3; j++)
-                {
-                    temp_coord = comp1.coord[j];
-                    comp1.coord[j] = comp2.coord[j];
-                    comp2.coord[j] = temp_coord;
-                }
             
 
-    /* Update the overlaps and the bounding box dimensions for the changed components.    */
-                update_state(design, comp1, which1);
-                update_state(design, comp2, which2);
+            /* UPDATE THE OVERLAPS AND THE BOUNDING BOX DIMENSIONS FOR THE CHANGED COMPONENTS.    */
+            update_state(design, comp1);
+            update_state(design, comp2);
 
-    #if LOCATE
-                Console.WriteLine("Leaving swap");
-    #endif
-            }
+            Console.WriteLine("Leaving swap");
+        }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function backs up component information.  Backup are pointers to components   */
@@ -630,8 +637,8 @@ namespace _3D_LayoutOpt
 
 
 /* Update the overlaps and bounding box dimensions back to how they were since we reverted */
-                update_state(design, comp1, which1);
-                update_state(design, comp2, which2);
+                update_state(design, comp1);
+                update_state(design, comp2);
             }
 
 /* Revert objective_function values to the values before the step. */
@@ -651,10 +658,10 @@ namespace _3D_LayoutOpt
         /* This function updates the overlaps and bounding box dimensions after taking a step */
         /* or after reverting to a previous design.                                           */
         /* ---------------------------------------------------------------------------------- */
-        static void update_state(Design design, Component comp, int which)
+        static void update_state(Design design, Component comp)
         {
 
-            obj_function.update_overlaps(design, comp, which);  
+            obj_function.update_overlaps(design, comp);  
             obj_function.eval_overlap_container(design);
         }
 
