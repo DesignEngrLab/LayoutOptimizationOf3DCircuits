@@ -76,7 +76,8 @@ namespace _3D_LayoutOpt
         public const double MIN_MOVE_DIST = 0.1;
         public const int I_LIMIT = 25000;
         public const int MOVE_NUM = 17;                                                         //WHAT IS THIS
-        public const int TRANS_NUM = 15;                                                        //WHAT IS THIS
+        public const int TRANS_NUM = 15;                                                       //WHAT IS THIS
+        public const int ROT_NUM = 10;
         public const double MIN_PROB = 0.03;
         public const int DIMENSION = 3;
 

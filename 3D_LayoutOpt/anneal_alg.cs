@@ -258,9 +258,6 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void take_step(Design design, Hustin hustin, out int comp1, out int comp2)
         {
-            int i;
-            double prob;
-
             /* Pick a component to move */
             comp1 = Program.my_random(1, design.comp_count - 1);
 
@@ -268,10 +265,10 @@ namespace _3D_LayoutOpt
             /* to find the appropriate move. 
                                                 */
             Random random = new Random();
-            prob = random.NextDouble();
+            double prob = random.NextDouble();
             comp2 = 0;
 
-            i = -1;
+            int i = -1;
             while(++i<Constants.MOVE_NUM)
             {
                 prob -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OF THE ALGORITHM
@@ -289,24 +286,34 @@ namespace _3D_LayoutOpt
 	                else if (i == Constants.TRANS_NUM)
                     {   /* i.e. if (i < (TRANS_NUM + 1)) */
 
-                        rotate(design, comp1);
-                        design.gauss = 1;
-	                }
-	                else                   /* If we reach this, we are at the last move (swap) */
-	                {
-/* Pick at random a second component (different from the first) to swap.              */
-                        comp2 = Program.my_random(1, (design.comp_count - 1));                    //IMPLEMENT WHICH2 != WHICH1
-	                    //if (which2 >= which1)
-		                    // ++(which2);
-
-                        swap(design,comp1, comp2);
-	/*design.gauss = 1;*/
-	                }
-/* Set i to MOVE_NUM to break out of the loop since we took a step */
-	                i = Constants.MOVE_NUM;
+                        int j = -1;
+                        double prob2 = random.NextDouble();
+                        while (++j < Constants.ROT_NUM)
+                        {
+                            prob2 -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OF THE ALGORITHM
+                            if (prob2 < 0)
+                            {
+                                rotate(design, comp1, hustin.rot_size[j]);
+                                design.gauss = 1;
+                            }
+                        }
+                    }
 	            }
-            }
+	            else                   /* If we reach this, we are at the last move (swap) */
+	            {
+                    /* Pick at random a second component (different from the first) to swap.              */
+                    comp2 = Program.my_random(1, (design.comp_count - 1));                    //IMPLEMENT WHICH2 != WHICH1
+	                //if (which2 >= which1)
+		                // ++(which2);
+
+                    swap(design,comp1, comp2);
+	            }
+                /* Set i to MOVE_NUM to break out of the loop since we took a step */
+	            i = Constants.MOVE_NUM;
+	        }
         }
+
+        
 
         /* ---------------------------------------------------------------------------------- */
         /* This function takes a move step, moving a component along a random direction for   */
@@ -380,42 +387,37 @@ namespace _3D_LayoutOpt
 /* This function takes a rotation step.  An orientation (different from the current   */
 /* one) is randomly selected and the component dimensions are updated accordingly.    */
 /* ---------------------------------------------------------------------------------- */
-        static void rotate(Design design, int which)
+        static void rotate(Design design, int which, double rotation_size)
         {
-            int new_orientation;
-            Component comp = null;
-
-#if LOCATE
+            double[] rot_vect = new double[3];
+            Random random = new Random();
+            double prob = random.NextDouble();
             Console.WriteLine("Entering rotate");
-#endif
 
             /* Find the correct component and back up the component information in case we reject */
             /* the step.                                                                          */
-            for (int i = 0; i < which; i++)
-            {
-                comp = design.components[i];
-            }
+            Component comp = design.components[which];
             back_up(design, comp);
 
-/* Pick a random orientation different from the current one and rotate the component. */
-#if DEBUG
-            Console.WriteLine("Rotating {0}", comp.name);
-#endif
+            /* Pick a random orientation different from the current one and rotate the component. */
 
-            if (Constants.DIMENSION == 3)
+            Console.WriteLine("Rotating {0}", comp.name);
+            for (int j = 0; j < 3; j++)
             {
-                new_orientation = Program.my_random(1,5);
-                if (new_orientation >= comp.orientation)
-                    ++new_orientation;
-                comp.orientation = new_orientation;
+                rot_vect[j] = Program.my_double_random(-1.0, 1.0);
             }
-            if (Constants.DIMENSION == 2)
-            {
-                if (comp.orientation == 1)
-                    comp.orientation = 3;
-                else
-                    comp.orientation = 1;
-            }
+            normalize(rot_vect);
+
+            double[] rot_angles = new double[] { Math.PI * rotation_size * rot_vect[0], Math.PI * rotation_size * rot_vect[1], Math.PI * rotation_size * rot_vect[2] };
+
+            var TranslateMatrix = new double[,]
+                {
+                    {Math.Cos(rot_angles[0]) * Math.Cos(rot_angles[1]), Math.Cos(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Sin(rot_angles[2]) - Math.Sin(rot_angles[0]) * Math.Cos(rot_angles[2]), Math.Cos(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Cos(rot_angles[2]) + Math.Sin(rot_angles[0]) * Math.Sin(rot_angles[2]), 0},
+                    {Math.Sin(rot_angles[0]) * Math.Cos(rot_angles[1]), Math.Sin(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Sin(rot_angles[2]) + Math.Cos(rot_angles[0]) * Math.Cos(rot_angles[2]), Math.Sin(rot_angles[0]) * Math.Sin(rot_angles[1]) * Math.Cos(rot_angles[2]) - Math.Cos(rot_angles[0]) * Math.Sin(rot_angles[2]), 0},
+                    {-1 * Math.Cos(rot_angles[1]), Math.Cos(rot_angles[1]) * Math.Sin(rot_angles[2]), Math.Cos(rot_angles[1]) * Math.Cos(rot_angles[2]), 0},
+                    {0.0, 0.0, 0.0, 1.0}
+                };
+
             Program.update_dim(comp);    /* IN TEST3.C */
 
 /* Update the overlaps and the bounding box dimensions for the changed component.     */

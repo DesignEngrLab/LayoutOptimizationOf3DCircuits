@@ -214,6 +214,7 @@ namespace _3D_LayoutOpt
         public double[] quality = new double[Constants.MOVE_NUM];
         public double[] prob = new double[Constants.MOVE_NUM];
         public double[] move_size = new double[Constants.TRANS_NUM];
+        public double[] rot_size = new double[Constants.ROT_NUM];
         public double usable_prob;
     }
 }
