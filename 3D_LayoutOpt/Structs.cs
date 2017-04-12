@@ -8,13 +8,14 @@ namespace _3D_LayoutOpt
     public class Component
     {
         public List<TessellatedSolid> ts = null;
+        public List<TessellatedSolid> backup_ts = null;
         public Footprint footprint = null;
-        public double[] orientation = new double[3];
+        public Footprint backup_footprint = null;
         public int node_center, nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
-        public double[] dim = new double[3];
         public double temp, tempcrit, q, k;
         public string name;
         public int index;
+
 
         public Component(string CmpName, Footprint FP, int CmpIndex)
         {
@@ -100,6 +101,7 @@ namespace _3D_LayoutOpt
     {
 
         public double[][] DesignVars;
+        public double[][] OldDesignVars;
         public List<Net> Netlist = null;
 
 

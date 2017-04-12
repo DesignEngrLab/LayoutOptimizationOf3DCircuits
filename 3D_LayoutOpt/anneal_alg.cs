@@ -258,18 +258,18 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static void take_step(Design design, Hustin hustin, out int which_comp1, out int which_comp2)
         {
-            /* Pick a component to move */
+            /* PICK A COMPONENT TO MOVE */
             which_comp1 = Program.my_random(1, design.comp_count - 1);
 
-            /* Generate a random number to pick a move.  Then, step through the move probabilites */
-            /* to find the appropriate move. 
-                                                */
+            /* GENERATE A RANDOM NUMBER TO PICK A MOVE.  THEN, STEP THROUGH THE MOVE PROBABILITES TO FIND THE APPROPRIATE MOVE.  */
             Random random = new Random();
             double prob = random.NextDouble();
             which_comp2 = 0;
 
             int i = -1;
-            while(++i<Constants.MOVE_NUM)
+            bool TookAStep = false;
+
+            while(++i<Constants.MOVE_NUM || !TookAStep)
             {
                 prob -= hustin.prob[i];             //KEEP SUBTRACTING PROBABILITY TILL WE GET TO ZERO, THIS HELP TO TAKE BIGGER STEPS IN THE BEGINNING OF THE ALGORITHM
                 if (prob< 0)
@@ -280,6 +280,7 @@ namespace _3D_LayoutOpt
                     {
 
                         move(design, which_comp1, hustin.move_size[i]);
+                        TookAStep = true;
 	                    if (hustin.move_size[i] < design.gaussmove) 
 		                    design.gauss = 1;
 	                }
@@ -294,22 +295,18 @@ namespace _3D_LayoutOpt
                             if (prob2 < 0)
                             {
                                 rotate(design, which_comp1, hustin.rot_size[j]);
+                                TookAStep = true;
                                 design.gauss = 1;
                             }
                         }
                     }
 	            }
 	            else                   /* If we reach this, we are at the last move (swap) */
-	            {
-                    /* Pick at random a second component (different from the first) to swap.              */
-                    which_comp2 = Program.my_random(1, (design.comp_count - 1));                    //IMPLEMENT WHICH2 != WHICH1
-	                //if (which2 >= which1)
-		                // ++(which2);
-
+	            {    
+                    which_comp2 = Program.my_random(1, (design.comp_count - 1));                 
                     swap(design,which_comp1, which_comp2);
-	            }
-                /* Set i to MOVE_NUM to break out of the loop since we took a step */
-	            i = Constants.MOVE_NUM;
+                    TookAStep = true;
+                }
 	        }
         }
 
@@ -353,14 +350,18 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
+            comp.backup_ts = comp.ts;
             comp.ts[0].Transform(TranslateMatrix);
 
-            //UPDATING THE PIN COORDINATES
+            comp.backup_footprint = comp.footprint;
 
+            //UPDATING THE PIN COORDINATES
             foreach (SMD smd in comp.footprint.pads)
             {
                 smd.coord = TranslateMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
+
+            design.OldDesignVars = design.DesignVars;
 
             design.DesignVars[comp.index][0] = comp.ts[0].Center[0];
             design.DesignVars[comp.index][1] = comp.ts[0].Center[1]; 
@@ -417,13 +418,18 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
+            comp.backup_ts = comp.ts;
             comp.ts[0].Transform(TransformMatrix);
+
+            comp.backup_footprint = comp.footprint;
 
             //UPDATING THE PIN COORDINATES
             foreach (SMD smd in comp.footprint.pads)
             {
                 smd.coord = TransformMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
             }
+
+            design.OldDesignVars = design.DesignVars;
 
             design.DesignVars[comp.index][3] += rot_angles[0];
             design.DesignVars[comp.index][4] += rot_angles[1];
@@ -473,10 +479,27 @@ namespace _3D_LayoutOpt
                     {0.0, 0.0, 0.0, 1.0}
                 };
 
-            comp1.ts[0].Transform(TranslateMatrix1);
-            comp2.ts[0].Transform(TranslateMatrix2);    
+            comp1.backup_ts = comp1.ts;
+            comp2.backup_ts = comp2.ts;
 
-            
+            comp1.ts[0].Transform(TranslateMatrix1);
+            comp2.ts[0].Transform(TranslateMatrix2);
+
+            comp1.backup_footprint = comp1.footprint;
+
+            //UPDATING THE PIN COORDINATES
+            foreach (SMD smd in comp1.footprint.pads)
+            {
+                smd.coord = TranslateMatrix1.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
+            }
+
+            comp2.backup_footprint = comp2.footprint;
+
+            //UPDATING THE PIN COORDINATES
+            foreach (SMD smd in comp2.footprint.pads)
+            {
+                smd.coord = TranslateMatrix2.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
+            }
 
             /* UPDATE THE OVERLAPS AND THE BOUNDING BOX DIMENSIONS FOR THE CHANGED COMPONENTS.    */
             update_state(design, comp1);
@@ -486,20 +509,17 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function backs up component information.  Backup are pointers to components   */
-        /* containing backup information about components in case we reject a step and need   */
-        /* to revert to a previous design.  Whichbackup are pointers to the components which  */
-        /* are backed up, so that we know where to where the old information should be copied */
-        /* when we revert.  Which tells us which component is being backed up (0 or 1).       */
+        /* THIS FUNCTION BACKS UP COMPONENT INFORMATION.  BACKUP ARE POINTERS TO COMPONENTS   */
+        /* CONTAINING BACKUP INFORMATION ABOUT COMPONENTS IN CASE WE REJECT A STEP AND NEED   */
+        /* TO REVERT TO A PREVIOUS DESIGN.  WHICHBACKUP ARE POINTERS TO THE COMPONENTS WHICH  */
+        /* ARE BACKED UP, SO THAT WE KNOW WHERE TO WHERE THE OLD INFORMATION SHOULD BE COPIED */
+        /* WHEN WE REVERT.  WHICH TELLS US WHICH COMPONENT IS BEING BACKED UP (0 OR 1).       */
         /* ---------------------------------------------------------------------------------- */
         static void back_up(Design design, Component comp)
         {
             int i;
             Component comp1;
-
-#if LOCATE
             Console.WriteLine("Entering back_up");
-#endif
 
 /* Back up coordinates and dimensions. */
 /*  Console.WriteLine("The component being backed up is %s",comp.comp_name);
@@ -518,12 +538,8 @@ namespace _3D_LayoutOpt
             {
                 design.backup_obj_values[j] = design.new_obj_values[j];
             }
-
-
-#if LOCATE
             Console.WriteLine("Leaving back_up");
-#endif
-}
+        }
 
 /* ---------------------------------------------------------------------------------- */
 /* This function does all the stuff you want to do when a step is accepted.           */
@@ -591,19 +607,9 @@ namespace _3D_LayoutOpt
 
             double temp_coord;
             Component comp1 = null, comp2 = null;
-
-#if LOCATE
             Console.WriteLine("Entering revert");
-#endif
 
-            /* Find the first component. */
-
-            for (int j = 0; j < which1; j++)
-            {
-                comp1 = design.components[j];
-            }
-
-
+            comp1 = design.components[which1];
             if (which2 == 0)
             {
                 comp1.orientation = design.old_orientation;
@@ -614,19 +620,12 @@ namespace _3D_LayoutOpt
                     comp1.dim[j] = design.old_dim[j];
                 }
 
-
-                /* Update the overlaps and bounding box dimensions back to how they were since we reverted */
-                update_state(design, comp1, which1);    
+                update_state(design, comp1);    
             }
 
             else
             {
-                /* Find the second component. */
-
-                for (int i = 0; i < which2; i++)
-                {
-                    comp2 = design.components[i];
-                }
+                comp2 = design.components[which2];
 
                 for (int j = 0; j < 3; j++)
                 {
@@ -635,13 +634,11 @@ namespace _3D_LayoutOpt
                     comp2.coord[j] = temp_coord;
                 }
 
-
-/* Update the overlaps and bounding box dimensions back to how they were since we reverted */
                 update_state(design, comp1);
                 update_state(design, comp2);
             }
 
-/* Revert objective_function values to the values before the step. */
+            /* Revert objective_function values to the values before the step. */
             
             for (int j = 0; j < Constants.OBJ_NUM; j++)
             {
