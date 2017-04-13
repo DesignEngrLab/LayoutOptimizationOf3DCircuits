@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TVGL;
 using OptimizationToolbox;
+using System;
 
 
 namespace _3D_LayoutOpt
@@ -66,8 +67,8 @@ namespace _3D_LayoutOpt
     public class SMD
     {
         public string name;
-        public double[] coord = new double[2];
-        public double[] dim = new double[2];
+        public double[] coord;
+        public double[] dim;
 
         public SMD(string SMDname, double[] coordinates, double[] dimensions)
         {
@@ -79,6 +80,7 @@ namespace _3D_LayoutOpt
 
     public class PinRef
     {
+        public int CompIndex;
         public string CompName;
         public string PinName;
 
@@ -95,13 +97,16 @@ namespace _3D_LayoutOpt
         public List<PinRef> PinRefs = null;
         public double NetLength = 0;
 
-        public void CalcNetDirectLineLength()
+        public void CalcNetDirectLineLength(Design design)
         {
             for (int i = 0; i < PinRefs.Count - 1; i++)
             {
                 for (int j = i + 1; j < PinRefs.Count; j++)
                 {
-
+                    SMD PinJ = design.components[PinRefs[j].CompIndex].footprint.pads.Find(smd => smd.name == PinRefs[j].PinName);
+                    SMD PinI = design.components[PinRefs[i].CompIndex].footprint.pads.Find(smd => smd.name == PinRefs[i].PinName);
+                    double d = (PinJ.coord[0] - PinI.coord[0])*(PinJ.coord[0] - PinI.coord[0]) + (PinJ.coord[1] - PinI.coord[1])*(PinJ.coord[1] - PinI.coord[1]) + (PinJ.coord[2] - PinI.coord[2])*(PinJ.coord[2] - PinI.coord[2]);
+                    NetLength += Math.Sqrt(d); 
                 }
             }
         }

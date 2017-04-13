@@ -66,11 +66,15 @@ namespace _3D_LayoutOpt
 
         static void EvaluateNetlist(Design design)
         {
+            double sum = 0;
+
             foreach (var net in design.Netlist)
             {
-
+                net.CalcNetDirectLineLength(design);
+                sum += net.NetLength;
             }
 
+            design.new_obj_values[3] = sum;
         }
 
         /* ---------------------------------------------------------------------------------- */
