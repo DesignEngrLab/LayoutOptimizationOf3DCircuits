@@ -18,7 +18,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the temperature.                                             */
         /* ---------------------------------------------------------------------------------- */
-        public static void update_temp(double t, double sigma)
+        public static void UpdateTemp(double t, double sigma)
         {
             double reduce = Math.Exp(-(Math.Pow(Constants.LAMBDA, t)) / sigma);
             if (reduce < Constants.T_RATIO_MIN)
@@ -39,7 +39,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
 
 
-        public static void calc_statistics(Schedule schedule)
+        public static void CalcStatistics(Schedule schedule)
         {
             int i, j;
             double eval, sum, sum_sqrs;
@@ -83,7 +83,7 @@ namespace _3D_LayoutOpt
         /* This function initializes variables, counters, coefficients, and calculates the    */
         /* initial objective function value.                                                  */
         /* ---------------------------------------------------------------------------------- */
-        public static void init_schedule(Schedule schedule)
+        public static void InitSchedule(Schedule schedule)
 
         {
             //double calc_initial_t ();
@@ -112,36 +112,36 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function does a random walk to generate a sample of the design space.         */
         /* ---------------------------------------------------------------------------------- */
-        public static void sample_space(Design design)
+        public static void SampleSpace(Design design)
         {
-            int i, which1, which2, column, update, accept_flag;
+            int i, column, update;
             double eval, dummy_eval;
             Hustin dummy_hustin = new Hustin();
+            AcceptFlag Accept_Flag;
+            Component which1 = null, which2 = null;
 
             Chustin.init_hustin(dummy_hustin);
             dummy_eval = 0;
-            eval = obj_function.evaluate(design, 0, 1000); 
+            eval = obj_function.Evaluate(design, 0, 1000); 
             obj_balance.init_obj_values(design); 
 
             using (StreamWriter streamwriter = new StreamWriter("sample.data"))
             {
                 column = 0;
                 update = 0;
-                which1 = 0;
-                which2 = 0;
                 i = 0;
 
                 while (++i <= Constants.SAMPLE)
                 {
                     anneal_alg.TakeStep(design, dummy_hustin, out which1, out which2); 
-                    eval = obj_function.evaluate(design, i, Constants.SAMPLE); 
+                    eval = obj_function.Evaluate(design, i, Constants.SAMPLE); 
 
                     /* Sending (eval + 1.0) as the current_eval makes every step an "improvement".  Thus  */
-                    /* every step will be accepted (unless the BOX_LIMIT box is violated).                */
-                    accept_flag = anneal_alg.accept(1, eval, (eval + 1.0), design);
-                    if (accept_flag > 0)
+                    /* every step will be Accepted (unless the BOX_LIMIT box is violated).                */
+                    Accept_Flag = anneal_alg.Accept(1, eval, (eval + 1.0), design);
+                    if (Accept_Flag == AcceptFlag.AcceptedBadMove || Accept_Flag == AcceptFlag.AcceptedGoodMove)
                     {
-                        anneal_alg.UpdateAccept(design, 0, accept_flag, column, update, /* IN ANNEAL_ALG.C */
+                        anneal_alg.UpdateAccept(design, 0, Accept_Flag, column, update,
                             eval, dummy_eval, (eval + 1.0));
                         streamwriter.WriteLine("{0}", eval);
                     }
@@ -149,7 +149,7 @@ namespace _3D_LayoutOpt
                     {
                         --i;
 
-                        anneal_alg.UpdateReject(design, 0, which1, which2, eval); /* IN ANNEAL_ALG.C */
+                        anneal_alg.UpdateReject(design, 0, which1, eval, which2); /* IN ANNEAL_ALG.C */
                     }
                 }
             }
@@ -158,7 +158,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates parameters for the equilibrium condition.                    */
         /* ---------------------------------------------------------------------------------- */
-        public static void equilibrium_update(double step_eval, double current_eval, Schedule schedule, int hold_temp)
+        public static void EquilibriumUpdate(double step_eval, double current_eval, Schedule schedule, int hold_temp)
         {
             /* Update c_min, c_max, and max_delta_c for the frozen condition check. */
             if (step_eval > schedule.c_max)
@@ -188,7 +188,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function checks the frozen condition.                                         */
         /* ---------------------------------------------------------------------------------- */
-        public static bool frozen_check(Schedule schedule)
+        public static bool FrozenCheck(Schedule schedule)
         {
             if ((schedule.c_max - schedule.c_min) == schedule.max_delta_c)
                 return true;

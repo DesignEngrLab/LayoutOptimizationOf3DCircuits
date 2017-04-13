@@ -42,7 +42,7 @@ namespace _3D_LayoutOpt
 
             initialize(design);
             Console.WriteLine("Sampling points in design space\n");
-            Schedules.sample_space(design);  
+            Schedules.SampleSpace(design);  
 
 
             anneal_alg.anneal(design);                        /* This function is in anneal_alg.c */
@@ -50,7 +50,7 @@ namespace _3D_LayoutOpt
             readwrite.save_container(design);
             readwrite.save_tfield(design);
 
-            /* downhill(design, MIN_MOVE_DIST);      */
+            /* DownHill(design, MIN_MOVE_DIST);      */
             end_time = get_time();
 
             using (StreamWriter writetext = new StreamWriter("results"))
@@ -100,25 +100,25 @@ namespace _3D_LayoutOpt
         public static void initialize(Design design)
         {
           Console.WriteLine("Initializing locations.\n");
-          init_locations(design);
+          InitLocations(design);
 
           //Console.WriteLine("Initializing box bounds.\n");
           //init_bounds(design);
 
           Console.WriteLine("Initializing overlaps.\n");
-          obj_function.init_overlaps(design);          
+          obj_function.InitOverlaps(design);          
 
           Console.WriteLine("Initializing weights.\n");
-          init_weights(design);
+          InitWeights(design);
 
           Console.WriteLine("Initializing heat parameters.\n");
-          heatbasic.init_heat_param(design);        
+          heatbasic.InitHeatParam(design);        
         }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function sets the initial objective function weights to 1.0.                  */
         /* ---------------------------------------------------------------------------------- */
-        static void init_weights(Design design)
+        static void InitWeights(Design design)
         {
             int i;
             for (i = 0; i< Constants.OBJ_NUM; ++i)
@@ -131,7 +131,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function initializes the component locations.                                 */
         /* ---------------------------------------------------------------------------------- */
-        static void init_locations(Design design)
+        static void InitLocations(Design design)
         {
             Component temp_comp = null;
             Console.WriteLine("Placing components in randomly in 3D space");
@@ -143,7 +143,7 @@ namespace _3D_LayoutOpt
                 {
                     double[,] BackTransformMatrix = null; 
                     var NewTessellatedSolid = TessellatedSolid.SetToOriginAndSquareTesselatedSolid(out BackTransformMatrix);
-                    TessellatedSolids.ReMove(TessellatedSolid);
+                    TessellatedSolids.Remove(TessellatedSolid);
                     TessellatedSolids.Add(NewTessellatedSolid);
                 }
                 comp.ts = TessellatedSolids;
@@ -154,12 +154,12 @@ namespace _3D_LayoutOpt
             //for (int i = 0; i < design.comp_count; i++)
             //{
             //    temp_comp = design.components[i];
-            //    //temp_comp.orientation = my_random(1, 6);            //TO DO: WHY SET IT TO 1 AFTER RANDOM?
+            //    //temp_comp.orientation = CreateRndInt(1, 6);            //TO DO: WHY SET IT TO 1 AFTER RANDOM?
             //    temp_comp.orientation = 1;
             //    update_dim(temp_comp);
             //    for (int j = 0; j < Constants.DIMENSION; j++)
             //    {
-            //        temp_comp.coord[j] = my_double_random(-Constants.INITIAL_BOX_SIZE, Constants.INITIAL_BOX_SIZE);
+            //        temp_comp.coord[j] = CreateRndDouble(-Constants.INITIAL_BOX_SIZE, Constants.INITIAL_BOX_SIZE);
             //    }
             //    if (Constants.DIMENSION == 2)
             //        temp_comp.coord[2] = 0.0;
@@ -180,7 +180,7 @@ namespace _3D_LayoutOpt
             //}
 
         #if LOCATE
-            Console.WriteLine("Leavinging init_locations");
+            Console.WriteLine("Leavinging InitLocations");
         #endif
 
         }
@@ -201,9 +201,9 @@ namespace _3D_LayoutOpt
 
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function returns a random integer between integers rndmin and rndmax.         */
+        /* THIS FUNCTION RETURNS A RANDOM INTEGER BETWEEN INTEGERS RNDMIN AND RNDMAX.         */
         /* ---------------------------------------------------------------------------------- */
-        public static int my_random(int rndmin, int rndmax)
+        public static int CreateRndInt(int rndmin, int rndmax)
         {
             int t = get_time();
             Random r = new Random(t);
@@ -211,9 +211,9 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function returns a random integer between integers rndmin and rndmax.         */
+        /* THIS FUNCTION RETURNS A RANDOM INTEGER BETWEEN INTEGERS RNDMIN AND RNDMAX.         */
         /* ---------------------------------------------------------------------------------- */
-        public static double my_double_random(double rndmin, double rndmax)
+        public static double CreateRndDouble(double rndmin, double rndmax)
         {
             int t = get_time();
             Random random = new Random();
@@ -385,41 +385,36 @@ namespace _3D_LayoutOpt
 
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function calculates the center of gravity.                                    */
+        /* THIS FUNCTION CALCULATES THE CENTER OF GRAVITY.                                    */
         /* ---------------------------------------------------------------------------------- */
-        public static void calc_c_grav(Design design)
+        public static void CalcCenterofGravity(Design design)
         {
             double mass;
             double[] sum = new double[3];
-            Component comp;
 
             mass = 0.0;
             sum[0] = 0.0;
             sum[1] = 0.0;
             sum[2] = 0.0;
 
-            
-            for (int i = 0; i < design.comp_count; i++)
+            foreach (var comp in design.components)
             {
-                comp = design.components[i];
-                mass += comp.mass;
-                for (int j = 0; j < 3; j++)
+                mass += comp.ts[0].Mass;
+                for (int i = 0; i < 3; i++)
                 {
-                    sum[j] += comp.mass * comp.coord[j];
+                    sum[i] += comp.ts[0].Mass * comp.ts[0].Center[i];
                 }
             }
-
             for (int i = 0; i < 3; i++)
             {
                 design.c_grav[i] = sum[i] / mass;
             }
-
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function finds a good downhill step size.                                     */
+        /* THIS FUNCTION FINDS A GOOD DOWNHILL STEP SIZE.                                     */
         /* ---------------------------------------------------------------------------------- */
-        void find_step(Design design)
+        void FindStep(Design design)
         {
             double eval;
             double Move_size = 0.05;
@@ -430,9 +425,9 @@ namespace _3D_LayoutOpt
                 while (Move_size <= 1.25)
                 {
                     writetext.WriteLine(Move_size);
-                    readwrite.restore_design(design);
-                    anneal_alg.downhill(design, Move_size);
-                    eval = obj_function.evaluate(design, 0, 0);
+                    readwrite.RestoreDesign(design);
+                    anneal_alg.DownHill(design, Move_size);
+                    eval = obj_function.Evaluate(design, 0, 0);
                     writetext.WriteLine("{0}", eval);
                     if (eval < min_eval)
                         min_eval = eval;

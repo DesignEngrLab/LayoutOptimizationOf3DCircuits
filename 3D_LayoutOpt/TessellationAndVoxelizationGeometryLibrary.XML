@@ -6286,9 +6286,9 @@
             </summary>
             <param name="f">The f.</param>
         </member>
-        <member name="M:TVGL.Primitive_Classification.PlanningSurface.ReMove(TVGL.Primitive_Classification.FaceWithScores)">
+        <member name="M:TVGL.Primitive_Classification.PlanningSurface.Remove(TVGL.Primitive_Classification.FaceWithScores)">
             <summary>
-                ReMoves the specified f.
+                Removes the specified f.
             </summary>
             <param name="f">The f.</param>
         </member>
@@ -7144,7 +7144,7 @@
                 Others the edge.
             </summary>
             <param name="thisVertex">The this vertex.</param>
-            <param name="willAcceptNullAnswer">if set to <c>true</c> [will accept null answer].</param>
+            <param name="willAcceptNullAnswer">if set to <c>true</c> [will Accept null answer].</param>
             <returns>Edge.</returns>
         </member>
         <member name="M:TVGL.PolygonalFace.OtherVertex(TVGL.Edge,System.Boolean)">
@@ -7152,7 +7152,7 @@
                 Others the vertex.
             </summary>
             <param name="thisEdge">The this edge.</param>
-            <param name="willAcceptNullAnswer">if set to <c>true</c> [will accept null answer].</param>
+            <param name="willAcceptNullAnswer">if set to <c>true</c> [will Accept null answer].</param>
             <returns>Vertex.</returns>
         </member>
         <member name="M:TVGL.PolygonalFace.OtherVertex(TVGL.Vertex,TVGL.Vertex,System.Boolean)">
@@ -7161,7 +7161,7 @@
             </summary>
             <param name="v1">The v1.</param>
             <param name="v2">The v2.</param>
-            <param name="willAcceptNullAnswer">if set to <c>true</c> [will accept null answer].</param>
+            <param name="willAcceptNullAnswer">if set to <c>true</c> [will Accept null answer].</param>
             <returns>Vertex.</returns>
         </member>
         <member name="M:TVGL.PolygonalFace.NextVertexCCW(TVGL.Vertex)">

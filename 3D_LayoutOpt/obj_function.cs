@@ -19,14 +19,14 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function returns an evaluation of the current design.                         */
         /* ---------------------------------------------------------------------------------- */
-        public static double evaluate(Design design, int steps_at_t, int gen_limit)
+        public static double Evaluate(Design design, int steps_at_t, int gen_limit)
         {
             int i, k;
             double eval;
             char wait;
 
 #if LOCATE
-            Console.WriteLine("Entering evaluate");
+            Console.WriteLine("Entering Evaluate");
 #endif
 
             /* Evaluate the four components of the objective function. */
@@ -55,7 +55,7 @@ namespace _3D_LayoutOpt
   fclose(fptr);*/
 
 #if LOCATE
-            Console.WriteLine("Leaving evaluate");
+            Console.WriteLine("Leaving Evaluate");
 #endif
   
             return(eval);
@@ -169,7 +169,7 @@ namespace _3D_LayoutOpt
         /* Note that only the top half of the overlap matrix is used.                         */
         /* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
         /* ---------------------------------------------------------------------------------- */
-        public static void init_overlaps(Design design)
+        public static void InitOverlaps(Design design)
         {
             double dx, dy, dz;
             Component comp0, comp1;
@@ -200,7 +200,7 @@ namespace _3D_LayoutOpt
         ///* Note that only the top half of the overlap matrix is used.                         */
         ///* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
         ///* ---------------------------------------------------------------------------------- */
-        //public static void init_overlaps(Design design)
+        //public static void InitOverlaps(Design design)
         //{
         //    double dx, dy, dz;
         //    Component comp1, comp2;

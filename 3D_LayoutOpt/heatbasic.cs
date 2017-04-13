@@ -117,7 +117,7 @@ namespace _3D_LayoutOpt
 
         /* ---------------------------------------------------------------------------------- */
         /* This function backs up the current temperatures into old_temp if the step was      */
-        /* accepted.                                                                          */
+        /* Accepted.                                                                          */
         /* ---------------------------------------------------------------------------------- */
         public static void back_up_tfield(Design design)
         {
@@ -131,7 +131,7 @@ namespace _3D_LayoutOpt
         /* This function initializes the heat parameters such as matrix tolerance and minimum */
         /* node spacing.                                                                      */
         /* ---------------------------------------------------------------------------------- */
-        public static void init_heat_param(Design design)
+        public static void InitHeatParam(Design design)
         {
             design.tolerance = 0.001;
             design.min_node_space = 50.0;

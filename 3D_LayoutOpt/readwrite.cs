@@ -64,7 +64,7 @@ namespace _3D_LayoutOpt
                     string line;
                     while ((line = readtext.ReadLine()) != null)
                     {
-                        string[] items = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.ReMoveEmptyEntries);
+                        string[] items = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                         var compname = items[0];
                         var tempcrit = Convert.ToDouble(items[1]);
                         var q = Convert.ToDouble(items[2]);
@@ -287,7 +287,7 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function writes accepted steps to a file.                                     */
+        /* This function writes Accepted steps to a file.                                     */
         /* ---------------------------------------------------------------------------------- */
 
         static void write_step(Design design, int iteration, int flag)
@@ -323,16 +323,16 @@ namespace _3D_LayoutOpt
         /* This function writes data regarding the last temperature to a file.                */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void write_loop_data(double t, int steps_at_t, int accept_count, int bad_accept_count, int gen_limit, int flag)
+        public static void WriteLoopData(double t, int steps_at_t, int Accept_count, int bad_Accept_count, int gen_limit, int flag)
         {
             using (StreamWriter writetext = new StreamWriter("/temperature.out"))
             {
                 if (flag == 1)
                 {
                     writetext.WriteLine("Temperature set at {0}", t);
-                    writetext.WriteLine("At this temperature {0} steps were taken.  {1} were accepted",
-                        steps_at_t, accept_count);
-                    writetext.WriteLine("Of the accepted steps, {0} were inferior steps", bad_accept_count);
+                    writetext.WriteLine("At this temperature {0} steps were taken.  {1} were Accepted",
+                        steps_at_t, Accept_count);
+                    writetext.WriteLine("Of the Accepted steps, {0} were inferior steps", bad_Accept_count);
                     writetext.WriteLine("Equilibrium was ");
                     if (steps_at_t > gen_limit)
 
@@ -343,8 +343,8 @@ namespace _3D_LayoutOpt
                     writetext.WriteLine("Design is now frozen\n\n");
                 else if (flag == 3)
                 {
-                    writetext.WriteLine("Temperature set at infinity (Downhill search)");
-                    writetext.WriteLine("{0} steps were taken.  {1} were accepted\n\n", steps_at_t, accept_count);
+                    writetext.WriteLine("Temperature set at infinity (DownHill search)");
+                    writetext.WriteLine("{0} steps were taken.  {1} were Accepted\n\n", steps_at_t, Accept_count);
                 }
             }
         }
@@ -483,7 +483,7 @@ namespace _3D_LayoutOpt
         /* This function reads design data from a file.                                       */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void restore_design(Design design)
+        public static void RestoreDesign(Design design)
         {
             int i, j;
             double avg_old_value;
@@ -539,7 +539,7 @@ namespace _3D_LayoutOpt
             }
 
             Program.init_bounds(design);
-            obj_function.init_overlaps(design);
+            obj_function.InitOverlaps(design);
             i = -1;
             while (++i < Constants.OBJ_NUM)
             {

@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
+    public enum AcceptFlag
+    {
+        ComponentOutside = -1,
+        RejectedBadMove = 0,
+        AcceptedBadMove = 1,
+        AcceptedGoodMove = 2
+    }
     public static class Constants
     {
 
         public const int DESGIN_VAR_NUM = 6;
+        
 
         /* ---------------------------------------------------------------------------------- */
         /*                                    CONSTANTS.C                                     */
@@ -41,7 +49,7 @@ namespace _3D_LayoutOpt
         /* SAMPLE: The sample size of points used to calculate the initial value of sigma.    */
         /* MIN_SAMPLE: The number of points used to calculate statistics at each temperature. */
         /* K: Used to define the initial temperature (T1 = K * sigma).  The value of 18.5 was */
-        /*    selected to give an 85% probability of accepting a design whose cost is 3 sigma */
+        /*    selected to give an 85% probability of Accepting a design whose cost is 3 sigma */
         /*    worse than the current one.                                                     */
         /* RANGE: Used to define the "within count" interval.  The interval is defined as     */
         /*        average cost plus or minus delta, where delta = RANGE * sigma.              */
