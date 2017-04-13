@@ -974,7 +974,7 @@
             <returns>System.Double.</returns>
             <exception cref="T:System.Exception">Bounding circle failed to converge</exception>
             <references>
-                Based on Emo Welzl's "move-to-front heuristic" and this paper (algorithm 1).
+                Based on Emo Welzl's "Move-to-front heuristic" and this paper (algorithm 1).
                 http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf
                 This algorithm runs in near linear time. Visiting most points just a few times.
                 Though a linear algorithm was found by Meggi do, this algorithm is more robust
@@ -1128,7 +1128,7 @@
         </member>
         <member name="M:TVGL.MinimumEnclosure.OrientedBoundingBox(TVGL.TVGLConvexHull)">
             <summary>
-                The MC_ApproachOne rotates around each edge of the convex hull between the owned and
+                The MC_ApproachOne Rotates around each edge of the convex hull between the owned and
                 other faces. In this way, it guarantees a much more optimal solution than the flat
                 with face algorithm, but is, therefore, slower.
             </summary>
@@ -2948,7 +2948,7 @@
             <exception cref="T:System.Exception">
                 Cannot open file without extension (e.g. f00.stl).
                 or
-                This function has been recently removed.
+                This function has been recently reMoved.
                 or
                 Cannot determine format from extension (not .stl, .ply, .3ds, .lwo, .obj, .objx, or .off.
             </exception>
@@ -6286,9 +6286,9 @@
             </summary>
             <param name="f">The f.</param>
         </member>
-        <member name="M:TVGL.Primitive_Classification.PlanningSurface.Remove(TVGL.Primitive_Classification.FaceWithScores)">
+        <member name="M:TVGL.Primitive_Classification.PlanningSurface.ReMove(TVGL.Primitive_Classification.FaceWithScores)">
             <summary>
-                Removes the specified f.
+                ReMoves the specified f.
             </summary>
             <param name="f">The f.</param>
         </member>
@@ -7100,7 +7100,7 @@
         </member>
         <member name="M:TVGL.Edge.Update">
             <summary>
-                Updates the edge vector and length, if a vertex has been moved.
+                Updates the edge vector and length, if a vertex has been Moved.
             </summary>
             <exception cref="T:System.Exception"></exception>
         </member>
@@ -7321,11 +7321,11 @@
                 Combines the vertices of edge.
             </summary>
             <param name="edge">The edge.</param>
-            <param name="removedVertexOut">The removed vertex out.</param>
-            <param name="removedEdge1Out">The removed edge1 out.</param>
-            <param name="removedEdge2Out">The removed edge2 out.</param>
-            <param name="removedFace1">The removed face1.</param>
-            <param name="removedFace2">The removed face2.</param>
+            <param name="reMovedVertexOut">The reMoved vertex out.</param>
+            <param name="reMovedEdge1Out">The reMoved edge1 out.</param>
+            <param name="reMovedEdge2Out">The reMoved edge2 out.</param>
+            <param name="reMovedFace1">The reMoved face1.</param>
+            <param name="reMovedFace2">The reMoved face2.</param>
             <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         </member>
         <member name="M:TVGL.TessellatedSolid.AdjustPositionOfKeptVertex(TVGL.Vertex,TVGL.Vertex)">
@@ -7333,16 +7333,16 @@
                 Adjusts the position of kept vertex.
             </summary>
             <param name="keepVertex">The keep vertex.</param>
-            <param name="removedVertex">The removed vertex.</param>
+            <param name="reMovedVertex">The reMoved vertex.</param>
         </member>
         <member name="M:TVGL.TessellatedSolid.AdjustPositionOfKeptVertexExperimental(TVGL.Vertex,TVGL.Vertex,TVGL.PolygonalFace,TVGL.PolygonalFace)">
             <summary>
                 Adjusts the position of kept vertex experimental.
             </summary>
             <param name="keepVertex">The keep vertex.</param>
-            <param name="removedVertex">The removed vertex.</param>
-            <param name="removeFace1">The remove face1.</param>
-            <param name="removeFace2">The remove face2.</param>
+            <param name="reMovedVertex">The reMoved vertex.</param>
+            <param name="reMoveFace1">The reMove face1.</param>
+            <param name="reMoveFace2">The reMove face2.</param>
         </member>
         <member name="M:TVGL.TessellatedSolid.DefineCenterVolumeAndSurfaceArea(System.Collections.Generic.IList{TVGL.PolygonalFace},System.Double[]@,System.Double@,System.Double@)">
             <summary>

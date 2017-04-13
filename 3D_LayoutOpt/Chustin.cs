@@ -15,7 +15,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function sets the translate move distances and the initial probabilities.     */
+        /* This function sets the translate Move distances and the initial probabilities.     */
         /* ---------------------------------------------------------------------------------- */
         public static void init_hustin(Hustin hustin)
         {
@@ -29,7 +29,7 @@ namespace _3D_LayoutOpt
             
             for (int i = 0; i < Constants.TRANS_NUM; i++)                           //GRADUALLY INCREASING MOVE DISTANCE OVER 15 INCREMENTS
             {
-                hustin.move_size[i] = dist;
+                hustin.Move_size[i] = dist;
                 dist += delta_dist;
                 hustin.prob[i] = init_prob;
                 hustin.attempts[i] = 0;
@@ -45,7 +45,7 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function updates the move set probabilities.                                  */
+        /* This function updates the Move set probabilities.                                  */
         /* ---------------------------------------------------------------------------------- */
         public static void update_hustin(Hustin hustin)
         {

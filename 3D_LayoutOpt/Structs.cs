@@ -174,8 +174,8 @@ namespace _3D_LayoutOpt
         /* min_node_space is the minimum allowable node spacing.                              */
         /* hcf is the Approximation Method Correction Factor established using Matrix Method. */
         /* hcf_per_temp is the number of times App gets corrected per temperature.            */
-        /* gaussmove is the move size under which GS is used instead of LU for translations.  */
-        /* gauss is the flag that says to use GS.  GS is always used on rotations and swaps.  */
+        /* gaussMove is the Move size under which GS is used instead of LU for translations.  */
+        /* gauss is the flag that says to use GS.  GS is always used on rotations and Swaps.  */
         /* max_iter is the maximum number of iterations for GS.                               */
         /* analysis_switch[] is the vector of t/initial t steps that the thermal              */
         /* analysis switches.                                                                 */
@@ -184,7 +184,7 @@ namespace _3D_LayoutOpt
         //public Temperature_field[] tfield = new Temperature_field[Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM];
         public Temperature_field[] tfield = InitializeArray<Temperature_field>(Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM);
         public double kb, tamb, tolerance, min_node_space;
-        public double hcf, gaussmove;
+        public double hcf, gaussMove;
         public double[] h = new double[3];
         public double[] analysis_switch = new double[Constants.SWITCH_NUM];
         public int hcf_per_temp, gauss, max_iter, choice;
@@ -215,19 +215,19 @@ namespace _3D_LayoutOpt
 
     public class Hustin
     {
-        /* attemts is the number of attempts made for each move, which_move is the move taken */
-        /* so we know which move to attribute a cost change to, delta_c is the cumulative     */
-        /* change in cost (absolute value) due to each move, quality is the quality factor    */
-        /* for each move, probability is the probability if selecting each move, and move_    */
-        /* size is the distance for each of the translate moves, usable_prob is the "usable"  */
+        /* attemts is the number of attempts made for each Move, which_Move is the Move taken */
+        /* so we know which Move to attribute a cost change to, delta_c is the cumulative     */
+        /* change in cost (absolute value) due to each Move, quality is the quality factor    */
+        /* for each Move, probability is the probability if selecting each Move, and Move_    */
+        /* size is the distance for each of the translate Moves, usable_prob is the "usable"  */
         /* portion of the probability.  The "unusable" portion (i.e. MIN_PROB * MOVE_NUM) is  */
-        /* set aside to give each move a minimum probability.                                 */
+        /* set aside to give each Move a minimum probability.                                 */
         public int[] attempts = new int[Constants.MOVE_NUM];
-        public int which_move;
+        public int which_Move;
         public double[] delta_c = new double[Constants.MOVE_NUM];
         public double[] quality = new double[Constants.MOVE_NUM];
         public double[] prob = new double[Constants.MOVE_NUM];
-        public double[] move_size = new double[Constants.TRANS_NUM];
+        public double[] Move_size = new double[Constants.TRANS_NUM];
         public double[] rot_size = new double[Constants.ROT_NUM];
         public double usable_prob;
     }

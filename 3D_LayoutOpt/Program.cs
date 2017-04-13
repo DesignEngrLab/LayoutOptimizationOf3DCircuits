@@ -143,7 +143,7 @@ namespace _3D_LayoutOpt
                 {
                     double[,] BackTransformMatrix = null; 
                     var NewTessellatedSolid = TessellatedSolid.SetToOriginAndSquareTesselatedSolid(out BackTransformMatrix);
-                    TessellatedSolids.Remove(TessellatedSolid);
+                    TessellatedSolids.ReMove(TessellatedSolid);
                     TessellatedSolids.Add(NewTessellatedSolid);
                 }
                 comp.ts = TessellatedSolids;
@@ -279,7 +279,7 @@ namespace _3D_LayoutOpt
         ///* First test to see if we are moving the min_comp.  If we are, not, we just update   */
         ///* min bounds for this component.  If we are, we have to update bounds for all the    */
         ///* elements to find the new one (which may the the same as the current one).  To      */
-        ///* correctly update the bounds, we reset the box_min (since we've moved the min_comp  */
+        ///* correctly update the bounds, we reset the box_min (since we've Moved the min_comp  */
         ///* the old value is no longer valid).                                                 */
 
         //    for (int i = 0; i < 3; i++)
@@ -422,21 +422,21 @@ namespace _3D_LayoutOpt
         void find_step(Design design)
         {
             double eval;
-            double move_size = 0.05;
+            double Move_size = 0.05;
             double min_eval = 5;
 
             using (StreamWriter writetext = new StreamWriter("size.dat"))
             {
-                while (move_size <= 1.25)
+                while (Move_size <= 1.25)
                 {
-                    writetext.WriteLine(move_size);
+                    writetext.WriteLine(Move_size);
                     readwrite.restore_design(design);
-                    anneal_alg.downhill(design, move_size);
+                    anneal_alg.downhill(design, Move_size);
                     eval = obj_function.evaluate(design, 0, 0);
                     writetext.WriteLine("{0}", eval);
                     if (eval < min_eval)
                         min_eval = eval;
-                    move_size += .05;
+                    Move_size += .05;
                 }
                 writetext.WriteLine("THE MIN WAS {0}", min_eval);
             }

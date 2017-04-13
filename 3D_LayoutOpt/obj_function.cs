@@ -31,7 +31,7 @@ namespace _3D_LayoutOpt
 
             /* Evaluate the four components of the objective function. */
             eval_overlap_comp(design);
-            eval_overlap_container(design);
+            EvalOverlapContainer(design);
             heatbasic.heat_eval(design, steps_at_t, gen_limit);
             obj_balance.update_coef(design);                            //WHAT DOES IT DO?
 
@@ -89,7 +89,7 @@ namespace _3D_LayoutOpt
         /* This function sets the value of the third part of the objective function, which    */
         /* is the amount of overlap with the container.                                       */
         /* ---------------------------------------------------------------------------------- */
-        public static void eval_overlap_container(Design design)
+        public static void EvalOverlapContainer(Design design)
         {
             double box_penalty;
             box_penalty = 0.0;
@@ -113,7 +113,7 @@ namespace _3D_LayoutOpt
         ///* This function sets the value of the third part of the objective function, which    */
         ///* is the amount of overlap with the container.                                       */
         ///* ---------------------------------------------------------------------------------- */
-        //static void eval_overlap_container(Design design)
+        //static void EvalOverlapContainer(Design design)
         //{
         //    double difference, box_penalty;
         //    box_penalty = 0.0;
@@ -230,13 +230,13 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the overlap matrix for the components.                       */
         /* ---------------------------------------------------------------------------------- */
-        public static void update_overlaps(Design design, Component comp0)
+        public static void UpdateOverlaps(Design design, Component comp0)
         {
             int index;
             Component comp1;
 
 #if LOCATE
-            Console.WriteLine("Entering update_overlaps");
+            Console.WriteLine("Entering UpdateOverlaps");
 #endif
 
             /* Check overlap with components.  Since we are only using the top half of a symmetric */
@@ -271,7 +271,7 @@ namespace _3D_LayoutOpt
             }
 
 #if LOCATE
-            Console.WriteLine("Leaving update_overlaps");
+            Console.WriteLine("Leaving UpdateOverlaps");
 #endif
         }
 
@@ -283,7 +283,7 @@ namespace _3D_LayoutOpt
         //        /* Note that only the top half of the overlap matrix is used.                         */
         //        /* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
         //        /* ---------------------------------------------------------------------------------- */
-        //        public static void update_overlaps(Design design, Component temp1, int which)
+        //        public static void UpdateOverlaps(Design design, Component temp1, int which)
         //        {
         //            int index;
         //            double dx, dy, dz, d1, d2;
@@ -291,7 +291,7 @@ namespace _3D_LayoutOpt
         //            Component temp2;
 
         //#if LOCATE
-        //            Console.WriteLine("Entering update_overlaps");
+        //            Console.WriteLine("Entering UpdateOverlaps");
         //#endif
 
         //            /* Check overlap with components.  Since we are only using the top half of a symmetric */
@@ -350,7 +350,7 @@ namespace _3D_LayoutOpt
         //            }
 
         //#if LOCATE
-        //            Console.WriteLine("Leaving update_overlaps");
+        //            Console.WriteLine("Leaving UpdateOverlaps");
         //#endif
 
 

@@ -76,14 +76,14 @@ namespace _3D_LayoutOpt
             {
 	            design.choice = 3;
 	            design.hcf_per_temp = 1;
-	            design.gaussmove = 3.0;
+	            design.gaussMove = 3.0;
             }
             if ((t/(schedule.t_initial)) < design.analysis_switch[4])
             {
 	            design.choice = 3;
 	            design.tolerance = 0.0001;
 	            design.max_iter = 250;
-	            design.gaussmove = 0.6;
+	            design.gaussMove = 0.6;
             }
         }
 
@@ -104,7 +104,7 @@ namespace _3D_LayoutOpt
 
 
 /* ---------------------------------------------------------------------------------- */
-/* This function reverts to  the previous node temperatures if the new move was       */
+/* This function reverts to  the previous node temperatures if the new Move was       */
 /* rejected.                                                                          */
 /* ---------------------------------------------------------------------------------- */
         public static void revert_tfield(Design design)
@@ -136,7 +136,7 @@ namespace _3D_LayoutOpt
             design.tolerance = 0.001;
             design.min_node_space = 50.0;
             design.hcf = 0.1;
-            design.gaussmove = 0.0;
+            design.gaussMove = 0.0;
             design.gauss = 0;
             design.hcf_per_temp = 4;
             design.max_iter = 100;

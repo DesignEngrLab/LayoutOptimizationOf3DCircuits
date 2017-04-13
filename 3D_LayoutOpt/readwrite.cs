@@ -64,7 +64,7 @@ namespace _3D_LayoutOpt
                     string line;
                     while ((line = readtext.ReadLine()) != null)
                     {
-                        string[] items = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] items = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.ReMoveEmptyEntries);
                         var compname = items[0];
                         var tempcrit = Convert.ToDouble(items[1]);
                         var q = Convert.ToDouble(items[2]);
@@ -550,8 +550,8 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function writes to a file: the current move probabilities, the percentage     */
-        /* change in delta_c due to each move, and the percentage of attempts for each move.  */
+        /* This function writes to a file: the current Move probabilities, the percentage     */
+        /* change in delta_c due to each Move, and the percentage of attempts for each Move.  */
         /* ---------------------------------------------------------------------------------- */
 
         public static void write_probs(Hustin hustin, double temp)

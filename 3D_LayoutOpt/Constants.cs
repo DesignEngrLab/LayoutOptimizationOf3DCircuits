@@ -23,7 +23,7 @@ namespace _3D_LayoutOpt
         /* INITIAL_BOX_SIZE: The initial locations for the components have x-y-z coordinates  */
         /*                   in the range +- INITIAL_BOX_SIZE.                                */
         /* OBJ_NUM: The number of components in the objective function.                       */
-        /* BALANCE_AVG: The number of moves averaged to balance components of the objective   */
+        /* BALANCE_AVG: The number of Moves averaged to balance components of the objective   */
         /*              function.                                                             */
         /* UPDATE_INTERVAL: How often (# of iterations) balancing coefficients are updated    */
         /* BOX_LIMIT: The value that the bounding box dimensions are not allowed to exceed.   */
@@ -62,12 +62,12 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /*                                  CONTROL OF MOVES                                  */
         /*                                                                                    */
-        /* PERTURB: is the percent probability of selecting a perterubation (move or rotate)  */
-        /*          as opposed to a larger move (swap).                                       */
+        /* PERTURB: is the percent probability of selecting a perterubation (Move or Rotate)  */
+        /*          as opposed to a larger Move (Swap).                                       */
         /* M_PROB: is the percent probability of moving a component, as opposed to rotating   */
-        /*         it, when a perturbation move has been selected.                            */
-        /* MAX_MOVE_DIST: is the maximum distance a component will be moved.                  */
-        /* MMIN_MOVE_DIST: is the minimum distance a component will be moved.                 */
+        /*         it, when a perturbation Move has been selected.                            */
+        /* MAX_MOVE_DIST: is the maximum distance a component will be Moved.                  */
+        /* MMIN_MOVE_DIST: is the minimum distance a component will be Moved.                 */
         /* DIMENSION: dimensions of problem, either 2 or 3                                    */
         /* ---------------------------------------------------------------------------------- */
         public const int PERTURB = 90;

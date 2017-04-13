@@ -97,14 +97,14 @@ namespace _3D_LayoutOpt
             schedule.problem_size = Constants.COMP_NUM;
 
             /* Note on calculation of mgl: the maximum generation limit, which is defined as the  */
-            /* number of states which can be reached from a given state.  The "move" operator     */
+            /* number of states which can be reached from a given state.  The "Move" operator     */
             /* counts as one even though an infinite number of states can actually be reached,    */
-            /* since the move distance is discrete.                                               */
-            /* For a move, any component may be selected and moved: 1 * COMP_NUM.  For a rotation */
+            /* since the Move distance is discrete.                                               */
+            /* For a Move, any component may be selected and Moved: 1 * COMP_NUM.  For a rotation */
             /* any component may be selected and have its rotation changed to any of 5 other      */
-            /* rotations: 5 * COMP_NUM.  For a swap, any component may be selected, any remaining */
-            /* component may be selected (COMP_NUM - 1) and divide by 2 since swapping A and B is */
-            /* the same as swapping B and A: COMP_NUM * (COMP_NUM - 1)/2.                         */
+            /* rotations: 5 * COMP_NUM.  For a Swap, any component may be selected, any remaining */
+            /* component may be selected (COMP_NUM - 1) and divide by 2 since Swapping A and B is */
+            /* the same as Swapping B and A: COMP_NUM * (COMP_NUM - 1)/2.                         */
             /* (1 * COMP_NUM) + (5 * COMP_NUM) + COMP_NUM * (COMP_NUM - 1)/2 is equal to          */
             /* COMP_NUM * (COMP_NUM + 11)/2 = 195 for 15 components.                              */
         }
@@ -133,7 +133,7 @@ namespace _3D_LayoutOpt
 
                 while (++i <= Constants.SAMPLE)
                 {
-                    anneal_alg.take_step(design, dummy_hustin, out which1, out which2); 
+                    anneal_alg.TakeStep(design, dummy_hustin, out which1, out which2); 
                     eval = obj_function.evaluate(design, i, Constants.SAMPLE); 
 
                     /* Sending (eval + 1.0) as the current_eval makes every step an "improvement".  Thus  */
@@ -141,7 +141,7 @@ namespace _3D_LayoutOpt
                     accept_flag = anneal_alg.accept(1, eval, (eval + 1.0), design);
                     if (accept_flag > 0)
                     {
-                        anneal_alg.update_accept(design, 0, accept_flag, column, update, /* IN ANNEAL_ALG.C */
+                        anneal_alg.UpdateAccept(design, 0, accept_flag, column, update, /* IN ANNEAL_ALG.C */
                             eval, dummy_eval, (eval + 1.0));
                         streamwriter.WriteLine("{0}", eval);
                     }
@@ -149,7 +149,7 @@ namespace _3D_LayoutOpt
                     {
                         --i;
 
-                        anneal_alg.update_reject(design, 0, which1, which2, eval); /* IN ANNEAL_ALG.C */
+                        anneal_alg.UpdateReject(design, 0, which1, which2, eval); /* IN ANNEAL_ALG.C */
                     }
                 }
             }
