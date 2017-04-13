@@ -249,12 +249,12 @@ namespace _3D_LayoutOpt
 }
  
         /* ---------------------------------------------------------------------------------- */
-        /* This function takes a step at random.                                              */
-        /* Take a step.  A step is one of three "operators" - move, rotate or swap.           */
-        /* Move and rotate are perturbations, since they typically lead to smaller changes in */
-        /* objective function.  "Move" moves a component along a random direction.  "Rotate"  */
-        /* rotates a component 90 degrees along a random axis.  "Swap" switches the location  */
-        /* of two components.                                                                 */
+        /* THIS FUNCTION TAKES A STEP AT RANDOM.                                              */
+        /* TAKE A STEP.  A STEP IS ONE OF THREE "OPERATORS" - MOVE, ROTATE OR SWAP.           */
+        /* MOVE AND ROTATE ARE PERTURBATIONS, SINCE THEY TYPICALLY LEAD TO SMALLER CHANGES IN */
+        /* OBJECTIVE FUNCTION.  "MOVE" MOVES A COMPONENT ALONG A RANDOM DIRECTION.  "ROTATE"  */
+        /* ROTATES A COMPONENT 90 DEGREES ALONG A RANDOM AXIS.  "SWAP" SWITCHES THE LOCATION  */
+        /* OF TWO COMPONENTS.                                                                 */
         /* ---------------------------------------------------------------------------------- */
         public static void take_step(Design design, Hustin hustin, out int which_comp1, out int which_comp2)
         {
@@ -510,20 +510,6 @@ namespace _3D_LayoutOpt
         /* ARE BACKED UP, SO THAT WE KNOW WHERE TO WHERE THE OLD INFORMATION SHOULD BE COPIED */
         /* WHEN WE REVERT.  WHICH TELLS US WHICH COMPONENT IS BEING BACKED UP (0 OR 1).       */
         /* ---------------------------------------------------------------------------------- */
-        //static void Backup(Design design, Component comp)
-        //{
-        //    Console.WriteLine("Entering back_up");
-
-        //    comp.BackupComponent();
-        //    design.OldDesignVars = design.DesignVars;
-
-        //    for (int j = 0; j < Constants.OBJ_NUM; j++)
-        //    {
-        //        design.backup_obj_values[j] = design.new_obj_values[j];
-        //    }
-        //    Console.WriteLine("Leaving back_up");
-        //}
-
         static void Backup(Design design, Component comp1, Component comp2 = null)
         {
             Console.WriteLine("Entering back_up");
@@ -585,10 +571,10 @@ namespace _3D_LayoutOpt
 #endif
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function does all the stuff you want to do when a step is rejected.           */
-/* ---------------------------------------------------------------------------------- */
-   public static     void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION DOES ALL THE STUFF YOU WANT TO DO WHEN A STEP IS REJECTED.           */
+        /* ---------------------------------------------------------------------------------- */
+        public static void update_reject(Design design, int iteration, int which1, int which2, double current_eval)
         {
 #if DEBUG
             Console.WriteLine("Rejecting step\n");
@@ -599,68 +585,51 @@ namespace _3D_LayoutOpt
             write_step(design, iteration, 0);
 #endif
       
-            revert(design, which1, which2);
+            Revert(design, which1, which2);
 #if TESTS
 /* Do consistency checks on the design.  The zero flag means it's a rejected step. */
             test_it(design, current_eval, 0, iteration);
 #endif
-}
+        }
+
+
         /* ---------------------------------------------------------------------------------- */
-        /* This function reverts to old information contained when a step is rejected.        */
-        /* Which2 tells us if we are reverting 1 component (which2 = 0) or two (which2 > 0).  */
+        /* THIS FUNCTION REVERTS TO OLD INFORMATION CONTAINED WHEN A STEP IS REJECTED.        */
+        /* WHICH2 TELLS US IF WE ARE REVERTING 1 COMPONENT (WHICH2 = 0) OR TWO (WHICH2 > 0).  */
         /* ---------------------------------------------------------------------------------- */
-        static void revert(Design design, int which1, int which2)
+        static void Revert(Design design, Component comp1, Component comp2 = null)
         {
 
-            double temp_coord;
-            Component comp1 = null, comp2 = null;
             Console.WriteLine("Entering revert");
 
-            comp1 = design.components[which1];
-            if (which2 == 0)
+            if (comp2 == null)
             {
-                comp1.orientation = design.old_orientation;
-
-                for (int j = 0; j < 3; j++)
+                comp1.RevertComponent();
+                design.DesignVars = design.OldDesignVars;
+                for (int j = 0; j < Constants.OBJ_NUM; j++)
                 {
-                    comp1.coord[j] = design.old_coord[j];
-                    comp1.dim[j] = design.old_dim[j];
+                    design.new_obj_values[j] = design.backup_obj_values[j];
                 }
-
-                update_state(design, comp1);    
             }
-
             else
             {
-                comp2 = design.components[which2];
+                comp1.RevertComponent();
+                comp2.RevertComponent();
+                design.DesignVars = design.OldDesignVars;
 
-                for (int j = 0; j < 3; j++)
+                // REVERT OBJECTIVE_FUNCTION VALUES TO THE VALUES BEFORE THE STEP.
+                for (int j = 0; j < Constants.OBJ_NUM; j++) 
                 {
-                    temp_coord = comp1.coord[j];
-                    comp1.coord[j] = comp2.coord[j];
-                    comp2.coord[j] = temp_coord;
+                    design.new_obj_values[j] = design.backup_obj_values[j];
                 }
-
+            }
                 update_state(design, comp1);
                 update_state(design, comp2);
-            }
-
-            /* Revert objective_function values to the values before the step. */
-            
-            for (int j = 0; j < Constants.OBJ_NUM; j++)
-            {
-                design.new_obj_values[j] = design.backup_obj_values[j];
-            }
-            
-
-#if LOCATE
-            Console.WriteLine("Leaving revert");
-#endif
-}
+        }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function updates the overlaps and bounding box dimensions after taking a step */
-        /* or after reverting to a previous design.                                           */
+        /* THIS FUNCTION UPDATES THE OVERLAPS AND BOUNDING BOX DIMENSIONS AFTER TAKING A STEP */
+        /* OR AFTER REVERTING TO A PREVIOUS DESIGN.                                           */
         /* ---------------------------------------------------------------------------------- */
         static void update_state(Design design, Component comp)
         {
@@ -923,7 +892,7 @@ namespace _3D_LayoutOpt
                 comp = design.components[i];
             }
 
-            back_up(design, comp);
+            Backup(design, comp);
 
 /* Pick a random direction and distance, and move the component. Multiply that vector */
 /* by a vector from the center of the component to the center of gravity, to imrove   */
@@ -949,7 +918,7 @@ namespace _3D_LayoutOpt
             
 
 /* Update the overlaps and the bounding box dimensions for the changed component.     */
-            update_state(design, comp, which);
+            update_state(design, comp);
 
 #if LOCATE
             Console.WriteLine("Leaving downhill_move");

@@ -30,6 +30,12 @@ namespace _3D_LayoutOpt
             backup_footprint = footprint;
         }
 
+        public void RevertComponent()
+        {
+            ts = backup_ts;
+            footprint = backup_footprint;
+        }
+
     }
 
     public class Container
