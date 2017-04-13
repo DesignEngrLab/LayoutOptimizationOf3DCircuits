@@ -29,7 +29,8 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Entering Evaluate");
 #endif
 
-            /* Evaluate the four components of the objective function. */
+            // Evaluate the four components of the objective function.
+            EvaluateNetlist(design);
             EvalOverlapComp(design);
             EvalOverlapContainer(design);
             HeatBasic.HeatEval(design, steps_at_t, gen_limit);
@@ -58,6 +59,18 @@ namespace _3D_LayoutOpt
 #endif
   
             return(eval);
+        }
+
+
+
+
+        static void EvaluateNetlist(Design design)
+        {
+            foreach (var net in design.Netlist)
+            {
+
+            }
+
         }
 
         /* ---------------------------------------------------------------------------------- */

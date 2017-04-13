@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TVGL;
+using OptimizationToolbox;
 
 
 namespace _3D_LayoutOpt
@@ -92,9 +93,21 @@ namespace _3D_LayoutOpt
     {
         public string Netname;
         public List<PinRef> PinRefs = null;
+        public double NetLength = 0;
+
+        public void CalcNetDirectLineLength()
+        {
+            for (int i = 0; i < PinRefs.Count - 1; i++)
+            {
+                for (int j = i + 1; j < PinRefs.Count; j++)
+                {
+
+                }
+            }
+        }
     }
 
-    
+
 
     public class TemperatureNode
     {
@@ -109,9 +122,21 @@ namespace _3D_LayoutOpt
         public double vol, k;
     }
 
-    public class Design
+    public class Design : IDependentAnalysis
     {
 
+        public void calculate(double[] x)
+        {
+            OldDesignVars =(double[][]) DesignVars.Clone();
+            int k = 0;
+            foreach (var comp in DesignVars)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    comp[i] = x[k++];
+                }
+            }
+        }
         public double[][] DesignVars;
         public double[][] OldDesignVars;
         public List<Net> Netlist = null;
