@@ -38,7 +38,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public const int MAX_NAME_LENGTH = 25;
         public const double INITIAL_BOX_SIZE = 10.0;
-        public const int OBJ_NUM = 5;
+        public const int OBJ_NUM = 4;
         public const int BALANCE_AVG = 45;
         public const int UPDATE_INTERVAL = 1;
         public const double BOX_LIMIT = 30.0;

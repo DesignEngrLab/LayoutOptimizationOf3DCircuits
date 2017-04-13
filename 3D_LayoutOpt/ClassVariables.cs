@@ -96,7 +96,7 @@ namespace _3D_LayoutOpt
 
     
 
-    public class Temperature_field
+    public class TemperatureNode
     {
         /* A matrix of such structures mark each node of the temperature field.  There will   */
         /* be a total of COMP_NUM squared of these components.  A zero in the comp variable   */
@@ -126,7 +126,7 @@ namespace _3D_LayoutOpt
         public double[] old_orientation;
         public double[] box_min = new double[3];
         public double[] box_max = new double[3];
-        public double[,] overlap = new double[Constants.COMP_NUM, Constants.COMP_NUM];
+        public double[,] overlap;
         public double[] old_coord = new double[3];
         public double[] old_dim = new double[3];
         public double[] c_grav = new double[3];
@@ -179,10 +179,10 @@ namespace _3D_LayoutOpt
         /* max_iter is the maximum number of iterations for GS.                               */
         /* analysis_switch[] is the vector of t/initial t steps that the thermal              */
         /* analysis switches.                                                                 */
-        /* choice is the flag for the heat_eval H.T. chooser.                                 */
+        /* choice is the flag for the HeatEval H.T. chooser.                                 */
 
         //public Temperature_field[] tfield = new Temperature_field[Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM];
-        public Temperature_field[] tfield = InitializeArray<Temperature_field>(Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM);
+        public TemperatureNode[] tfield = InitializeArray<TemperatureNode>(Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM);
         public double kb, tamb, tolerance, min_node_space;
         public double hcf, gaussMove;
         public double[] h = new double[3];

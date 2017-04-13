@@ -83,18 +83,18 @@ namespace _3D_LayoutOpt
         /* This function initializes variables, counters, coefficients, and calculates the    */
         /* initial objective function value.                                                  */
         /* ---------------------------------------------------------------------------------- */
-        public static void InitSchedule(Schedule schedule)
+        public static void InitSchedule(Schedule schedule, Design design)
 
         {
             //double calc_initial_t ();
 
             /* Initialize variables and counters */
             schedule.t_initial = Constants.K * schedule.sigma;
-            schedule.mgl = Constants.COMP_NUM * (Constants.COMP_NUM + 11) / 2;
-            schedule.mgl = Constants.COMP_NUM * (Constants.COMP_NUM + 11);
-            schedule.within_target = (int)Constants.ERF_RANGE * 3 * Constants.COMP_NUM;
-            schedule.max_tolerance = (int)(1 - Constants.ERF_RANGE) * 3 * Constants.COMP_NUM;
-            schedule.problem_size = Constants.COMP_NUM;
+            schedule.mgl = design.comp_count * (design.comp_count + 11) / 2;
+            schedule.mgl = design.comp_count * (design.comp_count + 11);
+            schedule.within_target = (int)Constants.ERF_RANGE * 3 * design.comp_count;
+            schedule.max_tolerance = (int)(1 - Constants.ERF_RANGE) * 3 * design.comp_count;
+            schedule.problem_size = design.comp_count;
 
             /* Note on calculation of mgl: the maximum generation limit, which is defined as the  */
             /* number of states which can be reached from a given state.  The "Move" operator     */
@@ -120,10 +120,10 @@ namespace _3D_LayoutOpt
             AcceptFlag Accept_Flag;
             Component which1 = null, which2 = null;
 
-            Chustin.init_hustin(dummy_hustin);
+            ClassHustin.init_hustin(dummy_hustin);
             dummy_eval = 0;
-            eval = obj_function.Evaluate(design, 0, 1000); 
-            obj_balance.init_obj_values(design); 
+            eval = ObjFunction.Evaluate(design, 0, 1000); 
+            ObjBalance.init_obj_values(design); 
 
             using (StreamWriter streamwriter = new StreamWriter("sample.data"))
             {
@@ -133,15 +133,15 @@ namespace _3D_LayoutOpt
 
                 while (++i <= Constants.SAMPLE)
                 {
-                    anneal_alg.TakeStep(design, dummy_hustin, out which1, out which2); 
-                    eval = obj_function.Evaluate(design, i, Constants.SAMPLE); 
+                    AnnealAlg.TakeStep(design, dummy_hustin, out which1, out which2); 
+                    eval = ObjFunction.Evaluate(design, i, Constants.SAMPLE); 
 
                     /* Sending (eval + 1.0) as the current_eval makes every step an "improvement".  Thus  */
                     /* every step will be Accepted (unless the BOX_LIMIT box is violated).                */
-                    Accept_Flag = anneal_alg.Accept(1, eval, (eval + 1.0), design);
+                    Accept_Flag = AnnealAlg.Accept(1, eval, (eval + 1.0), design);
                     if (Accept_Flag == AcceptFlag.AcceptedBadMove || Accept_Flag == AcceptFlag.AcceptedGoodMove)
                     {
-                        anneal_alg.UpdateAccept(design, 0, Accept_Flag, column, update,
+                        AnnealAlg.UpdateAccept(design, 0, Accept_Flag, column, update,
                             eval, dummy_eval, (eval + 1.0));
                         streamwriter.WriteLine("{0}", eval);
                     }
@@ -149,7 +149,7 @@ namespace _3D_LayoutOpt
                     {
                         --i;
 
-                        anneal_alg.UpdateReject(design, 0, which1, eval, which2); /* IN ANNEAL_ALG.C */
+                        AnnealAlg.UpdateReject(design, 0, which1, eval, which2); /* IN ANNEAL_ALG.C */
                     }
                 }
             }

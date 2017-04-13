@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    static class Chustin
+    static class ClassHustin
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    static class heatbasic
+    static class HeatBasic
     {
 
-        public static void heat_eval(Design design, int steps_at_t, int gen_limit)
+        public static void HeatEval(Design design, int steps_at_t, int gen_limit)
         {
             int correction;
             Component comp;
@@ -24,16 +24,16 @@ namespace _3D_LayoutOpt
 	                break;
 	            case 1:
 	                if (correction == 0)
-                      heatSS.correct_SS_by_LU(design);
-                    heatSS.thermal_analysis_SS(design);
+                      HeatSS.correct_SS_by_LU(design);
+                    HeatSS.thermal_analysis_SS(design);
 	                break;
 	            case 2:
 	                if (correction == 0)
-                        heatSS.correct_SS_by_LU(design);
-                    heatSS.thermal_analysis_SS(design);
+                        HeatSS.correct_SS_by_LU(design);
+                    HeatSS.thermal_analysis_SS(design);
 	                break;
 	            case 3:
-                    heatMM.thermal_analysis_MM(design);
+                    HeatMM.thermal_analysis_MM(design);
 	                break;
 	            default:
                     Console.WriteLine("ERROR in Thermal Analysis Choice.");
@@ -46,7 +46,7 @@ namespace _3D_LayoutOpt
             for (int i = 0; i < design.comp_count; i++)
             {
                 comp = design.components[i];
-                design.new_obj_values[3] += calc_temp_penalty(comp.temp, comp.tempcrit);
+                design.new_obj_values[3] += calc_temp_penalty(design, comp.temp, comp.tempcrit);
             }
 
         }
@@ -91,13 +91,13 @@ namespace _3D_LayoutOpt
 /* This function returns the value of the penalty function for a temperature in       */
 /* excess of the critical temperature.                                                */
 /* ---------------------------------------------------------------------------------- */
-        public static double calc_temp_penalty(double temp, double tempcrit)
+        public static double calc_temp_penalty(Design design, double temp, double tempcrit)
         {
             double value = 0.0;
 
             if (temp > tempcrit)
             {
-                value = (temp - tempcrit)*(temp - tempcrit)/(Constants.COMP_NUM);
+                value = (temp - tempcrit)*(temp - tempcrit)/(design.comp_count);
             }
             return(value);
         }

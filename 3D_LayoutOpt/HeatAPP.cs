@@ -23,7 +23,7 @@
             thermal_analysis_APP(design);
             tempapp = design.components[0].temp;
 
-            heatMM.thermal_analysis_MM(design);
+            HeatMM.thermal_analysis_MM(design);
 
             for (int i = 0; i < design.comp_count; i++)
             {

@@ -8,7 +8,7 @@ using TVGL;
 
 namespace _3D_LayoutOpt
 {
-    static class obj_function
+    static class ObjFunction
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -30,10 +30,10 @@ namespace _3D_LayoutOpt
 #endif
 
             /* Evaluate the four components of the objective function. */
-            eval_overlap_comp(design);
+            EvalOverlapComp(design);
             EvalOverlapContainer(design);
-            heatbasic.heat_eval(design, steps_at_t, gen_limit);
-            obj_balance.update_coef(design);                            //WHAT DOES IT DO?
+            HeatBasic.HeatEval(design, steps_at_t, gen_limit);
+            ObjBalance.UpdateCoef(design);                            //WHAT DOES IT DO?
 
         /* Add up the individual evaluations. */
             eval = 0.0;
@@ -48,7 +48,6 @@ namespace _3D_LayoutOpt
                 design.weight[1]*design.new_obj_values[1],
                 design.weight[2]*design.new_obj_values[2],
                 design.weight[3]*design.new_obj_values[3],
-                design.weight[4]*design.new_obj_values[4],
                 eval);
 /*  fptr = fopen("/eval.out","a");
   fConsole.WriteLine(fptr,"%.2f %.2f %.2f %.2f", (design.coef[0] * design.weight[0] * design.new_obj_values[0]), (design.coef[1] * design.weight[1] * design.new_obj_values[1]), (design.coef[2] * design.weight[2] * design.new_obj_values[2]), (design.coef[3] * design.weight[3] * design.new_obj_values[3]));
@@ -61,13 +60,13 @@ namespace _3D_LayoutOpt
             return(eval);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function sets the value of the second part of the objective function, which   */
-/* is the amount of overlap in a design.                                              */
-/* Note that only the top half of the overlap matrix is used.                         */
-/* Remember that an nXn matrix has elements numbered from [0][0] to [n-1][n-1]        */
-/* ---------------------------------------------------------------------------------- */
-        static void eval_overlap_comp(Design design)
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION SETS THE VALUE OF THE SECOND PART OF THE OBJECTIVE FUNCTION, WHICH   */
+        /* IS THE AMOUNT OF OVERLAP IN A DESIGN.                                              */
+        /* NOTE THAT ONLY THE TOP HALF OF THE OVERLAP MATRIX IS USED.                         */
+        /* REMEMBER THAT AN NXN MATRIX HAS ELEMENTS NUMBERED FROM [0][0] TO [N-1][N-1]        */
+        /* ---------------------------------------------------------------------------------- */
+        static void EvalOverlapComp(Design design)
         {
             double sum;
             sum = 0.0;
@@ -86,8 +85,8 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function sets the value of the third part of the objective function, which    */
-        /* is the amount of overlap with the container.                                       */
+        /* THIS FUNCTION SETS THE VALUE OF THE THIRD PART OF THE OBJECTIVE FUNCTION, WHICH    */
+        /* IS THE AMOUNT OF OVERLAP WITH THE CONTAINER.                                       */
         /* ---------------------------------------------------------------------------------- */
         public static void EvalOverlapContainer(Design design)
         {

@@ -9,7 +9,7 @@ using TVGL;
 
 namespace _3D_LayoutOpt
 {
-    static class anneal_alg
+    static class AnnealAlg
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -53,17 +53,17 @@ namespace _3D_LayoutOpt
             /* function value.                                                                    */
             init_anneal(design, out best_eval, out current_eval);
             Schedules.CalcStatistics(schedule);                       /* IN SCHEDULE.C */
-            Schedules.InitSchedule(schedule);                         /* IN SCHEDULE.C */
+            Schedules.InitSchedule(schedule, design);                         /* IN SCHEDULE.C */
 
             Console.WriteLine("The initial evaluation value is {0}", current_eval);
             Console.WriteLine("sigma and c_avg are {0} and {1}", schedule.sigma, schedule.c_avg);
             Console.WriteLine("The initial temperature is {0}", schedule.t_initial);
 
             /* Initialize the hustin structure. */
-            Chustin.init_hustin(hustin);           
+            ClassHustin.init_hustin(hustin);           
 
             /* User provides input into when to switch between thermal anylses. */
-            heatbasic.establish_thermal_changes(design);
+            HeatBasic.establish_thermal_changes(design);
 
             /* Initialization */
             t = schedule.t_initial;
@@ -109,7 +109,7 @@ namespace _3D_LayoutOpt
 
                         // TAKE A STEP AND EVALUATE IT.  UPDATE STATE BY ACCEPTING OR REJECTING STEP.
                         TakeStep(design, hustin, out which1, out which2);
-                        step_eval = obj_function.Evaluate(design, steps_at_t, gen_limit);
+                        step_eval = ObjFunction.Evaluate(design, steps_at_t, gen_limit);
 
                         /*  Accept or reject step (AcceptFlag > 0 means Accept) */
                         AcceptFlag Accept_Flag = Accept(t, step_eval, current_eval, design);
@@ -131,7 +131,7 @@ namespace _3D_LayoutOpt
                                     hustin.delta_c[hustin.which_Move] += (step_eval - current_eval)/5.0;*/
                             UpdateAccept(design, iteration, Accept_Flag, column, cost_update, step_eval, best_eval, current_eval);
 
-                            heatbasic.back_up_tfield(design);
+                            HeatBasic.back_up_tfield(design);
 
                             /* If we have taken more than MIN_SAMPLE steps, update parameters for the */
                             /* equilibrium condition. */
@@ -150,8 +150,8 @@ namespace _3D_LayoutOpt
                         }
                         else if (Accept_Flag == AcceptFlag.RejectedBadMove)
                         {
-                            UpdateReject(design, iteration, which1, which2, current_eval);
-                            heatbasic.revert_tfield(design);
+                            UpdateReject(design, iteration, which1, current_eval, which2);
+                            HeatBasic.revert_tfield(design);
 
                             /* Write evaluation to file. */
                             using (StreamWriter streamwriter = new StreamWriter("sample.data"))
@@ -165,8 +165,8 @@ namespace _3D_LayoutOpt
                             --iteration;
                             --steps_at_t;
                             ++junk;
-                            UpdateReject(design, 0, which1, which2, current_eval);
-                            heatbasic.revert_tfield(design);
+                            UpdateReject(design, 0, which1, current_eval, which2);
+                            HeatBasic.revert_tfield(design);
 
                         }
 
@@ -184,7 +184,7 @@ namespace _3D_LayoutOpt
                     Console.WriteLine("{0} steps were Accepted", Accept_count);
                     Console.WriteLine("{0} of them were inferior steps", bad_Accept_count);
 
-                    readwrite.WriteLoopData(t, steps_at_t, Accept_count, bad_Accept_count, gen_limit, 1);
+                    IO.WriteLoopData(t, steps_at_t, Accept_count, bad_Accept_count, gen_limit, 1);
 
                     /* Check frozen condition.  If frozen, change the flag.  If not, do updates. */
                     if (Accept_count == 0)
@@ -201,13 +201,13 @@ namespace _3D_LayoutOpt
                         /* probabilities to a file.                                                        */
                         Schedules.UpdateTemp(t, schedule.sigma);   /* IN SCHEDULE.C */
 
-                        heatbasic.update_heat_param(design, schedule, t); /* IN HEAT.C */
+                        HeatBasic.update_heat_param(design, schedule, t); /* IN HEAT.C */
 
-                        Chustin.update_hustin(hustin);              /* IN HUSTIN.C */
+                        ClassHustin.update_hustin(hustin);              /* IN HUSTIN.C */
 
-                        readwrite.write_probs(hustin, t);             /* IN READWRITE.C */
+                        IO.WriteProbs(hustin, t);             /* IN READWRITE.C */
 
-                        Chustin.reset_hustin(hustin);
+                        ClassHustin.reset_hustin(hustin);
                         /*		  Console.WriteLine("\nHit return to continue\n");
 		                          getchar(wait);
                         */
@@ -215,11 +215,11 @@ namespace _3D_LayoutOpt
                 }                             /* END OUTER LOOP */
 
 
-                readwrite.WriteLoopData(t, steps_at_t, Accept_count, bad_Accept_count, gen_limit, 0);
+                IO.WriteLoopData(t, steps_at_t, Accept_count, bad_Accept_count, gen_limit, 0);
 
                 /* Print out evaluation information about the last design. */
                 design.choice = 3;
-                step_eval = obj_function.Evaluate(design, 0, 1000);
+                step_eval = ObjFunction.Evaluate(design, 0, 1000);
                 Console.WriteLine("{0} iterations were junked", junk);
                 Console.WriteLine("The best eval was {0}", best_eval);
                 Console.WriteLine("The final eval was {0} ({1} percent density)", step_eval,(100/design.new_obj_values[0]));
@@ -232,10 +232,6 @@ namespace _3D_LayoutOpt
                     streamwriter.WriteLine("{0} iterations were junked", junk);
                     streamwriter.WriteLine("The best eval was {0}", best_eval);
                     streamwriter.WriteLine("The final eval was {0}", step_eval);
-                    streamwriter.WriteLine("The container dimensions are {0} {1} {2}", design.container[0],
-                    design.container[1], design.container[2]);
-                    streamwriter.WriteLine("The box dimensions are {0} X {1} X {2}", (design.box_max[0] - design.box_min[0]),
-                    (design.box_max[1] - design.box_min[1]), (design.box_max[2] - design.box_min[2]));
                 }
 
 
@@ -550,7 +546,7 @@ namespace _3D_LayoutOpt
             }
 
             // WRITE OBJECTIVE FUNCTION VALUES TO FILE 
-            // write_step(design, iteration, Accept_Flag);
+            // WriteStep(design, iteration, Accept_Flag);
 
             //// DO CONSISTENCY CHECKS ON THE DESIGN.  THE 1 FLAG MEANS IT'S AN ACCEPTED STEP.
             //TestIt(design, current_eval, 1, iteration);
@@ -567,7 +563,7 @@ namespace _3D_LayoutOpt
 	      
 #if OBJ_DATA
 /* Write objective function values to file */
-            write_step(design, iteration, 0);
+            WriteStep(design, iteration, 0);
 #endif
       
             Revert(design, comp1, comp2);
@@ -619,8 +615,8 @@ namespace _3D_LayoutOpt
         static void UpdateState(Design design, Component comp)
         {
 
-            obj_function.UpdateOverlaps(design, comp);  
-            obj_function.EvalOverlapContainer(design);
+            ObjFunction.UpdateOverlaps(design, comp);  
+            ObjFunction.EvalOverlapContainer(design);
         }
 
 
@@ -732,9 +728,9 @@ namespace _3D_LayoutOpt
 /* of the coefficients has been Normalized to equal the number of components of the   */
 /* objective function times the initial value of the first component.                 */
 
-            current_eval = obj_function.Evaluate(design, 0, 1000);       /* In obj_function.c */
+            current_eval = ObjFunction.Evaluate(design, 0, 1000);       /* In obj_function.c */
             best_eval = current_eval;
-            obj_balance.init_obj_values(design);                /* In obj_balance.c */
+            ObjBalance.init_obj_values(design);                /* In obj_balance.c */
 
             Program.CalcCenterofGravity(design);
             Console.WriteLine("The center of gravity is {0}{1}{2}", design.c_grav[0],
@@ -762,7 +758,7 @@ namespace _3D_LayoutOpt
             Accept_count = 0;
             var improving = true;
   
-            current_eval = obj_function.Evaluate(design, max, 1000);
+            current_eval = ObjFunction.Evaluate(design, max, 1000);
             best_eval = current_eval;
             step_eval = current_eval;
             Console.WriteLine("current_eval is {0}", current_eval);
@@ -779,7 +775,7 @@ namespace _3D_LayoutOpt
                     // TAKE A STEP AND EVALUATE IT.  UPDATE STATE BY ACCEPTING OR REJECTING STEP.
                     DownHillMove(design, out whichComp, Move_size);
 
-                    step_eval = obj_function.Evaluate(design, max, 1000);
+                    step_eval = ObjFunction.Evaluate(design, max, 1000);
 	                if (step_eval <= current_eval)
 	                {
                         UpdateAccept(design, iteration, AcceptFlag.AcceptedGoodMove, column, cost_update,
@@ -799,9 +795,9 @@ namespace _3D_LayoutOpt
                 if (current_eval/old_eval > 0.99)
 	                improving = false;
             }
-            readwrite.WriteLoopData(0.0, (1000*count), Accept_count, 0, 0, 3);
+            IO.WriteLoopData(0.0, (1000*count), Accept_count, 0, 0, 3);
 
-            step_eval = obj_function.Evaluate(design, max, 1000);
+            step_eval = ObjFunction.Evaluate(design, max, 1000);
             Console.WriteLine("The best eval was {0}", best_eval);
             Console.WriteLine("The final eval was {0}", step_eval);
 

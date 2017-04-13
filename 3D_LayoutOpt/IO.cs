@@ -12,7 +12,7 @@ using TVGL.IOFunctions;
 
 namespace _3D_LayoutOpt
 {
-    static class readwrite
+    static class IO
     {
         private static readonly string[] CompNames =
         {
@@ -48,7 +48,7 @@ namespace _3D_LayoutOpt
             Stream fileStream;
             List<TessellatedSolid> ts;
             using (fileStream = File.OpenRead(filename))
-                ts = IO.Open(fileStream, filename);
+                ts = TVGL.IOFunctions.IO.Open(fileStream, filename);
             string name = GetNameFromFileName(filename);
             var container = new Container(name, ts);
             design.container = container;
@@ -183,7 +183,7 @@ namespace _3D_LayoutOpt
                 Stream fileStream;
                 List<TessellatedSolid> ts;
                 using (fileStream = File.OpenRead(filename))
-                    ts = IO.Open(fileStream, filename);
+                    ts = TVGL.IOFunctions.IO.Open(fileStream, filename);
                 string name = GetNameFromFileName(filename);
                 var comp = design.components.Find(x => x.name == name);
                 comp.ts = ts;
@@ -233,55 +233,19 @@ namespace _3D_LayoutOpt
             }
         }
 
+        /* ---------------------------------------------------------------------------------- */
+        /* This function prints out component information.                                    */
+        /* ---------------------------------------------------------------------------------- */
 
-            /* ---------------------------------------------------------------------------------- */
-            /* This function gets component data from a file.                                     */
-            /* ---------------------------------------------------------------------------------- */
-
-
-
-
-            /* ---------------------------------------------------------------------------------- */
-            /*                                                                                    */
-            /*                                    READWRITE.C                                      */
-            /*                                                                                    */
-            /* ---------------------------------------------------------------------------------- */
-
-            /* ---------------------------------------------------------------------------------- */
-            /* This function prints out component information.                                    */
-            /* ---------------------------------------------------------------------------------- */
-
-            static void fprint_data(Design design, int which)
+        static void FprintData(Design design, Component comp)
         {
-            int i;
-            Component comp;
-
             using (StreamWriter writetext = new StreamWriter("/comp.out"))
             {
-                comp = design.components[0];
-                i = 1;
-                while (++i <= which)
-                    comp = design.components[i];
-
-
-                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name, comp.orientation);
-
-                i = -1;
-                while (++i < 3)
-                    writetext.WriteLine("dim {0} is {1}", i, comp.dim[i]);
-
-                i = -1;
-                while (++i < 3)
-                    writetext.WriteLine("dim_initial {0} is {1}", i, comp.dim_initial[i]);
-
-                i = -1;
-                while (++i < 3)
-                    writetext.WriteLine("current dim {0} is {1}", i, comp.dim[i]);
-
-                i = -1;
-                while (++i < 3)
-                    writetext.WriteLine("coord {0} is {1}", i, comp.coord[i]);
-
+                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name);
+                for (int i = 0; i < 3; i++)
+                {
+                    Console.WriteLine("coord {0} is {1}", i, comp.ts[0].Center[i]);
+                }
                 writetext.WriteLine("");
             }
         }
@@ -290,7 +254,7 @@ namespace _3D_LayoutOpt
         /* This function writes Accepted steps to a file.                                     */
         /* ---------------------------------------------------------------------------------- */
 
-        static void write_step(Design design, int iteration, int flag)
+        static void WriteStep(Design design, int iteration, int flag)
         {
 
             if (iteration == 0)         //????????????????????
@@ -350,33 +314,26 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function prints out component information.                                    */
+        /* THIS FUNCTION PRINTS OUT COMPONENT INFORMATION.                                    */
         /* ---------------------------------------------------------------------------------- */
 
-        static void print_data(Design design, int which)
+        static void PrintData(Design design, Component comp)
         {
-            int i;
-            Component comp;
 
-            comp = design.components[0];
-            i = 1;
-            while (++i <= which)
-                comp = design.components[i];
+            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name);
 
+            //i = -1;
+            //while (++i < 3)
+            //    Console.WriteLine("dim {0} is {1}", i, comp.dim[i]);
 
-            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name, comp.orientation);
+            //i = -1;
+            //while (++i < 3)
+            //    Console.WriteLine("dim_initial {0} is {1}", i, comp.dim_initial[i]);
 
-            i = -1;
-            while (++i < 3)
-                Console.WriteLine("dim {0} is {1}", i, comp.dim[i]);
-
-            i = -1;
-            while (++i < 3)
-                Console.WriteLine("dim_initial {0} is {1}", i, comp.dim_initial[i]);
-
-            i = -1;
-            while (++i < 3)
-                Console.WriteLine("coord {0} is {1}", i, comp.coord[i]);
+            for (int i = 0; i < 3; i++)
+            {
+                Console.WriteLine("coord {0} is {1}", i, comp.ts[0].Center[i]);
+            }
             Console.WriteLine("");
         }
 
@@ -384,25 +341,25 @@ namespace _3D_LayoutOpt
         /* This function writes component data to a file.                                     */
         /* ---------------------------------------------------------------------------------- */
 
-        static void print_comp_data(Design design)
+        static void PrintCompData(Design design)
         {
-            int i;
 
-            i = 0;
-            while (++i <= Constants.COMP_NUM)
-                fprint_data(design, i);
+            foreach (var comp in design.components)
+            {
+                FprintData(design, comp);
+            }
         }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function prints out overlap data.                                             */
         /* ---------------------------------------------------------------------------------- */
 
-        static void print_overlaps(Design design)
+        static void PrintOverlaps(Design design)
         {
             int i, j;
 
             i = -1;
-            while (++i < Constants.COMP_NUM)
+            while (++i < design.comp_count)
             {
                 j = -1;
                 while (++j <= i)
@@ -415,7 +372,7 @@ namespace _3D_LayoutOpt
         /* This function writes design data to a file.                                        */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void save_design(Design design)
+        public static void SaveDesign(Design design)
         {
             int i, j;
             double avg_old_value;
@@ -433,14 +390,14 @@ namespace _3D_LayoutOpt
             {
                 i = 0;
                 comp = design.components[0];
-                while (++i <= Constants.COMP_NUM)
+                while (++i <= design.comp_count)
                 {
                     //writetext.WriteLine("{0} {1} {2}", comp.name, comp.shape_type, comp.orientation);
                     //writetext.WriteLine("{0} {1} {2}", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
                     //writetext.WriteLine("{0} {1} {2}", comp.dim[0], comp.dim[1], comp.dim[2]);
                     //writetext.WriteLine("{0} {1} {2}", comp.coord[0], comp.coord[1], comp.coord[2]);
                     //writetext.WriteLine("{0} {1}  {2}", comp.half_area, comp.mass, comp.temp);
-                    if (i < Constants.COMP_NUM)
+                    if (i < design.comp_count)
 
                         comp = design.components[i];
                 }
@@ -455,7 +412,7 @@ namespace _3D_LayoutOpt
         /* This function writes container data to a file.                                        */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void save_container(Design design)
+        public static void SaveContainer(Design design)
         {
             int i, j;
             double avg_old_value;
@@ -480,7 +437,7 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function reads design data from a file.                                       */
+        /* THIS FUNCTION READS DESIGN DATA FROM A FILE.                                       */
         /* ---------------------------------------------------------------------------------- */
 
         public static void RestoreDesign(Design design)
@@ -496,38 +453,38 @@ namespace _3D_LayoutOpt
                 i = 0;
                 comp = design.components[0];
                 string line;
-                while (++i <= Constants.COMP_NUM)
+                while (++i <= design.comp_count)
                 {
                     line = readtext.ReadLine();
                     string[] items = line.Split(' ');
                     comp.name = items[0];
-                    comp.shape_type = items[1];
-                    comp.orientation = Convert.ToInt16(items[2]);
+                    //comp.shape_type = items[1];
+                    //comp.orientation = Convert.ToInt16(items[2]);
 
                     line = readtext.ReadLine();
                     items = line.Split(' ');
-                    comp.dim_initial[0] = Convert.ToDouble(items[0]);
-                    comp.dim_initial[1] = Convert.ToDouble(items[1]);
-                    comp.dim_initial[2] = Convert.ToDouble(items[2]);
+                    //comp.dim_initial[0] = Convert.ToDouble(items[0]);
+                    //comp.dim_initial[1] = Convert.ToDouble(items[1]);
+                    //comp.dim_initial[2] = Convert.ToDouble(items[2]);
 
                     line = readtext.ReadLine();
                     items = line.Split(' ');
-                    comp.dim[0] = Convert.ToDouble(items[0]);
-                    comp.dim[1] = Convert.ToDouble(items[1]);
-                    comp.dim[2] = Convert.ToDouble(items[2]);
+                    //comp.dim[0] = Convert.ToDouble(items[0]);
+                    //comp.dim[1] = Convert.ToDouble(items[1]);
+                    //comp.dim[2] = Convert.ToDouble(items[2]);
 
                     line = readtext.ReadLine();
                     items = line.Split(' ');
-                    comp.coord[0] = Convert.ToDouble(items[0]);
-                    comp.coord[1] = Convert.ToDouble(items[1]);
-                    comp.coord[2] = Convert.ToDouble(items[2]);
+                    //comp.coord[0] = Convert.ToDouble(items[0]);
+                    //comp.coord[1] = Convert.ToDouble(items[1]);
+                    //comp.coord[2] = Convert.ToDouble(items[2]);
 
                     line = readtext.ReadLine();
                     items = line.Split(' ');
-                    comp.half_area = Convert.ToDouble(items[0]);
-                    comp.mass = Convert.ToDouble(items[1]);
+                    //comp.half_area = Convert.ToDouble(items[0]);
+                    //comp.mass = Convert.ToDouble(items[1]);
                     comp.temp = Convert.ToDouble(items[2]);
-                    if (i < Constants.COMP_NUM)
+                    if (i < design.comp_count)
                         comp = design.components[i];
                 }
                 line = readtext.ReadLine();
@@ -538,8 +495,8 @@ namespace _3D_LayoutOpt
                 avg_old_value = Convert.ToDouble(items2[3]);
             }
 
-            Program.init_bounds(design);
-            obj_function.InitOverlaps(design);
+            //Program.InitBounds(design);
+            ObjFunction.InitOverlaps(design);
             i = -1;
             while (++i < Constants.OBJ_NUM)
             {
@@ -550,11 +507,11 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function writes to a file: the current Move probabilities, the percentage     */
-        /* change in delta_c due to each Move, and the percentage of attempts for each Move.  */
+        /* THIS FUNCTION WRITES TO A FILE: THE CURRENT MOVE PROBABILITIES, THE PERCENTAGE     */
+        /* CHANGE IN DELTA_C DUE TO EACH MOVE, AND THE PERCENTAGE OF ATTEMPTS FOR EACH MOVE.  */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void write_probs(Hustin hustin, double temp)
+        public static void WriteProbs(Hustin hustin, double temp)
         {
             int i, total_attempts;
             double total_delta_c;
@@ -594,10 +551,10 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function writes the final temperature field to a file.                        */
+        /* THIS FUNCTION WRITES THE FINAL TEMPERATURE FIELD TO A FILE.                        */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void save_tfield(Design design)
+        public static void SaveTfield(Design design)
         {
             int k = 0;
             Console.WriteLine("Saving current tfield");
@@ -620,7 +577,7 @@ namespace _3D_LayoutOpt
         /* This function restores the temperature field to a old_temp's.                       */
         /* ---------------------------------------------------------------------------------- */
 
-        static void restore_tfield(Design design)
+        static void RestoreTfield(Design design)
         {
             int k = 0;
             Console.WriteLine("Restoring tfield");

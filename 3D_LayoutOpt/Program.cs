@@ -35,7 +35,7 @@ namespace _3D_LayoutOpt
 
 
             // IMPORTING CAD MODELS, COMPONENT AND CONTAINER FEATURES
-            readwrite.ImportData(design);
+            IO.ImportData(design);
             Console.WriteLine("{0} components were read in from the file.\n",design.comp_count);
 
             //INITIALIZING THE PROCESS
@@ -45,10 +45,10 @@ namespace _3D_LayoutOpt
             Schedules.SampleSpace(design);  
 
 
-            anneal_alg.anneal(design);                        /* This function is in anneal_alg.c */
-            readwrite.save_design(design);
-            readwrite.save_container(design);
-            readwrite.save_tfield(design);
+            AnnealAlg.anneal(design);                        /* This function is in anneal_alg.c */
+            IO.SaveDesign(design);
+            IO.SaveContainer(design);
+            IO.SaveTfield(design);
 
             /* DownHill(design, MIN_MOVE_DIST);      */
             end_time = get_time();
@@ -103,16 +103,16 @@ namespace _3D_LayoutOpt
           InitLocations(design);
 
           //Console.WriteLine("Initializing box bounds.\n");
-          //init_bounds(design);
+          //InitBounds(design);
 
           Console.WriteLine("Initializing overlaps.\n");
-          obj_function.InitOverlaps(design);          
+          ObjFunction.InitOverlaps(design);          
 
           Console.WriteLine("Initializing weights.\n");
           InitWeights(design);
 
           Console.WriteLine("Initializing heat parameters.\n");
-          heatbasic.InitHeatParam(design);        
+          HeatBasic.InitHeatParam(design);        
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -188,7 +188,7 @@ namespace _3D_LayoutOpt
         ///* ---------------------------------------------------------------------------------- */
         ///* This function initializes the bounds for the bounding box.                         */
         ///* ---------------------------------------------------------------------------------- */
-        //public static void init_bounds(Design design)
+        //public static void InitBounds(Design design)
         //{
         //    Component comp;  
         //    for (int i = 0; i < design.comp_count; i++)
@@ -425,9 +425,9 @@ namespace _3D_LayoutOpt
                 while (Move_size <= 1.25)
                 {
                     writetext.WriteLine(Move_size);
-                    readwrite.RestoreDesign(design);
-                    anneal_alg.DownHill(design, Move_size);
-                    eval = obj_function.Evaluate(design, 0, 0);
+                    IO.RestoreDesign(design);
+                    AnnealAlg.DownHill(design, Move_size);
+                    eval = ObjFunction.Evaluate(design, 0, 0);
                     writetext.WriteLine("{0}", eval);
                     if (eval < min_eval)
                         min_eval = eval;

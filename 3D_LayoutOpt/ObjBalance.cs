@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class obj_balance
+    class ObjBalance
     {
         /* ---------------------------------------------------------------------------------- */
         /*                                                                                    */
@@ -34,7 +34,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         /* This function updates the normalizing coefficients.                                */
         /* ---------------------------------------------------------------------------------- */
-        public static void update_coef(Design design)
+        public static void UpdateCoef(Design design)
         {
             int i, j;
 

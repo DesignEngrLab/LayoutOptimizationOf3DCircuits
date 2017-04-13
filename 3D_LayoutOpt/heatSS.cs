@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class heatSS
+    class HeatSS
     {
 
         /* ---------------------------------------------------------------------------------- */
@@ -56,13 +56,13 @@ namespace _3D_LayoutOpt
             }
             find_k_and_q(design, divisions, tot_nodes, ss_dim, flux, fringe);
             set_up_SS_matrix(design, flux, R, ss_dim, divisions, tot_nodes);
-            heatMM.LU_Decomp(design, R, flux, tot_nodes, divisions[1]*divisions[2]);
+            HeatMM.LU_Decomp(design, R, flux, tot_nodes, divisions[1]*divisions[2]);
             find_avg_temp(design, tot_nodes, ss_dim);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function defines the divisions of the sides and the lengths of the divisions. */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION DEFINES THE DIVISIONS OF THE SIDES AND THE LENGTHS OF THE DIVISIONS. */
+        /* ---------------------------------------------------------------------------------- */
         public static void define_divisions(Design design, int[] divisions, double[] ss_dim, int tot_nodes, double[] fringe)
         {
             double ratio;
@@ -82,12 +82,12 @@ namespace _3D_LayoutOpt
     
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function initializes the temperature field.  This field is a vector not a     */
-/* matrix.  This is because it corresponds to the x in Ax = b.  The comp in the       */
-/* tfield structure refers to the number of the component in the list.  If zero, then */
-/* corresponds to a simple resistor junction.                                         */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION INITIALIZES THE TEMPERATURE FIELD.  THIS FIELD IS A VECTOR NOT A     */
+        /* MATRIX.  THIS IS BECAUSE IT CORRESPONDS TO THE X IN AX = B.  THE COMP IN THE       */
+        /* TFIELD STRUCTURE REFERS TO THE NUMBER OF THE COMPONENT IN THE LIST.  IF ZERO, THEN */
+        /* CORRESPONDS TO A SIMPLE RESISTOR JUNCTION.                                         */
+        /* ---------------------------------------------------------------------------------- */
         public static void find_k_and_q(Design design, int[] divisions, int tot_nodes, double[] ss_dim, double[] flux, double[] fringe)
         {
             Component comp;
@@ -126,15 +126,15 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function sets up the cooefficient matrix R.  This matrix corresponds to the   */
-/* A in Ax = b.  Calculations of all the thermal resistances and boundary conditions  */
-/* are done in this subroutine.                                                       */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION SETS UP THE COOEFFICIENT MATRIX R.  THIS MATRIX CORRESPONDS TO THE   */
+        /* A IN AX = B.  CALCULATIONS OF ALL THE THERMAL RESISTANCES AND BOUNDARY CONDITIONS  */
+        /* ARE DONE IN THIS SUBROUTINE.                                                       */
+        /* ---------------------------------------------------------------------------------- */
         public static double find_vol(Component comp, double[] sscoord, double[] ss_dim)
         {
             double dx, dy, dz;
-
+            comp.ts[0].
             dx = (comp.dim[0] + ss_dim[0])/2.0 - Math.Abs(comp.coord[0] - sscoord[0]);
             if (dx< 0) dx = 0;
             if (dx > comp.dim[0]) dx = comp.dim[0];
@@ -151,11 +151,11 @@ namespace _3D_LayoutOpt
             return(dx* dy* dz);
         }    
 
-/* ---------------------------------------------------------------------------------- */
-/* This function sets up the cooefficient matrix R.  This matrix corresponds to the   */
-/* A in Ax = b.  Calculations of all the thermal resistances and boundary conditions  */
-/* are done in this subroutine.                                                       */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION SETS UP THE COOEFFICIENT MATRIX R.  THIS MATRIX CORRESPONDS TO THE   */
+        /* A IN AX = B.  CALCULATIONS OF ALL THE THERMAL RESISTANCES AND BOUNDARY CONDITIONS  */
+        /* ARE DONE IN THIS SUBROUTINE.                                                       */
+        /* ---------------------------------------------------------------------------------- */
         public static void set_up_SS_matrix(Design design, double[] flux, double[][] R, double[] ss_dim, int[] divisions, int tot_nodes)
         {
             int i, j, k, c;
@@ -307,7 +307,7 @@ namespace _3D_LayoutOpt
 
        
             tempSS = design.components[0].temp;
-            heatMM.thermal_analysis_MM(design);
+            HeatMM.thermal_analysis_MM(design);
 
             for (int i = 0; i < design.comp_count; i++)
             {

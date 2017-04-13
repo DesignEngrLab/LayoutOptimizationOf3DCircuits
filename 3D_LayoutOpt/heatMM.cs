@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class heatMM
+    class HeatMM
     {
         /* ------------------------------------------------------------------------- */
         /*                                                                           */
@@ -27,13 +27,13 @@ namespace _3D_LayoutOpt
             int i, j, tot_nodes, hbw, width;
             int[] node_dim = new int[Constants.DIMENSION];
 
-            set_up_tfield(design, node_dim);
+            SetUpTfield(design, node_dim);
             hbw = node_dim[1]*node_dim[2];
             width = 2*hbw + 1;
             tot_nodes = node_dim[0]*hbw;
 
 
-            find_contained_nodes(design, hbw, node_dim[2]);
+            FindContainedNodes(design, hbw, node_dim[2]);
 
             /* These commands set up the flux vector and R matrix using dynamic memory */
             /* allocation.                                                             */
@@ -47,15 +47,15 @@ namespace _3D_LayoutOpt
                 for (j = 0; j < width; ++j)
                     R[i][j] = 0.0;
             }
-            set_up_flux(design, flux, tot_nodes);
-            set_up_coef_matrix(design, flux, R, tot_nodes, hbw, node_dim[2]);
+            SetupFlux(design, flux, tot_nodes);
+            SetupCoefMatrix(design, flux, R, tot_nodes, hbw, node_dim[2]);
             /*if (design.gauss) {
     design.gauss = 0;
-    gauss_seidel(design, R, flux, tot_nodes, hbw, node_dim[2]);
+    GaussSeidel(design, R, flux, tot_nodes, hbw, node_dim[2]);
   }
   else*/
             LU_Decomp(design, R, flux, tot_nodes, hbw);
-            find_comp_temp(design);
+            FindCompTemp(design);
 
             //for (i = 0; i<tot_nodes; i++)
             //    free(R[i]);
@@ -63,14 +63,14 @@ namespace _3D_LayoutOpt
             //    free(flux);
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function initializes the temperature field.  This field is a vector not a     */
-/* matrix.  This is because it corresponds to the x in Ax = b.  The comp in the       */
-/* tfield structure refers to the number of the component in the list.  If zero, then */
-/* corresponds to a simple resistor junction.                                         */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION INITIALIZES THE TEMPERATURE FIELD.  THIS FIELD IS A VECTOR NOT A     */
+        /* MATRIX.  THIS IS BECAUSE IT CORRESPONDS TO THE X IN AX = B.  THE COMP IN THE       */
+        /* TFIELD STRUCTURE REFERS TO THE NUMBER OF THE COMPONENT IN THE LIST.  IF ZERO, THEN */
+        /* CORRESPONDS TO A SIMPLE RESISTOR JUNCTION.                                         */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void set_up_tfield(Design design, int[] node_dim)
+        static void SetUpTfield(Design design, int[] node_dim)
         {
             Component comp;
             double[][] xx = new double[3][];
@@ -87,15 +87,15 @@ namespace _3D_LayoutOpt
                 comp = design.components[n];
                 for (m = 0; m < Constants.DIMENSION; m++)
                 {
-                    if (not_duplicate(comp.coord[m], xx[m], i[m]))
-                        xx[m][++i[m]] = comp.coord[m];
+                    if (NotDuplicate(comp.ts[0].Center[m], xx[m], i[m]))
+                        xx[m][++i[m]] = comp.ts[0].Center[m];
                 }
             }
          
             for (m = 0; m < Constants.DIMENSION; m++)
             {
                 node_dim[m] = i[m];
-                picksort(node_dim[m], xx[m]);
+                PickSort(node_dim[m], xx[m]);
             }
 
 #if SFRINGE
@@ -118,7 +118,7 @@ namespace _3D_LayoutOpt
             {
                 xx[m][0] = design.box_min[m] - fringe[m];
                 xx[m][(++node_dim[m])] = design.box_max[m] + fringe[m];
-                refinemesh(node_dim, xx[m], m, design.min_node_space);
+                RefineMesh(node_dim, xx[m], m, design.min_node_space);
                 ++node_dim[m];
             }
             /*Console.WriteLine("%d %d %d  ", node_dim[0], node_dim[1], node_dim[2]);*/
@@ -143,12 +143,12 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function finds if there already is such a coordinate in the array.            */
-/* It returns TRUE if no duplicates and FALSE if duplicates                           */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION FINDS IF THERE ALREADY IS SUCH A COORDINATE IN THE ARRAY.            */
+        /* IT RETURNS TRUE IF NO DUPLICATES AND FALSE IF DUPLICATES                           */
+        /* ---------------------------------------------------------------------------------- */
 
-        static bool not_duplicate(double num, double[] arr, int n)
+        static bool NotDuplicate(double num, double[] arr, int n)
         {
             int m;
 
@@ -160,12 +160,12 @@ namespace _3D_LayoutOpt
             return true;
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function is pick sort from NUMERICAL RECIPES in C.  It sorts the arrays in    */
-/* ascending order.                                                                   */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION IS PICK SORT FROM NUMERICAL RECIPES IN C.  IT SORTS THE ARRAYS IN    */
+        /* ASCENDING ORDER.                                                                   */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void picksort(int n, double[] arr)
+        static void PickSort(int n, double[] arr)
         {
             int i, j;
             double a;
@@ -183,12 +183,12 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function adds nodes in gaps where the space is bigger than MIN_NODE_SPACE.    */
-/*                                                                                    */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION ADDS NODES IN GAPS WHERE THE SPACE IS BIGGER THAN MIN_NODE_SPACE.    */
+        /*                                                                                    */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void refinemesh(int[] node_dim, double[] arr, int vector, double min_node_space)
+        static void RefineMesh(int[] node_dim, double[] arr, int vector, double min_node_space)
         {
             int i, j;
 
@@ -234,12 +234,12 @@ namespace _3D_LayoutOpt
          
          */
 
-/* ---------------------------------------------------------------------------------- */
-/* This function finds all the nodes that are contained in components and inner       */
-/* component heat sources.                                                            */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION FINDS ALL THE NODES THAT ARE CONTAINED IN COMPONENTS AND INNER       */
+        /* COMPONENT HEAT SOURCES.                                                            */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void find_contained_nodes(Design design, int hbw, int znodes)
+        static void FindContainedNodes(Design design, int hbw, int znodes)
         {
             int k = 0;
             Component comp;
@@ -249,7 +249,7 @@ namespace _3D_LayoutOpt
                 comp = design.components[k];
                 design.tfield[comp.node_center].comp = comp;
                 comp.nodes = 1;
-                find_neighbors(design.tfield, comp, comp.node_center, comp.nodes, hbw, znodes, 0);
+                FindNeighbors(design.tfield, comp, comp.node_center, comp.nodes, hbw, znodes, 0);
             }
         }
 
@@ -258,7 +258,7 @@ namespace _3D_LayoutOpt
 /* component.                                                                         */
 /* ---------------------------------------------------------------------------------- */
 
-        static void find_neighbors(Temperature_field[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
+        static void FindNeighbors(Temperature_field[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
         {
             /* This will check neighbors to the west so long as it didn't come FROM the west.*/
             if ((from != -1) && ((Math.Abs(tfield[k - hbw].coord[0] - comp.coord[0])) < (comp.dim[0]/2)) &&
@@ -266,7 +266,7 @@ namespace _3D_LayoutOpt
             {
                 tfield[k - hbw].comp = comp;
                 ++n;
-                find_neighbors(tfield, comp, k - hbw, n, hbw, znodes, 1);
+                FindNeighbors(tfield, comp, k - hbw, n, hbw, znodes, 1);
             }
             /* Checks to the east. */
             if ((from != 1) && ((Math.Abs(tfield[k + hbw].coord[0] - comp.coord[0])) < (comp.dim[0]/2)) &&
@@ -274,7 +274,7 @@ namespace _3D_LayoutOpt
             {
                 tfield[k + hbw].comp = comp;
                 ++n;
-                find_neighbors(tfield, comp, k + hbw, n, hbw, znodes, -1);
+                FindNeighbors(tfield, comp, k + hbw, n, hbw, znodes, -1);
             }
             /* Checks to the south. */
             if ((from != -2) && ((Math.Abs(tfield[k - znodes].coord[1] - comp.coord[1])) < (comp.dim[1]/2)) &&
@@ -282,7 +282,7 @@ namespace _3D_LayoutOpt
             {
                 tfield[k - znodes].comp = comp;
                 ++n;
-                find_neighbors(tfield, comp, k - znodes, n, hbw, znodes, 2);
+                FindNeighbors(tfield, comp, k - znodes, n, hbw, znodes, 2);
             }
             /* Checks to the north. */
             if ((from != 2) && ((Math.Abs(tfield[k + znodes].coord[1] - comp.coord[1])) < (comp.dim[1]/2)) &&
@@ -290,7 +290,7 @@ namespace _3D_LayoutOpt
             {
                 tfield[k + znodes].comp = comp;
                 ++n;
-                find_neighbors(tfield, comp, k + znodes, n, hbw, znodes, -2);
+                FindNeighbors(tfield, comp, k + znodes, n, hbw, znodes, -2);
             }
             /* Checks down. */
             if ((from != -3) && ((Math.Abs(tfield[k - 1].coord[2] - comp.coord[2])) < (comp.dim[2]/2)) &&
@@ -298,7 +298,7 @@ namespace _3D_LayoutOpt
             {
                 tfield[k - 1].comp = comp;
                 ++n;
-                find_neighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
+                FindNeighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
             }
             /* Checks up. */
             if ((from != 3) && ((Math.Abs(tfield[k + 1].coord[2] - comp.coord[2])) < (comp.dim[2]/2)) &&
@@ -306,18 +306,18 @@ namespace _3D_LayoutOpt
             {
                 tfield[k + 1].comp = comp;
                 ++n;
-                find_neighbors(tfield, comp, k + 1, n, hbw, znodes, -3);
+                FindNeighbors(tfield, comp, k + 1, n, hbw, znodes, -3);
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function initializes the heat flux vector.  This vector corresponds to the    */
-/* b in Ax = b.  If no component at node then it equals zero, however if there is     */
-/* a component at the node then it equals comp.q divided by the number of nodes      */
-/* inside the component.                                                              */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION INITIALIZES THE HEAT FLUX VECTOR.  THIS VECTOR CORRESPONDS TO THE    */
+        /* B IN AX = B.  IF NO COMPONENT AT NODE THEN IT EQUALS ZERO, HOWEVER IF THERE IS     */
+        /* A COMPONENT AT THE NODE THEN IT EQUALS COMP.Q DIVIDED BY THE NUMBER OF NODES      */
+        /* INSIDE THE COMPONENT.                                                              */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void set_up_flux(Design design, double[] flux, int tot_nodes)
+        static void SetupFlux(Design design, double[] flux, int tot_nodes)
         {
             Component comp;
             int k;
@@ -336,13 +336,13 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function sets up the cooefficient matrix R.  This matrix corresponds to the   */
-/* A in Ax = b.  Calculations of all the thermal resistances and boundary conditions  */
-/* are done in this subroutine.                                                       */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION SETS UP THE COOEFFICIENT MATRIX R.  THIS MATRIX CORRESPONDS TO THE   */
+        /* A IN AX = B.  CALCULATIONS OF ALL THE THERMAL RESISTANCES AND BOUNDARY CONDITIONS  */
+        /* ARE DONE IN THIS SUBROUTINE.                                                       */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void set_up_coef_matrix(Design design, double[] flux, double[][] R, int tot_nodes, int hbw, int znodes)
+        static void SetupCoefMatrix(Design design, double[] flux, double[][] R, int tot_nodes, int hbw, int znodes)
         {
             int k, i;
             double n, e, w, s, u, d;
@@ -394,28 +394,28 @@ namespace _3D_LayoutOpt
                     u = 0.0;
 
 
-                calc_resistances(design, flux, R, hbw, ((u + d)*(n + s)), w, k, -hbw, 0);
+                CalcResistances(design, flux, R, hbw, ((u + d)*(n + s)), w, k, -hbw, 0);
 
-                calc_resistances(design, flux, R, hbw, ((u + d)*(n + s)), e, k, hbw, 0);
+                CalcResistances(design, flux, R, hbw, ((u + d)*(n + s)), e, k, hbw, 0);
 
-                calc_resistances(design, flux, R, hbw, ((u + d)*(e + w)), s, k, -znodes, 1);
+                CalcResistances(design, flux, R, hbw, ((u + d)*(e + w)), s, k, -znodes, 1);
 
-                calc_resistances(design, flux, R, hbw, ((u + d)*(e + w)), n, k, znodes, 1);
+                CalcResistances(design, flux, R, hbw, ((u + d)*(e + w)), n, k, znodes, 1);
 
-                calc_resistances(design, flux, R, hbw, ((n + s)*(e + w)), d, k, -1, 2);
+                CalcResistances(design, flux, R, hbw, ((n + s)*(e + w)), d, k, -1, 2);
 
-                calc_resistances(design, flux, R, hbw, ((n + s)*(e + w)), u, k, 1, 2);
+                CalcResistances(design, flux, R, hbw, ((n + s)*(e + w)), u, k, 1, 2);
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function calculates the resistances between points.  The reason this function */
-/* is so complicated is that a connection between a node can either be in open space, */
-/* one node contained within a component, both nodes within separate components, or   */
-/* both nodes within the same component.                                              */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS FUNCTION CALCULATES THE RESISTANCES BETWEEN POINTS.  THE REASON THIS FUNCTION */
+        /* IS SO COMPLICATED IS THAT A CONNECTION BETWEEN A NODE CAN EITHER BE IN OPEN SPACE, */
+        /* ONE NODE CONTAINED WITHIN A COMPONENT, BOTH NODES WITHIN SEPARATE COMPONENTS, OR   */
+        /* BOTH NODES WITHIN THE SAME COMPONENT.                                              */
+        /* ---------------------------------------------------------------------------------- */
 
-        static void calc_resistances(Design design, double[] flux, double[][] R, int hbw, double area, double x, int k,
+        static void CalcResistances(Design design, double[] flux, double[][] R, int hbw, double area, double x, int k,
             int step, int dir)
         {
             double xc, nx, kc, kn;
@@ -431,9 +431,7 @@ namespace _3D_LayoutOpt
                 if (design.tfield[k].comp != null)
                 {
                     kc = design.tfield[k].comp.k;
-                    xc = (design.tfield[k].comp.dim[dir]/2) - Math.Abs(design.tfield[k].comp.coord[dir] -
-
-                                                                       design.tfield[k].coord[dir]);
+                    xc = (design.tfield[k].comp.dim[dir]/2) - Math.Abs(design.tfield[k].comp.coord[dir] - design.tfield[k].coord[dir]);
                 }
                 else
                 {
@@ -480,7 +478,7 @@ namespace _3D_LayoutOpt
 /* the component data structure for analysis by eval_part_5.                          */
 /* ---------------------------------------------------------------------------------- */
 
-        static void find_comp_temp(Design design)
+        static void FindCompTemp(Design design)
         {
             Component comp;
 
@@ -492,9 +490,9 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This is the matrix solver for the vector of nodes in tfield.  It uses LU decomp.   */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS IS THE MATRIX SOLVER FOR THE VECTOR OF NODES IN TFIELD.  IT USES LU DECOMP.   */
+        /* ---------------------------------------------------------------------------------- */
 
         public static void LU_Decomp(Design design, double[][] R, double[] flux, int n, int hbw)
         {
@@ -548,11 +546,11 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This is an iterative matrix solver for the vector of nodes in tfield.              */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS IS AN ITERATIVE MATRIX SOLVER FOR THE VECTOR OF NODES IN TFIELD.              */
+        /* ---------------------------------------------------------------------------------- */
 
-        void gauss_seidel(Design design, double[][] R, double[] flux, int tot_nodes, int hbw, int znodes)
+        void GaussSeidel(Design design, double[][] R, double[] flux, int tot_nodes, int hbw, int znodes)
         {
             int i, k;
             int[] pos = {1, 0, 0};
@@ -563,7 +561,7 @@ namespace _3D_LayoutOpt
             pos[1] = znodes;
             pos[2] = hbw;
 
-            get_initial_guess(design, tot_nodes, hbw);
+            GetInitialGuess(design, tot_nodes, hbw);
 
             /*      Guass - Seidel iteration with SOR      */
             do
@@ -599,12 +597,12 @@ namespace _3D_LayoutOpt
 	design.tfield[design.first_comp.node_center].temp, tol);*/
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This is function establishes the intial guesses used by Gauss-Seidel.  These       */
-/* are from the previous iteration.                                                   */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* THIS IS FUNCTION ESTABLISHES THE INTIAL GUESSES USED BY GAUSS-SEIDEL.  THESE       */
+        /* ARE FROM THE PREVIOUS ITERATION.                                                   */
+        /* ---------------------------------------------------------------------------------- */
 
-        void get_initial_guess(Design design, int tot_nodes, int hbw)
+        void GetInitialGuess(Design design, int tot_nodes, int hbw)
         {
             int k;
             Component comp;
