@@ -395,7 +395,7 @@ namespace _3D_LayoutOpt
                     //writetext.WriteLine("{0} {1} {2}", comp.name, comp.shape_type, comp.orientation);
                     //writetext.WriteLine("{0} {1} {2}", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
                     //writetext.WriteLine("{0} {1} {2}", comp.dim[0], comp.dim[1], comp.dim[2]);
-                    //writetext.WriteLine("{0} {1} {2}", comp.coord[0], comp.coord[1], comp.coord[2]);
+                    //writetext.WriteLine("{0} {1} {2}", comp.ts[0].Center[0], comp.ts[0].Center[1], comp.ts[0].Center[2]);
                     //writetext.WriteLine("{0} {1}  {2}", comp.half_area, comp.mass, comp.temp);
                     if (i < design.comp_count)
 
@@ -475,9 +475,9 @@ namespace _3D_LayoutOpt
 
                     line = readtext.ReadLine();
                     items = line.Split(' ');
-                    //comp.coord[0] = Convert.ToDouble(items[0]);
-                    //comp.coord[1] = Convert.ToDouble(items[1]);
-                    //comp.coord[2] = Convert.ToDouble(items[2]);
+                    //comp.ts[0].Center[0] = Convert.ToDouble(items[0]);
+                    //comp.ts[0].Center[1] = Convert.ToDouble(items[1]);
+                    //comp.ts[0].Center[2] = Convert.ToDouble(items[2]);
 
                     line = readtext.ReadLine();
                     items = line.Split(' ');

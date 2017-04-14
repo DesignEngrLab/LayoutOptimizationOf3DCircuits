@@ -689,7 +689,7 @@ namespace _3D_LayoutOpt
         //        comp = design.components[j];
         //        for (int i = 0; i < 3; i++)                 // Test to make sure the bounding box dimensions are correct. 
         //        {
-        //            if (((comp.coord[i] - comp.dim[i] / 2) <= design.box_min[i]) &&
+        //            if (((comp.ts[0].Center[i] - comp.dim[i] / 2) <= design.box_min[i]) &&
         //                (design.min_comp[i] != comp))
         //            {
 
@@ -697,7 +697,7 @@ namespace _3D_LayoutOpt
 
         //                return;
         //            }
-        //            if (((comp.coord[i] + comp.dim[i] / 2) >= design.box_max[i]) &&
+        //            if (((comp.ts[0].Center[i] + comp.dim[i] / 2) >= design.box_max[i]) &&
         //                (design.max_comp[i] != comp))
         //            {
 

@@ -159,10 +159,10 @@ namespace _3D_LayoutOpt
             //    update_dim(temp_comp);
             //    for (int j = 0; j < Constants.DIMENSION; j++)
             //    {
-            //        temp_comp.coord[j] = CreateRndDouble(-Constants.INITIAL_BOX_SIZE, Constants.INITIAL_BOX_SIZE);
+            //        temp_comp.ts[0].Center[j] = CreateRndDouble(-Constants.INITIAL_BOX_SIZE, Constants.INITIAL_BOX_SIZE);
             //    }
             //    if (Constants.DIMENSION == 2)
-            //        temp_comp.coord[2] = 0.0;
+            //        temp_comp.ts[0].Center[2] = 0.0;
             //    Console.WriteLine("{0} Dimensional Initial Placement ", Constants.DIMENSION);                 
                 
             //}
@@ -175,8 +175,8 @@ namespace _3D_LayoutOpt
             ///* Set the initial max and min bounding box dimensions */
             //for (int i = 0; i < 3; i++)
             //{
-            //    design.box_min[i] = temp_comp.coord[i];
-            //    design.box_max[i] = temp_comp.coord[i];
+            //    design.box_min[i] = temp_comp.ts[0].Center[i];
+            //    design.box_max[i] = temp_comp.ts[0].Center[i];
             //}
 
         #if LOCATE
@@ -290,7 +290,7 @@ namespace _3D_LayoutOpt
         //        {
         //            /*	  Console.WriteLine("Min comp may have changed - recomputing min bounds");
         //            */
-        //            design.box_min[i] = comp.coord[i];
+        //            design.box_min[i] = comp.ts[0].Center[i];
 
         //            for (int j = 0; j < design.comp_count; j++)
         //            {
@@ -311,7 +311,7 @@ namespace _3D_LayoutOpt
         //        {
         //            /*	  Console.WriteLine("Max comp may have changed - recomputing max bounds");
         //            */
-        //            design.box_max[i] = comp.coord[i];
+        //            design.box_max[i] = comp.ts[0].Center[i];
         //            for (int j = 0; j < design.comp_count; j++)
         //            {
         //                temp_comp = design.components[j];
@@ -341,7 +341,7 @@ namespace _3D_LayoutOpt
 //            */
 //            for (int i = 0; i < 3; i++)
 //            {
-//                location = comp.coord[i] - comp.dim[i] / 2.0;
+//                location = comp.ts[0].Center[i] - comp.dim[i] / 2.0;
 //                if (location < design.box_min[i])
 //                {
 //                    design.box_min[i] = location;
@@ -369,7 +369,7 @@ namespace _3D_LayoutOpt
 
 //            for (int i = 0; i < 3; i++)
 //            {
-//                location = comp.coord[i] + comp.dim[i] / 2.0;
+//                location = comp.ts[0].Center[i] + comp.dim[i] / 2.0;
 //                if (location > design.box_max[i])
 //                {
 //                    design.box_max[i] = location;

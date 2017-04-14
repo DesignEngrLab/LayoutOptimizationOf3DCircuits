@@ -113,7 +113,7 @@ namespace _3D_LayoutOpt
                         {
                             comp = design.components[n];
                             comp_vol = find_vol(comp, design.tfield[m].coord, ss_dim);
-                            flux[m] += (comp.q) * ((comp_vol) / (comp.dim[0] * comp.dim[1] * comp.dim[2]));
+                            flux[m] += (comp.q) * ((comp_vol) / ((comp.ts[0].XMax - comp.ts[0].XMin) * (comp.ts[0].YMax - comp.ts[0].YMin) * (comp.ts[0].ZMax - comp.ts[0].ZMin)));
                             ktot += (comp_vol) * (comp.k);
                             vol += comp_vol;
                         }
@@ -134,18 +134,17 @@ namespace _3D_LayoutOpt
         public static double find_vol(Component comp, double[] sscoord, double[] ss_dim)
         {
             double dx, dy, dz;
-            comp.ts[0].
-            dx = (comp.dim[0] + ss_dim[0])/2.0 - Math.Abs(comp.coord[0] - sscoord[0]);
-            if (dx< 0) dx = 0;
-            if (dx > comp.dim[0]) dx = comp.dim[0];
+            dx = ((comp.ts[0].XMax - comp.ts[0].XMin) + ss_dim[0])/2.0 - Math.Abs(comp.ts[0].Center[0] - sscoord[0]);
+            if (dx < 0) dx = 0;
+            if (dx > (comp.ts[0].XMax - comp.ts[0].XMin)) dx = (comp.ts[0].XMax - comp.ts[0].XMin);
             if (dx > ss_dim[0]) dx = ss_dim[0];
-            dy = (comp.dim[1] + ss_dim[1])/2.0 - Math.Abs(comp.coord[1] - sscoord[1]);
+            dy = ((comp.ts[0].YMax - comp.ts[0].YMin) + ss_dim[1])/2.0 - Math.Abs(comp.ts[0].Center[1] - sscoord[1]);
             if (dy< 0) dy = 0;
-            if (dy > comp.dim[1]) dy = comp.dim[1];
+            if (dy > (comp.ts[0].YMax - comp.ts[0].YMin)) dy = (comp.ts[0].YMax - comp.ts[0].YMin);
             if (dy > ss_dim[1]) dy = ss_dim[1];
-            dz = (comp.dim[2] + ss_dim[2])/2.0 - Math.Abs(comp.coord[2] - sscoord[2]);
+            dz = ((comp.ts[0].ZMax - comp.ts[0].ZMin) + ss_dim[2])/2.0 - Math.Abs(comp.ts[0].Center[2] - sscoord[2]);
             if (dz< 0) dz = 0;
-            if (dz > comp.dim[2]) dz = comp.dim[2];
+            if (dz > (comp.ts[0].ZMax - comp.ts[0].ZMin)) dz = (comp.ts[0].ZMax - comp.ts[0].ZMin);
             if (dz > ss_dim[2]) dz = ss_dim[2];
 
             return(dx* dy* dz);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    static class HeatBasic : IDe
+    static class HeatBasic
     {
 
         public static void HeatEval(Design design, int steps_at_t, int gen_limit)
