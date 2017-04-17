@@ -72,37 +72,37 @@ namespace _3D_LayoutOpt
         /* This function updates the heat parameters such as matrix tolerance and minimum     */
         /* node spacing and switches between analysis methods.                                */
         /* ---------------------------------------------------------------------------------- */
-        public static void update_heat_param(Design design, Schedule schedule, double t)
-        {
-            if ((t / (schedule.t_initial)) < design.analysis_switch[0])
-            {
-                design.choice = 0;
-                design.hcf_per_temp = 1;
-            }
-            if ((t / (schedule.t_initial)) < design.analysis_switch[1])
-            {
-                design.choice = 1;
-                design.hcf_per_temp = 1;
-            }
-            if ((t / (schedule.t_initial)) < design.analysis_switch[2])
-            {
-                design.choice = 2;
-                design.hcf_per_temp = 2;
-            }
-            if ((t / (schedule.t_initial)) < design.analysis_switch[3])
-            {
-                design.choice = 3;
-                design.hcf_per_temp = 1;
-                design.gaussMove = 3.0;
-            }
-            if ((t / (schedule.t_initial)) < design.analysis_switch[4])
-            {
-                design.choice = 3;
-                design.tolerance = 0.0001;
-                design.max_iter = 250;
-                design.gaussMove = 0.6;
-            }
-        }
+        //public static void update_heat_param(Design design, Schedule schedule, double t)
+        //{
+        //    if ((t / (schedule.t_initial)) < design.analysis_switch[0])
+        //    {
+        //        design.choice = 0;
+        //        design.hcf_per_temp = 1;
+        //    }
+        //    if ((t / (schedule.t_initial)) < design.analysis_switch[1])
+        //    {
+        //        design.choice = 1;
+        //        design.hcf_per_temp = 1;
+        //    }
+        //    if ((t / (schedule.t_initial)) < design.analysis_switch[2])
+        //    {
+        //        design.choice = 2;
+        //        design.hcf_per_temp = 2;
+        //    }
+        //    if ((t / (schedule.t_initial)) < design.analysis_switch[3])
+        //    {
+        //        design.choice = 3;
+        //        design.hcf_per_temp = 1;
+        //        design.gaussMove = 3.0;
+        //    }
+        //    if ((t / (schedule.t_initial)) < design.analysis_switch[4])
+        //    {
+        //        design.choice = 3;
+        //        design.tolerance = 0.0001;
+        //        design.max_iter = 250;
+        //        design.gaussMove = 0.6;
+        //    }
+        //}
 
         /* ---------------------------------------------------------------------------------- */
         /* This function returns the value of the penalty function for a temperature in       */

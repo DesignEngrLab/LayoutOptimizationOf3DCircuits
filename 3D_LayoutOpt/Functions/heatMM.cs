@@ -87,8 +87,8 @@ namespace _3D_LayoutOpt
                 comp = design.components[n];
                 for (m = 0; m < Constants.DIMENSION; m++)
                 {
-                    if (NotDuplicate(comp.ts[0].Center[m], xx[m], i[m]))
-                        xx[m][++i[m]] = comp.ts[0].Center[m];
+                    if (NotDuplicate(comp.ts.Center[m], xx[m], i[m]))
+                        xx[m][++i[m]] = comp.ts.Center[m];
                 }
             }
          
@@ -221,9 +221,9 @@ namespace _3D_LayoutOpt
             comp = first_comp;
             while (comp != null)
             {
-                if ((Math.Abs(comp.ts[0].Center[0] - tfield[k].coord[0]) < Constants.CLOSE_NODE) &&
-                    (Math.Abs(comp.ts[0].Center[1] - tfield[k].coord[1]) < Constants.CLOSE_NODE) &&
-                    (Math.Abs(comp.ts[0].Center[2] - tfield[k].coord[2]) < Constants.CLOSE_NODE))
+                if ((Math.Abs(comp.ts.Center[0] - tfield[k].coord[0]) < Constants.CLOSE_NODE) &&
+                    (Math.Abs(comp.ts.Center[1] - tfield[k].coord[1]) < Constants.CLOSE_NODE) &&
+                    (Math.Abs(comp.ts.Center[2] - tfield[k].coord[2]) < Constants.CLOSE_NODE))
                 {
                     comp.node_center = k;
                     return;
@@ -261,7 +261,7 @@ namespace _3D_LayoutOpt
         static void FindNeighbors(TemperatureNode[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
         {
             /* This will check neighbors to the west so long as it didn't come FROM the west.*/
-            if ((from != -1) && ((Math.Abs(tfield[k - hbw].coord[0] - comp.ts[0].Center[0])) < (comp.ts[0].XMax - comp.ts[0].XMin)/2) &&
+            if ((from != -1) && ((Math.Abs(tfield[k - hbw].coord[0] - comp.ts.Center[0])) < (comp.ts.XMax - comp.ts.XMin)/2) &&
                 (tfield[k - hbw].comp == null))
             {
                 tfield[k - hbw].comp = comp;
@@ -269,7 +269,7 @@ namespace _3D_LayoutOpt
                 FindNeighbors(tfield, comp, k - hbw, n, hbw, znodes, 1);
             }
             /* Checks to the east. */
-            if ((from != 1) && ((Math.Abs(tfield[k + hbw].coord[0] - comp.ts[0].Center[0])) < (comp.ts[0].XMax - comp.ts[0].XMin) / 2) &&
+            if ((from != 1) && ((Math.Abs(tfield[k + hbw].coord[0] - comp.ts.Center[0])) < (comp.ts.XMax - comp.ts.XMin) / 2) &&
                 (tfield[k + hbw].comp == null))
             {
                 tfield[k + hbw].comp = comp;
@@ -277,7 +277,7 @@ namespace _3D_LayoutOpt
                 FindNeighbors(tfield, comp, k + hbw, n, hbw, znodes, -1);
             }
             /* Checks to the south. */
-            if ((from != -2) && ((Math.Abs(tfield[k - znodes].coord[1] - comp.ts[0].Center[1])) < (comp.ts[0].YMax - comp.ts[0].YMin) / 2) &&
+            if ((from != -2) && ((Math.Abs(tfield[k - znodes].coord[1] - comp.ts.Center[1])) < (comp.ts.YMax - comp.ts.YMin) / 2) &&
                 (tfield[k - znodes].comp == null))
             {
                 tfield[k - znodes].comp = comp;
@@ -285,7 +285,7 @@ namespace _3D_LayoutOpt
                 FindNeighbors(tfield, comp, k - znodes, n, hbw, znodes, 2);
             }
             /* Checks to the north. */
-            if ((from != 2) && ((Math.Abs(tfield[k + znodes].coord[1] - comp.ts[0].Center[1])) < (comp.ts[0].YMax - comp.ts[0].YMin) / 2) &&
+            if ((from != 2) && ((Math.Abs(tfield[k + znodes].coord[1] - comp.ts.Center[1])) < (comp.ts.YMax - comp.ts.YMin) / 2) &&
                 (tfield[k + znodes].comp == null))
             {
                 tfield[k + znodes].comp = comp;
@@ -293,7 +293,7 @@ namespace _3D_LayoutOpt
                 FindNeighbors(tfield, comp, k + znodes, n, hbw, znodes, -2);
             }
             /* Checks down. */
-            if ((from != -3) && ((Math.Abs(tfield[k - 1].coord[2] - comp.ts[0].Center[2])) < (comp.ts[0].ZMax - comp.ts[0].ZMin) / 2) &&
+            if ((from != -3) && ((Math.Abs(tfield[k - 1].coord[2] - comp.ts.Center[2])) < (comp.ts.ZMax - comp.ts.ZMin) / 2) &&
                 (tfield[k - 1].comp == null))
             {
                 tfield[k - 1].comp = comp;
@@ -301,7 +301,7 @@ namespace _3D_LayoutOpt
                 FindNeighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
             }
             /* Checks up. */
-            if ((from != 3) && ((Math.Abs(tfield[k + 1].coord[2] - comp.ts[0].Center[2])) < (comp.ts[0].ZMax - comp.ts[0].ZMin) / 2) &&
+            if ((from != 3) && ((Math.Abs(tfield[k + 1].coord[2] - comp.ts.Center[2])) < (comp.ts.ZMax - comp.ts.ZMin) / 2) &&
                 (tfield[k + 1].comp == null))
             {
                 tfield[k + 1].comp = comp;
@@ -433,13 +433,13 @@ namespace _3D_LayoutOpt
                     switch (dir)
                     {
                         case 0:
-                            xc = ((design.tfield[k].comp.ts[0].XMax - design.tfield[k].comp.ts[0].XMin) / 2) - Math.Abs(design.tfield[k].comp.ts[0].Center[dir] - design.tfield[k].coord[dir]);
+                            xc = ((design.tfield[k].comp.ts.XMax - design.tfield[k].comp.ts.XMin) / 2) - Math.Abs(design.tfield[k].comp.ts.Center[dir] - design.tfield[k].coord[dir]);
                             break;
                         case 1:
-                            xc = ((design.tfield[k].comp.ts[0].YMax - design.tfield[k].comp.ts[0].YMin) / 2) - Math.Abs(design.tfield[k].comp.ts[0].Center[dir] - design.tfield[k].coord[dir]);
+                            xc = ((design.tfield[k].comp.ts.YMax - design.tfield[k].comp.ts.YMin) / 2) - Math.Abs(design.tfield[k].comp.ts.Center[dir] - design.tfield[k].coord[dir]);
                             break;
                         case 2:
-                            xc = ((design.tfield[k].comp.ts[0].ZMax - design.tfield[k].comp.ts[0].ZMin) / 2) - Math.Abs(design.tfield[k].comp.ts[0].Center[dir] - design.tfield[k].coord[dir]);
+                            xc = ((design.tfield[k].comp.ts.ZMax - design.tfield[k].comp.ts.ZMin) / 2) - Math.Abs(design.tfield[k].comp.ts.Center[dir] - design.tfield[k].coord[dir]);
                             break;
                         default:
                             break;
@@ -456,13 +456,13 @@ namespace _3D_LayoutOpt
                     switch (dir)
                     {
                         case 0:
-                            xc = ((design.tfield[k + step].comp.ts[0].XMax - design.tfield[k + step].comp.ts[0].XMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts[0].Center[dir] - design.tfield[k + step].coord[dir]);
+                            xc = ((design.tfield[k + step].comp.ts.XMax - design.tfield[k + step].comp.ts.XMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts.Center[dir] - design.tfield[k + step].coord[dir]);
                             break;
                         case 1:
-                            xc = ((design.tfield[k + step].comp.ts[0].YMax - design.tfield[k + step].comp.ts[0].YMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts[0].Center[dir] - design.tfield[k + step].coord[dir]);
+                            xc = ((design.tfield[k + step].comp.ts.YMax - design.tfield[k + step].comp.ts.YMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts.Center[dir] - design.tfield[k + step].coord[dir]);
                             break;
                         case 2:
-                            xc = ((design.tfield[k + step].comp.ts[0].ZMax - design.tfield[k + step].comp.ts[0].ZMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts[0].Center[dir] - design.tfield[k + step].coord[dir]);
+                            xc = ((design.tfield[k + step].comp.ts.ZMax - design.tfield[k + step].comp.ts.ZMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts.Center[dir] - design.tfield[k + step].coord[dir]);
                             break;
                         default:
                             break;

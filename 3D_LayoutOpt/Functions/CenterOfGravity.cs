@@ -23,10 +23,10 @@ namespace _3D_LayoutOpt.Functions
 
             foreach (var comp in design.components)
             {
-                mass += comp.ts[0].Mass;
+                mass += comp.ts.Mass;
                 for (int i = 0; i < 3; i++)
                 {
-                    sum[i] += comp.ts[0].Mass * comp.ts[0].Center[i];
+                    sum[i] += comp.ts.Mass * comp.ts.Center[i];
                 }
             }
             for (int i = 0; i < 3; i++)

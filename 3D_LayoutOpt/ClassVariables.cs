@@ -2,15 +2,15 @@
 using TVGL;
 using OptimizationToolbox;
 using System;
-
+using StarMathLib;
 
 namespace _3D_LayoutOpt
 {
 
     public class Component
     {
-        public List<TessellatedSolid> ts = null;
-        public List<TessellatedSolid> backup_ts = null;
+        public TessellatedSolid ts = null;
+        public TessellatedSolid backup_ts = null;
         public Footprint footprint = null;
         public Footprint backup_footprint = null;
         public int node_center, nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
@@ -38,6 +38,38 @@ namespace _3D_LayoutOpt
             footprint = backup_footprint;
         }
 
+        internal void Update(double[] coord)
+        {
+            var x = coord[0];
+            var y = coord[1];
+            var z = coord[2];
+            var thetaX = coord[3];
+            var thetaY = coord[4];
+            var thetaZ = coord[5];
+            var TransformMatrix = new double[,]
+                 {
+                    {
+                         Math.Cos(thetaX) * Math.Cos(thetaY),
+                         Math.Cos(thetaX) * Math.Sin(thetaY) * Math.Sin(thetaZ) - Math.Sin(thetaX) * Math.Cos(thetaZ),
+                         Math.Cos(thetaX) * Math.Sin(thetaY) * Math.Cos(thetaZ) + Math.Sin(thetaX) * Math.Sin(thetaZ),
+                         x },
+                    {
+                         Math.Sin(thetaX) * Math.Cos(thetaY),
+                         Math.Sin(thetaX) * Math.Sin(thetaY) * Math.Sin(thetaZ) + Math.Cos(thetaX) * Math.Cos(thetaZ),
+                         Math.Sin(thetaX) * Math.Sin(thetaY) * Math.Cos(thetaZ) - Math.Cos(thetaX) * Math.Sin(thetaZ),
+                         y },
+                    {
+                         -1 * Math.Sin(thetaY),
+                         Math.Cos(thetaY) * Math.Sin(thetaZ),
+                         Math.Cos(thetaY) * Math.Cos(thetaZ),
+                         z },
+                    {0.0, 0.0, 0.0, 1.0}
+                 };
+            ts.Transform(TransformMatrix);
+            //UPDATING THE PIN COORDINATES
+            foreach (SMD smd in footprint.pads)
+                smd.coord = TransformMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
+        }
     }
 
     public class Container
@@ -125,139 +157,5 @@ namespace _3D_LayoutOpt
         public double[] coord = new double[3];
         public double prev_temp, old_temp, temp;
         public double vol, k;
-    }
-
-    public class Design : IDependentAnalysis
-    {
-        public double[][] DesignVars;
-        public double[][] OldDesignVars;
-        public List<Net> Netlist = null;
-
-
-        /* Box_min and box_max are the x, y, z bounds for the bounding box.  Overlap is a     */
-        /* matrix which contains the overlap between the ith and the jth components.  Note    */
-        /* that only the top half of the overlap matrix is used.  half_area is half of the    */
-        /* total of all the surface areas of the components.                                  */
-
-        public int comp_count;
-        public double[] old_orientation;
-        public double[] box_min = new double[3];
-        public double[] box_max = new double[3];
-        public double[,] overlap;
-        public double[] old_coord = new double[3];
-        public double[] old_dim = new double[3];
-        public double[] c_grav = new double[3];
-        //public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
-        public Container container;
-        public double half_area, volume, mass;
-
-        /* First comp is a pointer to the first component in the component list.  Min_comp    */
-        /* and max_comp are pointers to the components which contribute to the x, y, z max    */
-        /* and min bounds (i.e. box_min and box_max). Backup is a pointer to a component that */
-        /* contains backup information in case we reject a step and need to revert to a       */
-        /* previous design.                                                                   */
-
-        public Component[] min_comp = new Component[3];
-        public Component[] max_comp = new Component[3];
-        public List<Component> components = new List<Component>();
-
-        /* THESE HAVE BEEN ADDED FOR BALANCING THE COMPONENTS OF THE OBJECTIVE FUNCTION       */
-        /* new_obj_values are the latest values of the components of the objective function.  */
-        /* They are copied to a column of old_obj_values matrix (only on improvement steps).  */
-        /* old_obj_values keeps track of past values of the components of the objective       */
-        /* function.  Currently, the 0th line in the matrix are values of the area ratio and  */
-        /* the 1st line in the matrix are values of the overlap, coef is an array of          */
-        /* coefficients which the components of the objective function get multiplied by to   */
-        /* balance it.  (The 0th coefficient is ignored.).  The weights are also multiplied   */
-        /* with the components of the objective function, to specify relative importance of   */
-        /* the different components.  Backup_obj_values is used to back up the array of       */
-        /* new_obj_values before taking a step.  When a step is rejected, the revert function */
-        /* copies the backed up values to new_obj_values to restore the previous state.       */
-
-        public double[] new_obj_values = new double[Constants.OBJ_NUM];
-        public double[,] old_obj_values = new double[Constants.OBJ_NUM, Constants.BALANCE_AVG];
-        public double[] backup_obj_values = new double[Constants.OBJ_NUM];
-        public double[] coef = new double[Constants.OBJ_NUM];
-        public double[] weight = new double[Constants.OBJ_NUM];
-
-        /* These variables have been added for the thermal analysis.                          */
-        /* tfield is the vector of temperature nodes.  It is constrained to NODE_NUM in each  */
-        /* direction.                                                                         */
-        /* kb is the conductivity of the board.                                               */
-        /* h(x,y,z) is the heat transfer coefficient for the convective boundary conditions.  */
-        /* tamb is the ambient temperature of the boundary.                                   */
-        /* tolerance is the adjustable tolerance used by the Gauss-Seidel solver that         */
-        /* the temperatures are solved to.                                                    */
-        /* min_node_space is the minimum allowable node spacing.                              */
-        /* hcf is the Approximation Method Correction Factor established using Matrix Method. */
-        /* hcf_per_temp is the number of times App gets corrected per temperature.            */
-        /* gaussMove is the Move size under which GS is used instead of LU for translations.  */
-        /* gauss is the flag that says to use GS.  GS is always used on rotations and Swaps.  */
-        /* max_iter is the maximum number of iterations for GS.                               */
-        /* analysis_switch[] is the vector of t/initial t steps that the thermal              */
-        /* analysis switches.                                                                 */
-        /* choice is the flag for the HeatEval H.T. chooser.                                 */
-
-        //public TemperatureNode[] tfield = new TemperatureNode[Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM];
-        public TemperatureNode[] tfield = InitializeArray<TemperatureNode>(Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM);
-        public double kb, tamb, tolerance, min_node_space;
-        public double hcf, gaussMove;
-        public double[] h = new double[3];
-        public double[] analysis_switch = new double[Constants.SWITCH_NUM];
-        public int hcf_per_temp, gauss, max_iter, choice;
-
-        static T[] InitializeArray<T>(int length) where T : new()
-        {
-            T[] array = new T[length];
-            for (int i = 0; i < length; ++i)
-            {
-                array[i] = new T();
-            }
-
-            return array;
-        }
-
-        public void add_comp(Component comp)
-        {
-            components.Add(comp);
-        }
-
-        public void calculate(double[] x)
-        {
-            OldDesignVars = (double[][])DesignVars.Clone();
-            int k = 0;
-            foreach (var comp in DesignVars)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    comp[i] = x[k++];
-                }
-            }
-        }
-    }
-
-    public class Schedule
-    {
-        public int mgl, within_target, max_tolerance, in_count, out_count, equilibrium, problem_size;
-        public double t_initial, sigma, c_avg, delta, c_min, c_max, max_delta_c, delta_c;
-    }
-
-    public class Hustin
-    {
-        /* attemts is the number of attempts made for each Move, which_Move is the Move taken */
-        /* so we know which Move to attribute a cost change to, delta_c is the cumulative     */
-        /* change in cost (absolute value) due to each Move, quality is the quality factor    */
-        /* for each Move, probability is the probability if selecting each Move, and Move_    */
-        /* size is the distance for each of the translate Moves, usable_prob is the "usable"  */
-        /* portion of the probability.  The "unusable" portion (i.e. MIN_PROB * MOVE_NUM) is  */
-        /* set aside to give each Move a minimum probability.                                 */
-        public int[] attempts = new int[Constants.MOVE_NUM];
-        public int which_Move;
-        public double[] delta_c = new double[Constants.MOVE_NUM];
-        public double[] quality = new double[Constants.MOVE_NUM];
-        public double[] prob = new double[Constants.MOVE_NUM];
-        public double[] Move_size = new double[Constants.TRANS_NUM];
-        public double[] rot_size = new double[Constants.ROT_NUM];
-        public double usable_prob;
     }
 }

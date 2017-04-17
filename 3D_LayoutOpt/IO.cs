@@ -181,15 +181,15 @@ namespace _3D_LayoutOpt
                 var filename = CompNames[i];
                 Console.WriteLine("Attempting: " + filename);
                 Stream fileStream;
-                List<TessellatedSolid> ts;
+                TessellatedSolid ts;
                 using (fileStream = File.OpenRead(filename))
-                    ts = TVGL.IOFunctions.IO.Open(fileStream, filename);
+                    ts = TVGL.IOFunctions.IO.Open(fileStream, filename)[0];
                 string name = GetNameFromFileName(filename);
                 var comp = design.components.Find(x => x.name == name);
                 comp.ts = ts;
                 foreach (var smd in comp.footprint.pads)
                 {
-                    smd.coord[2] = comp.ts[0].ZMin;
+                    smd.coord[2] = comp.ts.ZMin;
                 }
             }
         }
@@ -244,7 +244,7 @@ namespace _3D_LayoutOpt
                 writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name);
                 for (int i = 0; i < 3; i++)
                 {
-                    Console.WriteLine("coord {0} is {1}", i, comp.ts[0].Center[i]);
+                    Console.WriteLine("coord {0} is {1}", i, comp.ts.Center[i]);
                 }
                 writetext.WriteLine("");
             }
@@ -332,7 +332,7 @@ namespace _3D_LayoutOpt
 
             for (int i = 0; i < 3; i++)
             {
-                Console.WriteLine("coord {0} is {1}", i, comp.ts[0].Center[i]);
+                Console.WriteLine("coord {0} is {1}", i, comp.ts.Center[i]);
             }
             Console.WriteLine("");
         }
@@ -430,9 +430,7 @@ namespace _3D_LayoutOpt
                 writetext.WriteLine("container B {0}", 1);
                 writetext.WriteLine("{0} {1} {2}", box_dim[0], box_dim[1], box_dim[2]);
                 writetext.WriteLine("{0} {1} {2}", box_dim[0], box_dim[1], box_dim[2]);
-                writetext.WriteLine("{0} {1} {2}", (design.box_min[0] + box_dim[0] / 2),
-                    (design.box_min[1] + box_dim[1] / 2),
-                    (design.box_min[2] + box_dim[2] / 2));
+               
             }
         }
 
@@ -506,50 +504,7 @@ namespace _3D_LayoutOpt
             }
         }
 
-        /* ---------------------------------------------------------------------------------- */
-        /* THIS FUNCTION WRITES TO A FILE: THE CURRENT MOVE PROBABILITIES, THE PERCENTAGE     */
-        /* CHANGE IN DELTA_C DUE TO EACH MOVE, AND THE PERCENTAGE OF ATTEMPTS FOR EACH MOVE.  */
-        /* ---------------------------------------------------------------------------------- */
-
-        public static void WriteProbs(Hustin hustin, double temp)
-        {
-            int i, total_attempts;
-            double total_delta_c;
-
-            total_attempts = 0;
-            total_delta_c = 0;
-
-            i = -1;
-            while (++i < Constants.MOVE_NUM)
-            {
-                total_attempts += hustin.attempts[i];
-                total_delta_c += hustin.delta_c[i];
-            }
-
-            StreamWriter F1 = new StreamWriter("/probs.out");
-            StreamWriter F2 = new StreamWriter("/delta_c.out");
-            StreamWriter F3 = new StreamWriter("/attempts.out");
-
-
-            F1.WriteLine(temp);
-            F2.WriteLine(temp);
-            F3.WriteLine(temp);
-
-            i = -1;
-            while (++i < Constants.MOVE_NUM)
-            {
-                F1.WriteLine(hustin.prob[i]);
-                F2.WriteLine(hustin.delta_c[i] / total_delta_c);
-                F3.WriteLine(1 * hustin.attempts[i] / total_attempts);
-            }
-            F1.WriteLine("");
-            F2.WriteLine("");
-            F3.WriteLine("");
-            F1.Close();
-            F2.Close();
-            F3.Close();
-        }
-
+      
         /* ---------------------------------------------------------------------------------- */
         /* THIS FUNCTION WRITES THE FINAL TEMPERATURE FIELD TO A FILE.                        */
         /* ---------------------------------------------------------------------------------- */

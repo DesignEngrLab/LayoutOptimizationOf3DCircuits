@@ -32,7 +32,7 @@ namespace _3D_LayoutOpt.Functions
                 var ts1 = comp.ts;
                 List<Vertex> ts1VertsInts0, ts0VertsInts1;
                 List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
-                TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1[0], out ts0VertsInts1,
+                TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
                             out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, false);
                 ts1VertsOutts0.AddRange(ts0VertsOutts1);
                 var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);

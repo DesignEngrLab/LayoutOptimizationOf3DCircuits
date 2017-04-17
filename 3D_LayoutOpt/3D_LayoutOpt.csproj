@@ -56,6 +56,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Design.cs" />
+    <Compile Include="ClassVariables.cs" />
     <Compile Include="Functions\CenterOfGravity.cs" />
     <Compile Include="Functions\ComponentToContainerOverlap.cs" />
     <Compile Include="Functions\ComponentToComponentOverlap.cs" />
@@ -66,12 +68,8 @@
     <Compile Include="Functions\HeatSS.cs" />
     <Compile Include="IO.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="OptMethod\AnnealAlg.cs" />
-    <Compile Include="OptMethod\ClassHustin.cs" />
-    <Compile Include="OptMethod\Schedules.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ClassVariables.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

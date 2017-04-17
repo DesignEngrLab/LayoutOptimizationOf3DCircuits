@@ -149,39 +149,11 @@ namespace _3D_LayoutOpt
         static void InitLocations(Design design)
         {
             Component temp_comp = null;
-            Console.WriteLine("Placing components in randomly in 3D space");
+            Console.WriteLine("Placing components at zero");
 
+            double[,] BackTransformMatrix = null;
             foreach (var comp in design.components)
-            {
-                var TessellatedSolids = comp.ts;
-                foreach (var TessellatedSolid in TessellatedSolids)
-                {
-                    double[,] BackTransformMatrix = null;
-                    var NewTessellatedSolid = TessellatedSolid.SetToOriginAndSquareTesselatedSolid(out BackTransformMatrix);
-                    TessellatedSolids.Remove(TessellatedSolid);
-                    TessellatedSolids.Add(NewTessellatedSolid);
-                }
-                comp.ts = TessellatedSolids;
-                temp_comp = comp;
-                design.DesignVars[comp.index] = new double[] { 0, 0, 0, 0, 0, 0 };
-            }
-            /* Set the initial max and min bounding box dimensions to the last component dimensioins */
-            design.box_min[0] = temp_comp.ts[1].XMin; design.box_max[0] = temp_comp.ts[1].XMax;
-            design.box_min[1] = temp_comp.ts[1].YMin; design.box_max[1] = temp_comp.ts[1].YMax;
-            design.box_min[2] = temp_comp.ts[1].ZMin; design.box_max[2] = temp_comp.ts[1].ZMax;
-
-            ///* Set the initial max and min bounding box dimensions */
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    design.box_min[i] = temp_comp.ts[0].Center[i];
-            //    design.box_max[i] = temp_comp.ts[0].Center[i];
-            //}
-
-#if LOCATE
-            Console.WriteLine("Leavinging InitLocations");
-#endif
-
+                comp.ts.SetToOriginAndSquareTesselatedSolid(out BackTransformMatrix);
         }
-        
     }
 }
