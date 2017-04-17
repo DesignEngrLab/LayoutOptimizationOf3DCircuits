@@ -3,39 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using OptimizationToolbox;
 namespace _3D_LayoutOpt
 {
-    static class HeatBasic
+    class HeatBasic : IInequality
     {
+        private Design design;
+        const int DUMMY = 100; //todo: remove this!
 
-        public static void HeatEval(Design design, int steps_at_t, int gen_limit)
+        internal HeatBasic(Design design)
         {
+            this.design = design;
+            design.tolerance = 0.001;
+            design.min_node_space = 50.0;
+            design.hcf = 0.1;
+            design.gaussMove = 0.0;
+            design.gauss = 0;
+            design.hcf_per_temp = 4;
+            design.max_iter = 100;
+            design.choice = 0;
+        }
+        public double calculate(double[] x)
+        {
+            int steps_at_t = DUMMY;
+            int gen_limit = DUMMY;
+
             int correction;
             Component comp;
-            correction = (steps_at_t - 1)%((int) (gen_limit/design.hcf_per_temp) + 1);
+            correction = (steps_at_t - 1) % ((int)(gen_limit / design.hcf_per_temp) + 1);
 
             switch (design.choice)
             {
-	            case 0:
+                case 0:
                     /*if (correction == 0)
 		            correct_APP_by_LU(design);*/
                     HeatAPP.thermal_analysis_APP(design);
-	                break;
-	            case 1:
-	                if (correction == 0)
-                      HeatSS.correct_SS_by_LU(design);
-                    HeatSS.thermal_analysis_SS(design);
-	                break;
-	            case 2:
-	                if (correction == 0)
+                    break;
+                case 1:
+                    if (correction == 0)
                         HeatSS.correct_SS_by_LU(design);
                     HeatSS.thermal_analysis_SS(design);
-	                break;
-	            case 3:
+                    break;
+                case 2:
+                    if (correction == 0)
+                        HeatSS.correct_SS_by_LU(design);
+                    HeatSS.thermal_analysis_SS(design);
+                    break;
+                case 3:
                     HeatMM.thermal_analysis_MM(design);
-	                break;
-	            default:
+                    break;
+                default:
                     Console.WriteLine("ERROR in Thermal Analysis Choice.");
                     break;
             }
@@ -48,70 +65,70 @@ namespace _3D_LayoutOpt
                 comp = design.components[i];
                 design.new_obj_values[3] += calc_temp_penalty(design, comp.temp, comp.tempcrit);
             }
-
+            return design.new_obj_values[3];
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function updates the heat parameters such as matrix tolerance and minimum     */
-/* node spacing and switches between analysis methods.                                */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function updates the heat parameters such as matrix tolerance and minimum     */
+        /* node spacing and switches between analysis methods.                                */
+        /* ---------------------------------------------------------------------------------- */
         public static void update_heat_param(Design design, Schedule schedule, double t)
         {
-            if ((t/(schedule.t_initial)) < design.analysis_switch[0])
+            if ((t / (schedule.t_initial)) < design.analysis_switch[0])
             {
-	            design.choice = 0;
-	            design.hcf_per_temp = 1;
+                design.choice = 0;
+                design.hcf_per_temp = 1;
             }
-            if ((t/(schedule.t_initial)) < design.analysis_switch[1])
+            if ((t / (schedule.t_initial)) < design.analysis_switch[1])
             {
-	            design.choice = 1;
-	            design.hcf_per_temp = 1;
+                design.choice = 1;
+                design.hcf_per_temp = 1;
             }
-            if ((t/(schedule.t_initial)) < design.analysis_switch[2])
+            if ((t / (schedule.t_initial)) < design.analysis_switch[2])
             {
-	            design.choice = 2;
-	            design.hcf_per_temp = 2;
+                design.choice = 2;
+                design.hcf_per_temp = 2;
             }
-            if ((t/(schedule.t_initial)) < design.analysis_switch[3])
+            if ((t / (schedule.t_initial)) < design.analysis_switch[3])
             {
-	            design.choice = 3;
-	            design.hcf_per_temp = 1;
-	            design.gaussMove = 3.0;
+                design.choice = 3;
+                design.hcf_per_temp = 1;
+                design.gaussMove = 3.0;
             }
-            if ((t/(schedule.t_initial)) < design.analysis_switch[4])
+            if ((t / (schedule.t_initial)) < design.analysis_switch[4])
             {
-	            design.choice = 3;
-	            design.tolerance = 0.0001;
-	            design.max_iter = 250;
-	            design.gaussMove = 0.6;
+                design.choice = 3;
+                design.tolerance = 0.0001;
+                design.max_iter = 250;
+                design.gaussMove = 0.6;
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function returns the value of the penalty function for a temperature in       */
-/* excess of the critical temperature.                                                */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function returns the value of the penalty function for a temperature in       */
+        /* excess of the critical temperature.                                                */
+        /* ---------------------------------------------------------------------------------- */
         public static double calc_temp_penalty(Design design, double temp, double tempcrit)
         {
             double value = 0.0;
 
             if (temp > tempcrit)
             {
-                value = (temp - tempcrit)*(temp - tempcrit)/(design.comp_count);
+                value = (temp - tempcrit) * (temp - tempcrit) / (design.comp_count);
             }
-            return(value);
+            return (value);
         }
 
 
-/* ---------------------------------------------------------------------------------- */
-/* This function reverts to  the previous node temperatures if the new Move was       */
-/* rejected.                                                                          */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function reverts to  the previous node temperatures if the new Move was       */
+        /* rejected.                                                                          */
+        /* ---------------------------------------------------------------------------------- */
         public static void revert_tfield(Design design)
         {
             int k;
 
-            for (k = 0; k<Constants.NODE_NUM; ++k)
+            for (k = 0; k < Constants.NODE_NUM; ++k)
                 design.tfield[k].temp = design.tfield[k].old_temp;
         }
 
@@ -123,31 +140,16 @@ namespace _3D_LayoutOpt
         {
             int k;
 
-            for (k = 0; k<Constants.NODE_NUM; ++k)
+            for (k = 0; k < Constants.NODE_NUM; ++k)
                 design.tfield[k].old_temp = design.tfield[k].temp;
         }
 
-        /* ---------------------------------------------------------------------------------- */
-        /* This function initializes the heat parameters such as matrix tolerance and minimum */
-        /* node spacing.                                                                      */
-        /* ---------------------------------------------------------------------------------- */
-        public static void InitHeatParam(Design design)
-        {
-            design.tolerance = 0.001;
-            design.min_node_space = 50.0;
-            design.hcf = 0.1;
-            design.gaussMove = 0.0;
-            design.gauss = 0;
-            design.hcf_per_temp = 4;
-            design.max_iter = 100;
-            design.choice = 0;
-        }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function is performed after determining the sample space but before
-/* the beginning of the annealing run.  The sser provides input into when to
-/* switch between thermal anylses. */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function is performed after determining the sample space but before
+        /* the beginning of the annealing run.  The sser provides input into when to
+        /* switch between thermal anylses. */
+        /* ---------------------------------------------------------------------------------- */
         public static void establish_thermal_changes(Design design)
         {
             int i;

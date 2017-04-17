@@ -1353,7 +1353,7 @@
             </summary>
             <param name="angle">The amount of angle in degrees (positive is counter-clockwise).</param>
             <param name="inRadians">if set to <c>true</c> [in radians].</param>
-            <returns>4-by-4 matrix Rotated by the amount specified.</returns>
+            <returns>4-by-4 matrix rotated by the amount specified.</returns>
         </member>
         <member name="M:StarMathLib.StarMath.RotationY(System.Double,System.Boolean)">
             <summary>
@@ -1361,7 +1361,7 @@
             </summary>
             <param name="angle">The amount of angle in degrees (positive is counter-clockwise).</param>
             <param name="inRadians">if set to <c>true</c> [in radians].</param>
-            <returns>4-by-4 matrix Rotated by the amount specified.</returns>
+            <returns>4-by-4 matrix rotated by the amount specified.</returns>
         </member>
         <member name="M:StarMathLib.StarMath.RotationZ(System.Double,System.Boolean)">
             <summary>
@@ -1369,7 +1369,7 @@
             </summary>
             <param name="angle">The amount of angle in degrees (positive is counter-clockwise).</param>
             <param name="inRadians">if set to <c>true</c> [in radians].</param>
-            <returns>4-by-4 matrix Rotated by the amount specified.</returns>
+            <returns>4-by-4 matrix rotated by the amount specified.</returns>
         </member>
         <member name="M:StarMathLib.StarMath.add(System.Collections.Generic.IList{System.Double},System.Collections.Generic.IList{System.Double})">
             <summary>
@@ -2419,7 +2419,7 @@
                                                 numRows +
                                                 ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count =  +
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count =  +
                                                 rowIndices.Count +
                                                 ) than there are rows in the matrix provided to RemoveRows (number of rows =  +
                                                 numRows + ).
@@ -2438,7 +2438,7 @@
                                                 numRows +
                                                 ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count =  +
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count =  +
                                                 rowIndices.Count +
                                                 ) than there are rows in the matrix provided to RemoveRows (number of rows =  +
                                                 numRows + ).
@@ -2447,7 +2447,7 @@
             , in the provided rowIndices for RemoveRows exceeds the number of rows (number of rows =  + numRows +
             ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count =  + rowIndices.Count +
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count =  + rowIndices.Count +
             ) than there are rows in the matrix provided to RemoveRows (number of rows =  + numRows + ).</exception>
         </member>
         <member name="M:StarMathLib.StarMath.RemoveColumns(System.Double[0:,0:],System.Collections.Generic.IList{System.Int32})">
@@ -2463,7 +2463,7 @@
                                                 numCols +
                                                 ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count = 
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count = 
                                                 + colIndices.Count +
                                                 ) than there are rows in the matrix provided to RemoveColumns (number of rows =  +
                                                 numCols + ).
@@ -2472,7 +2472,7 @@
             , in the provided rowIndices for RemoveColumns exceeds the number of rows (number of rows =  + numCols +
             ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count =
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count =
             + colIndices.Count +
             ) than there are rows in the matrix provided to RemoveColumns (number of rows =  + numCols + ).</exception>
         </member>
@@ -2489,7 +2489,7 @@
                                                 numCols +
                                                 ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count = 
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count = 
                                                 + colIndices.Count +
                                                 ) than there are rows in the matrix provided to RemoveColumns (number of rows =  +
                                                 numCols + ).
@@ -2498,7 +2498,7 @@
             , in the provided rowIndices for RemoveColumns exceeds the number of rows (number of rows =  + numCols +
             ) in the provided matrix.
             or
-            StarMath Size Error: An there are more rows to reMove (rowIndices.Count =
+            StarMath Size Error: An there are more rows to remove (rowIndices.Count =
             + colIndices.Count +
             ) than there are rows in the matrix provided to RemoveColumns (number of rows =  + numCols + ).</exception>
         </member>
@@ -2523,7 +2523,7 @@
             Removes the given entry of vector A.
             </summary>
             <param name="A">The vector, A.</param>
-            <param name="index">The index to reMove.</param>
+            <param name="index">The index to remove.</param>
             <returns>System.Double[].</returns>
             <exception cref="T:System.ArithmeticException">StarMath Size Error: An index value of 
                                                 + index
@@ -2539,7 +2539,7 @@
             Removes the given entry of vector A.
             </summary>
             <param name="A">The vector, A.</param>
-            <param name="index">The index to reMove.</param>
+            <param name="index">The index to remove.</param>
             <returns>System.Int32[].</returns>
             <exception cref="T:System.ArithmeticException">StarMath Size Error: An index value of 
                                                 + index
@@ -2563,7 +2563,7 @@
                                                 length +
                                                 ) in the provided vector.
             or
-            StarMath Size Error: There are more cells to reMove (Count =  + indices.Count +
+            StarMath Size Error: There are more cells to remove (Count =  + indices.Count +
                                                 ) than there are cells in the vector provided to RemoveVectorCells (Count =  +
                                                 length + ).
             </exception>
@@ -2585,7 +2585,7 @@
                                                 length +
                                                 ) in the provided vector.
             or
-            StarMath Size Error: There are more cells to reMove (Count =  + indices.Count +
+            StarMath Size Error: There are more cells to remove (Count =  + indices.Count +
                                                 ) than there are cells in the vector provided to RemoveVectorCells (Count =  +
                                                 length + ).
             </exception>
@@ -2677,7 +2677,7 @@
         <member name="M:StarMathLib.StarMath.DistinctVectors(System.Collections.Generic.List{System.Double[]})">
             <summary>
             Removes any duplicates in the List of vectors and returns just the distinct cases.
-            The order is preserved with duplicates reMoved.
+            The order is preserved with duplicates removed.
             </summary>
             <param name="list">The list.</param>
             <returns>List&lt;System.Double[]&gt;.</returns>
@@ -2685,7 +2685,7 @@
         <member name="M:StarMathLib.StarMath.DistinctVectors(System.Collections.Generic.List{System.Int32[]})">
             <summary>
             Removes any duplicates in the List of vectors and returns just the distinct cases.
-            The order is preserved with duplicates reMoved.
+            The order is preserved with duplicates removed.
             </summary>
             <param name="list">The list.</param>
             <returns>List&lt;System.Int32[]&gt;.</returns>
@@ -2970,33 +2970,33 @@
             <param name="dontDoPRoot">if set to <c>true</c> [don't take the P-root].</param>
             <returns>Scalar value of 2-norm.</returns>
         </member>
-        <member name="M:StarMathLib.StarMath.Normalize(System.Collections.Generic.IList{System.Double})">
+        <member name="M:StarMathLib.StarMath.normalize(System.Collections.Generic.IList{System.Double})">
             <summary>
-            Returns the Normalized vector (has length (or 2-norm) of 1)
+            Returns the normalized vector (has length (or 2-norm) of 1)
             for the vector, x.
             </summary>
             <param name="x">The vector, x.</param>
             <returns>unit vector.</returns>
         </member>
-        <member name="M:StarMathLib.StarMath.Normalize(System.Collections.Generic.IList{System.Double},System.Int32)">
+        <member name="M:StarMathLib.StarMath.normalize(System.Collections.Generic.IList{System.Double},System.Int32)">
             <summary>
-            Returns the Normalized vector (has length (or 2-norm) of 1)
+            Returns the normalized vector (has length (or 2-norm) of 1)
             for the vector, x.
             </summary>
             <param name="x">The vector, x.</param>
             <param name="length">The length of the vector.</param>
             <returns>unit vector.</returns>
         </member>
-        <member name="M:StarMathLib.StarMath.NormalizeInPlace(System.Double[])">
+        <member name="M:StarMathLib.StarMath.normalizeInPlace(System.Double[])">
             <summary>
-            Destructively Normalizes the vector x.
+            Destructively normalizes the vector x.
             </summary>
             <param name="x">The vector x.</param>
             <returns>IList&lt;System.Double&gt;.</returns>
         </member>
-        <member name="M:StarMathLib.StarMath.NormalizeInPlace(System.Collections.Generic.IList{System.Double},System.Int32)">
+        <member name="M:StarMathLib.StarMath.normalizeInPlace(System.Collections.Generic.IList{System.Double},System.Int32)">
             <summary>
-            Destructively Normalizes the vector x.
+            Destructively normalizes the vector x.
             </summary>
             <param name="x">The x.</param>
             <param name="length">The length.</param>
@@ -3890,25 +3890,25 @@
             <summary>
             Removes the row.
             </summary>
-            <param name="rowIndexToRemove">The row index to reMove.</param>
+            <param name="rowIndexToRemove">The row index to remove.</param>
         </member>
         <member name="M:StarMathLib.SparseMatrix.RemoveColumn(System.Int32)">
             <summary>
             Removes the column.
             </summary>
-            <param name="colIndexToRemove">The col index to reMove.</param>
+            <param name="colIndexToRemove">The col index to remove.</param>
         </member>
         <member name="M:StarMathLib.SparseMatrix.RemoveRows(System.Collections.Generic.IList{System.Int32})">
             <summary>
             Removes the rows.
             </summary>
-            <param name="rowIndicesToRemove">The row indices to reMove.</param>
+            <param name="rowIndicesToRemove">The row indices to remove.</param>
         </member>
         <member name="M:StarMathLib.SparseMatrix.RemoveColumns(System.Collections.Generic.IList{System.Int32})">
             <summary>
             Removes the columns.
             </summary>
-            <param name="colIndicesToRemove">The col indices to reMove.</param>
+            <param name="colIndicesToRemove">The col indices to remove.</param>
         </member>
         <member name="M:StarMathLib.SparseMatrix.solve(System.Collections.Generic.IList{System.Double},System.Collections.Generic.IList{System.Double},System.Boolean)">
             <summary>

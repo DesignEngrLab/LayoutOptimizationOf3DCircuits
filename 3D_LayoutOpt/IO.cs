@@ -46,9 +46,9 @@ namespace _3D_LayoutOpt
             var filename = ContainerName;
             Console.WriteLine("Attempting: " + filename);
             Stream fileStream;
-            List<TessellatedSolid> ts;
+            TessellatedSolid ts;
             using (fileStream = File.OpenRead(filename))
-                ts = TVGL.IOFunctions.IO.Open(fileStream, filename);
+                ts = TVGL.IOFunctions.IO.Open(fileStream, filename)[0];
             string name = GetNameFromFileName(filename);
             var container = new Container(name, ts);
             design.container = container;
@@ -496,7 +496,7 @@ namespace _3D_LayoutOpt
             }
 
             //Program.InitBounds(design);
-            ObjFunction.InitOverlaps(design);
+            //ObjFunction.InitOverlaps(design);
             i = -1;
             while (++i < Constants.OBJ_NUM)
             {
