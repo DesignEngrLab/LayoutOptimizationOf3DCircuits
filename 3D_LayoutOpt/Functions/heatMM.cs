@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class HeatMM
+    class HeatMm
     {
         /* ------------------------------------------------------------------------- */
         /*                                                                           */
@@ -23,38 +23,38 @@ namespace _3D_LayoutOpt
         public static void thermal_analysis_MM(Design design)
         {
             double[] flux;
-            double[][] R;
-            int i, j, tot_nodes, hbw, width;
-            int[] node_dim = new int[Constants.DIMENSION];
+            double[][] r;
+            int i, j, totNodes, hbw, width;
+            var nodeDim = new int[Constants.Dimension];
 
-            SetUpTfield(design, node_dim);
-            hbw = node_dim[1]*node_dim[2];
+            SetUpTfield(design, nodeDim);
+            hbw = nodeDim[1]*nodeDim[2];
             width = 2*hbw + 1;
-            tot_nodes = node_dim[0]*hbw;
+            totNodes = nodeDim[0]*hbw;
 
 
-            FindContainedNodes(design, hbw, node_dim[2]);
+            FindContainedNodes(design, hbw, nodeDim[2]);
 
             /* These commands set up the flux vector and R matrix using dynamic memory */
             /* allocation.                                                             */
-            flux = new double[tot_nodes];
-            for (i = 0; i < tot_nodes; i++)
+            flux = new double[totNodes];
+            for (i = 0; i < totNodes; i++)
                 flux[i] = 0.0;
-            R = new double[tot_nodes][];
-            for (i = 0; i < tot_nodes; i++)
+            r = new double[totNodes][];
+            for (i = 0; i < totNodes; i++)
             {
-                R[i] = new double[width];
+                r[i] = new double[width];
                 for (j = 0; j < width; ++j)
-                    R[i][j] = 0.0;
+                    r[i][j] = 0.0;
             }
-            SetupFlux(design, flux, tot_nodes);
-            SetupCoefMatrix(design, flux, R, tot_nodes, hbw, node_dim[2]);
+            SetupFlux(design, flux, totNodes);
+            SetupCoefMatrix(design, flux, r, totNodes, hbw, nodeDim[2]);
             /*if (design.gauss) {
     design.gauss = 0;
     GaussSeidel(design, R, flux, tot_nodes, hbw, node_dim[2]);
   }
   else*/
-            LU_Decomp(design, R, flux, tot_nodes, hbw);
+            LU_Decomp(design, r, flux, totNodes, hbw);
             FindCompTemp(design);
 
             //for (i = 0; i<tot_nodes; i++)
@@ -70,32 +70,32 @@ namespace _3D_LayoutOpt
         /* CORRESPONDS TO A SIMPLE RESISTOR JUNCTION.                                         */
         /* ---------------------------------------------------------------------------------- */
 
-        static void SetUpTfield(Design design, int[] node_dim)
+        static void SetUpTfield(Design design, int[] nodeDim)
         {
             Component comp;
-            double[][] xx = new double[3][];
-            double[] fringe = new double[3];
+            var xx = new double[3][];
+            var fringe = new double[3];
             int j, k, m;
-            int[] i = new int[3];
-            for (m = 0; m < Constants.DIMENSION; m++)
+            var i = new int[3];
+            for (m = 0; m < Constants.Dimension; m++)
             {
                 i[m] = 0;
             }
 
-            for (int n = 0; n < design.comp_count; n++)
+            for (var n = 0; n < design.CompCount; n++)
             {
-                comp = design.components[n];
-                for (m = 0; m < Constants.DIMENSION; m++)
+                comp = design.Components[n];
+                for (m = 0; m < Constants.Dimension; m++)
                 {
-                    if (NotDuplicate(comp.ts.Center[m], xx[m], i[m]))
-                        xx[m][++i[m]] = comp.ts.Center[m];
+                    if (NotDuplicate(comp.Ts.Center[m], xx[m], i[m]))
+                        xx[m][++i[m]] = comp.Ts.Center[m];
                 }
             }
          
-            for (m = 0; m < Constants.DIMENSION; m++)
+            for (m = 0; m < Constants.Dimension; m++)
             {
-                node_dim[m] = i[m];
-                PickSort(node_dim[m], xx[m]);
+                nodeDim[m] = i[m];
+                PickSort(nodeDim[m], xx[m]);
             }
 
 #if SFRINGE
@@ -114,27 +114,27 @@ namespace _3D_LayoutOpt
             }
 #endif
 
-            for (m = 0; m < Constants.DIMENSION; m++)
+            for (m = 0; m < Constants.Dimension; m++)
             {
-                xx[m][0] = design.box_min[m] - fringe[m];
-                xx[m][(++node_dim[m])] = design.box_max[m] + fringe[m];
-                RefineMesh(node_dim, xx[m], m, design.min_node_space);
-                ++node_dim[m];
+                xx[m][0] = design.BoxMin[m] - fringe[m];
+                xx[m][(++nodeDim[m])] = design.BoxMax[m] + fringe[m];
+                RefineMesh(nodeDim, xx[m], m, design.MinNodeSpace);
+                ++nodeDim[m];
             }
             /*Console.WriteLine("%d %d %d  ", node_dim[0], node_dim[1], node_dim[2]);*/
 /* Put coordinates and component number in each node.                                 */
             k = 0;
-            for (i[0] = 0; i[0] < node_dim[0]; ++i[0])
+            for (i[0] = 0; i[0] < nodeDim[0]; ++i[0])
             {
-                for (i[1] = 0; i[1] < node_dim[1]; ++i[1])
+                for (i[1] = 0; i[1] < nodeDim[1]; ++i[1])
                 {
-                    for (i[2] = 0; i[2] < node_dim[2]; ++i[2])
+                    for (i[2] = 0; i[2] < nodeDim[2]; ++i[2])
                     {
-                        for (m = 0; m < Constants.DIMENSION; m++)
+                        for (m = 0; m < Constants.Dimension; m++)
                         {
-                            design.tfield[k].coord[m] = xx[m][i[m]];
+                            design.Tfield[k].Coord[m] = xx[m][i[m]];
                         }
-                        design.tfield[k].comp = null;
+                        design.Tfield[k].Comp = null;
 
                         //find_if_comp_center(design.first_comp, design.tfield, k);
                         ++k;
@@ -154,7 +154,7 @@ namespace _3D_LayoutOpt
 
             for (m = 1; m <= n; ++m)
             {
-                if (Math.Abs(num - arr[m]) < Constants.CLOSE_NODE)
+                if (Math.Abs(num - arr[m]) < Constants.CloseNode)
                     return false;
             }
             return true;
@@ -188,17 +188,17 @@ namespace _3D_LayoutOpt
         /*                                                                                    */
         /* ---------------------------------------------------------------------------------- */
 
-        static void RefineMesh(int[] node_dim, double[] arr, int vector, double min_node_space)
+        static void RefineMesh(int[] nodeDim, double[] arr, int vector, double minNodeSpace)
         {
             int i, j;
 
-            i = node_dim[vector];
-            while ((i > 0) && (1 + node_dim[vector] < Constants.NODE_NUM))
+            i = nodeDim[vector];
+            while ((i > 0) && (1 + nodeDim[vector] < Constants.NodeNum))
             {
-                if ((arr[i] - arr[i - 1]) > min_node_space)
+                if ((arr[i] - arr[i - 1]) > minNodeSpace)
                 {
-                    ++node_dim[vector];
-                    for (j = node_dim[vector]; j > i; --j)
+                    ++nodeDim[vector];
+                    for (j = nodeDim[vector]; j > i; --j)
                         arr[j] = arr[j - 1];
                     arr[i] = 0.5*(arr[i + 1] - arr[i - 1]) + arr[i - 1];
                     i += 2;
@@ -241,15 +241,15 @@ namespace _3D_LayoutOpt
 
         static void FindContainedNodes(Design design, int hbw, int znodes)
         {
-            int k = 0;
+            var k = 0;
             Component comp;
 
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.components[k];
-                design.tfield[comp.node_center].comp = comp;
-                comp.nodes = 1;
-                FindNeighbors(design.tfield, comp, comp.node_center, comp.nodes, hbw, znodes, 0);
+                comp = design.Components[k];
+                design.Tfield[comp.NodeCenter].Comp = comp;
+                comp.Nodes = 1;
+                FindNeighbors(design.Tfield, comp, comp.NodeCenter, comp.Nodes, hbw, znodes, 0);
             }
         }
 
@@ -261,50 +261,50 @@ namespace _3D_LayoutOpt
         static void FindNeighbors(TemperatureNode[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
         {
             /* This will check neighbors to the west so long as it didn't come FROM the west.*/
-            if ((from != -1) && ((Math.Abs(tfield[k - hbw].coord[0] - comp.ts.Center[0])) < (comp.ts.XMax - comp.ts.XMin)/2) &&
-                (tfield[k - hbw].comp == null))
+            if ((from != -1) && ((Math.Abs(tfield[k - hbw].Coord[0] - comp.Ts.Center[0])) < (comp.Ts.XMax - comp.Ts.XMin)/2) &&
+                (tfield[k - hbw].Comp == null))
             {
-                tfield[k - hbw].comp = comp;
+                tfield[k - hbw].Comp = comp;
                 ++n;
                 FindNeighbors(tfield, comp, k - hbw, n, hbw, znodes, 1);
             }
             /* Checks to the east. */
-            if ((from != 1) && ((Math.Abs(tfield[k + hbw].coord[0] - comp.ts.Center[0])) < (comp.ts.XMax - comp.ts.XMin) / 2) &&
-                (tfield[k + hbw].comp == null))
+            if ((from != 1) && ((Math.Abs(tfield[k + hbw].Coord[0] - comp.Ts.Center[0])) < (comp.Ts.XMax - comp.Ts.XMin) / 2) &&
+                (tfield[k + hbw].Comp == null))
             {
-                tfield[k + hbw].comp = comp;
+                tfield[k + hbw].Comp = comp;
                 ++n;
                 FindNeighbors(tfield, comp, k + hbw, n, hbw, znodes, -1);
             }
             /* Checks to the south. */
-            if ((from != -2) && ((Math.Abs(tfield[k - znodes].coord[1] - comp.ts.Center[1])) < (comp.ts.YMax - comp.ts.YMin) / 2) &&
-                (tfield[k - znodes].comp == null))
+            if ((from != -2) && ((Math.Abs(tfield[k - znodes].Coord[1] - comp.Ts.Center[1])) < (comp.Ts.YMax - comp.Ts.YMin) / 2) &&
+                (tfield[k - znodes].Comp == null))
             {
-                tfield[k - znodes].comp = comp;
+                tfield[k - znodes].Comp = comp;
                 ++n;
                 FindNeighbors(tfield, comp, k - znodes, n, hbw, znodes, 2);
             }
             /* Checks to the north. */
-            if ((from != 2) && ((Math.Abs(tfield[k + znodes].coord[1] - comp.ts.Center[1])) < (comp.ts.YMax - comp.ts.YMin) / 2) &&
-                (tfield[k + znodes].comp == null))
+            if ((from != 2) && ((Math.Abs(tfield[k + znodes].Coord[1] - comp.Ts.Center[1])) < (comp.Ts.YMax - comp.Ts.YMin) / 2) &&
+                (tfield[k + znodes].Comp == null))
             {
-                tfield[k + znodes].comp = comp;
+                tfield[k + znodes].Comp = comp;
                 ++n;
                 FindNeighbors(tfield, comp, k + znodes, n, hbw, znodes, -2);
             }
             /* Checks down. */
-            if ((from != -3) && ((Math.Abs(tfield[k - 1].coord[2] - comp.ts.Center[2])) < (comp.ts.ZMax - comp.ts.ZMin) / 2) &&
-                (tfield[k - 1].comp == null))
+            if ((from != -3) && ((Math.Abs(tfield[k - 1].Coord[2] - comp.Ts.Center[2])) < (comp.Ts.ZMax - comp.Ts.ZMin) / 2) &&
+                (tfield[k - 1].Comp == null))
             {
-                tfield[k - 1].comp = comp;
+                tfield[k - 1].Comp = comp;
                 ++n;
                 FindNeighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
             }
             /* Checks up. */
-            if ((from != 3) && ((Math.Abs(tfield[k + 1].coord[2] - comp.ts.Center[2])) < (comp.ts.ZMax - comp.ts.ZMin) / 2) &&
-                (tfield[k + 1].comp == null))
+            if ((from != 3) && ((Math.Abs(tfield[k + 1].Coord[2] - comp.Ts.Center[2])) < (comp.Ts.ZMax - comp.Ts.ZMin) / 2) &&
+                (tfield[k + 1].Comp == null))
             {
-                tfield[k + 1].comp = comp;
+                tfield[k + 1].Comp = comp;
                 ++n;
                 FindNeighbors(tfield, comp, k + 1, n, hbw, znodes, -3);
             }
@@ -317,7 +317,7 @@ namespace _3D_LayoutOpt
         /* INSIDE THE COMPONENT.                                                              */
         /* ---------------------------------------------------------------------------------- */
 
-        static void SetupFlux(Design design, double[] flux, int tot_nodes)
+        static void SetupFlux(Design design, double[] flux, int totNodes)
         {
             Component comp;
             int k;
@@ -325,13 +325,13 @@ namespace _3D_LayoutOpt
             /*  flux[(comp.node_center)] = comp.q;*/
 
 
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.components[i];
-                for (k = 0; k < tot_nodes; k++)
+                comp = design.Components[i];
+                for (k = 0; k < totNodes; k++)
                 {
-                    if (design.tfield[k].comp == comp)
-                        flux[k] = comp.q / comp.nodes;
+                    if (design.Tfield[k].Comp == comp)
+                        flux[k] = comp.Q / comp.Nodes;
                 }
             }
         }
@@ -342,69 +342,69 @@ namespace _3D_LayoutOpt
         /* ARE DONE IN THIS SUBROUTINE.                                                       */
         /* ---------------------------------------------------------------------------------- */
 
-        static void SetupCoefMatrix(Design design, double[] flux, double[][] R, int tot_nodes, int hbw, int znodes)
+        static void SetupCoefMatrix(Design design, double[] flux, double[][] r, int totNodes, int hbw, int znodes)
         {
             int k, i;
             double n, e, w, s, u, d;
 
 /*  Go through each node to fill in each row of the R-matrix  */
-            for (k = 0; k < tot_nodes; ++k)
+            for (k = 0; k < totNodes; ++k)
             {
 /* Find dimension n, e, w, s, u, d to surrounding points (0 if boundary).   */
                 if ((k - hbw) >= 0)
                 {
-                    w = design.tfield[k].coord[0] - design.tfield[(k - hbw)].coord[0];
+                    w = design.Tfield[k].Coord[0] - design.Tfield[(k - hbw)].Coord[0];
                 }
                 else
                     w = 0.0;
 
-                if ((k + hbw) < tot_nodes)
+                if ((k + hbw) < totNodes)
                 {
-                    e = design.tfield[(k + hbw)].coord[0] - design.tfield[k].coord[0];
+                    e = design.Tfield[(k + hbw)].Coord[0] - design.Tfield[k].Coord[0];
                 }
                 else
                     e = 0.0;
 
                 if ((k%hbw) >= znodes)
                 {
-                    s = design.tfield[k].coord[1] - design.tfield[k - znodes].coord[1];
+                    s = design.Tfield[k].Coord[1] - design.Tfield[k - znodes].Coord[1];
                 }
                 else
                     s = 0.0;
 
                 if (((k + znodes)%hbw) >= znodes)
                 {
-                    n = design.tfield[k + znodes].coord[1] - design.tfield[k].coord[1];
+                    n = design.Tfield[k + znodes].Coord[1] - design.Tfield[k].Coord[1];
                 }
                 else
                     n = 0.0;
 
                 if ((k%znodes) != 0)
                 {
-                    d = design.tfield[k].coord[2] - design.tfield[k - 1].coord[2];
+                    d = design.Tfield[k].Coord[2] - design.Tfield[k - 1].Coord[2];
                 }
                 else
                     d = 0.0;
 
                 if (((k + 1)%znodes) != 0)
                 {
-                    u = design.tfield[k + 1].coord[2] - design.tfield[k].coord[2];
+                    u = design.Tfield[k + 1].Coord[2] - design.Tfield[k].Coord[2];
                 }
                 else
                     u = 0.0;
 
 
-                CalcResistances(design, flux, R, hbw, ((u + d)*(n + s)), w, k, -hbw, 0);
+                CalcResistances(design, flux, r, hbw, ((u + d)*(n + s)), w, k, -hbw, 0);
 
-                CalcResistances(design, flux, R, hbw, ((u + d)*(n + s)), e, k, hbw, 0);
+                CalcResistances(design, flux, r, hbw, ((u + d)*(n + s)), e, k, hbw, 0);
 
-                CalcResistances(design, flux, R, hbw, ((u + d)*(e + w)), s, k, -znodes, 1);
+                CalcResistances(design, flux, r, hbw, ((u + d)*(e + w)), s, k, -znodes, 1);
 
-                CalcResistances(design, flux, R, hbw, ((u + d)*(e + w)), n, k, znodes, 1);
+                CalcResistances(design, flux, r, hbw, ((u + d)*(e + w)), n, k, znodes, 1);
 
-                CalcResistances(design, flux, R, hbw, ((n + s)*(e + w)), d, k, -1, 2);
+                CalcResistances(design, flux, r, hbw, ((n + s)*(e + w)), d, k, -1, 2);
 
-                CalcResistances(design, flux, R, hbw, ((n + s)*(e + w)), u, k, 1, 2);
+                CalcResistances(design, flux, r, hbw, ((n + s)*(e + w)), u, k, 1, 2);
             }
         }
 
@@ -415,31 +415,31 @@ namespace _3D_LayoutOpt
         /* BOTH NODES WITHIN THE SAME COMPONENT.                                              */
         /* ---------------------------------------------------------------------------------- */
 
-        static void CalcResistances(Design design, double[] flux, double[][] R, int hbw, double area, double x, int k, int step, int dir)
+        static void CalcResistances(Design design, double[] flux, double[][] r, int hbw, double area, double x, int k, int step, int dir)
         {
             double xc = 0, nx = 0, kc, kn;
             int i;
 
             if (x == 0.0)
             {
-                flux[k] += 0.25*(design.tamb)*(design.h[dir])*area;
-                R[k][hbw] += 0.25*(design.h[dir])*area;
+                flux[k] += 0.25*(design.Tamb)*(design.H[dir])*area;
+                r[k][hbw] += 0.25*(design.H[dir])*area;
             }
             else
             {
-                if (design.tfield[k].comp != null)
+                if (design.Tfield[k].Comp != null)
                 {
-                    kc = design.tfield[k].comp.k;
+                    kc = design.Tfield[k].Comp.K;
                     switch (dir)
                     {
                         case 0:
-                            xc = ((design.tfield[k].comp.ts.XMax - design.tfield[k].comp.ts.XMin) / 2) - Math.Abs(design.tfield[k].comp.ts.Center[dir] - design.tfield[k].coord[dir]);
+                            xc = ((design.Tfield[k].Comp.Ts.XMax - design.Tfield[k].Comp.Ts.XMin) / 2) - Math.Abs(design.Tfield[k].Comp.Ts.Center[dir] - design.Tfield[k].Coord[dir]);
                             break;
                         case 1:
-                            xc = ((design.tfield[k].comp.ts.YMax - design.tfield[k].comp.ts.YMin) / 2) - Math.Abs(design.tfield[k].comp.ts.Center[dir] - design.tfield[k].coord[dir]);
+                            xc = ((design.Tfield[k].Comp.Ts.YMax - design.Tfield[k].Comp.Ts.YMin) / 2) - Math.Abs(design.Tfield[k].Comp.Ts.Center[dir] - design.Tfield[k].Coord[dir]);
                             break;
                         case 2:
-                            xc = ((design.tfield[k].comp.ts.ZMax - design.tfield[k].comp.ts.ZMin) / 2) - Math.Abs(design.tfield[k].comp.ts.Center[dir] - design.tfield[k].coord[dir]);
+                            xc = ((design.Tfield[k].Comp.Ts.ZMax - design.Tfield[k].Comp.Ts.ZMin) / 2) - Math.Abs(design.Tfield[k].Comp.Ts.Center[dir] - design.Tfield[k].Coord[dir]);
                             break;
                         default:
                             break;
@@ -447,22 +447,22 @@ namespace _3D_LayoutOpt
                 }
                 else
                 {
-                    kc = design.kb;
+                    kc = design.Kb;
                     xc = 0.0;
                 }
-                if (design.tfield[k + step].comp != null)
+                if (design.Tfield[k + step].Comp != null)
                 {
-                    kn = design.tfield[k + step].comp.k;
+                    kn = design.Tfield[k + step].Comp.K;
                     switch (dir)
                     {
                         case 0:
-                            xc = ((design.tfield[k + step].comp.ts.XMax - design.tfield[k + step].comp.ts.XMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts.Center[dir] - design.tfield[k + step].coord[dir]);
+                            xc = ((design.Tfield[k + step].Comp.Ts.XMax - design.Tfield[k + step].Comp.Ts.XMin) / 2) - Math.Abs(design.Tfield[k + step].Comp.Ts.Center[dir] - design.Tfield[k + step].Coord[dir]);
                             break;
                         case 1:
-                            xc = ((design.tfield[k + step].comp.ts.YMax - design.tfield[k + step].comp.ts.YMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts.Center[dir] - design.tfield[k + step].coord[dir]);
+                            xc = ((design.Tfield[k + step].Comp.Ts.YMax - design.Tfield[k + step].Comp.Ts.YMin) / 2) - Math.Abs(design.Tfield[k + step].Comp.Ts.Center[dir] - design.Tfield[k + step].Coord[dir]);
                             break;
                         case 2:
-                            xc = ((design.tfield[k + step].comp.ts.ZMax - design.tfield[k + step].comp.ts.ZMin) / 2) - Math.Abs(design.tfield[k + step].comp.ts.Center[dir] - design.tfield[k + step].coord[dir]);
+                            xc = ((design.Tfield[k + step].Comp.Ts.ZMax - design.Tfield[k + step].Comp.Ts.ZMin) / 2) - Math.Abs(design.Tfield[k + step].Comp.Ts.Center[dir] - design.Tfield[k + step].Coord[dir]);
                             break;
                         default:
                             break;
@@ -471,7 +471,7 @@ namespace _3D_LayoutOpt
                 }
                 else
                 {
-                    kn = design.kb;
+                    kn = design.Kb;
                     nx = 0.0;
                 }
 /* These two 'if' statements account for the chance that the node and the */
@@ -491,9 +491,9 @@ namespace _3D_LayoutOpt
                 if (x < 0.0) x = 0.0;
 /* These resistances are actually 'admittances' and therefore the total resistance   */
 /* is the reciprocal of the sum of the reciprocals.                                  */
-                R[k][hbw] += (0.25*(design.kb)*kc*kn*area)/(((design.kb)*kn*xc) + (kc*kn*x) + (kc*(design.kb)*nx));
-                R[k][(hbw + step)] = -(0.25*(design.kb)*kc*kn*area)/
-                                     (((design.kb)*kn*xc) + (kc*kn*x) + (kc*(design.kb)*nx));
+                r[k][hbw] += (0.25*(design.Kb)*kc*kn*area)/(((design.Kb)*kn*xc) + (kc*kn*x) + (kc*(design.Kb)*nx));
+                r[k][(hbw + step)] = -(0.25*(design.Kb)*kc*kn*area)/
+                                     (((design.Kb)*kn*xc) + (kc*kn*x) + (kc*(design.Kb)*nx));
             }
         }
 
@@ -506,10 +506,10 @@ namespace _3D_LayoutOpt
         {
             Component comp;
 
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.components[i];
-                comp.temp = design.tfield[comp.node_center].temp;
+                comp = design.Components[i];
+                comp.Temp = design.Tfield[comp.NodeCenter].Temp;
                 /*Console.WriteLine("Component %d temperature = %.2f", ++i, comp.temp);*/
             }
         }
@@ -518,7 +518,7 @@ namespace _3D_LayoutOpt
         /* THIS IS THE MATRIX SOLVER FOR THE VECTOR OF NODES IN TFIELD.  IT USES LU DECOMP.   */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void LU_Decomp(Design design, double[][] R, double[] flux, int n, int hbw)
+        public static void LU_Decomp(Design design, double[][] r, double[] flux, int n, int hbw)
         {
             int i, j, k, c = hbw;
             double sum;
@@ -526,7 +526,7 @@ namespace _3D_LayoutOpt
             Console.WriteLine("LU ");
 /*   L-U Decomposition of Banded Matrix; returning values to the R banded matrix  */
             for (i = 1; i <= hbw; ++i)
-                R[0][c + i] /= R[0][c];
+                r[0][c + i] /= r[0][c];
 
             for (k = 1; k < (n - 1); ++k)
             {
@@ -534,39 +534,39 @@ namespace _3D_LayoutOpt
                 {
                     if ((k + i) < n)
                     {
-                        sum = R[k + i][c - i];
+                        sum = r[k + i][c - i];
                         for (j = 1; j <= (hbw - i); ++j)
-                            if (j <= k) sum -= R[k - j][c + j]*R[k + i][c - i - j];
-                        R[k + i][c - i] = sum;
+                            if (j <= k) sum -= r[k - j][c + j]*r[k + i][c - i - j];
+                        r[k + i][c - i] = sum;
                     }
                 }
                 for (i = 1; i <= hbw; ++i)
                 {
-                    sum = R[k][c + i];
+                    sum = r[k][c + i];
                     for (j = 1; j <= (hbw - i); ++j)
-                        if (j <= k) sum -= R[k - j][c + j + i]*R[k][c - j];
-                    R[k][c + i] = sum/R[k][c];
+                        if (j <= k) sum -= r[k - j][c + j + i]*r[k][c - j];
+                    r[k][c + i] = sum/r[k][c];
                 }
             }
-            sum = R[n - 1][c];
+            sum = r[n - 1][c];
             for (i = 1; i <= hbw; ++i)
-                sum -= R[n - 1][c - i]*R[n - 1 - i][c + i];
-            R[n - 1][c] = sum;
+                sum -= r[n - 1][c - i]*r[n - 1 - i][c + i];
+            r[n - 1][c] = sum;
 
 /*   L-U Back-Substition to get temperatures.   */
             for (k = 0; k < n; ++k)
             {
                 sum = flux[k];
                 for (i = 1; i <= hbw; ++i)
-                    if (i <= k) sum -= R[k][c - i]*flux[k - i];
-                flux[k] = sum/R[k][c];
+                    if (i <= k) sum -= r[k][c - i]*flux[k - i];
+                flux[k] = sum/r[k][c];
             }
             for (k = n - 1; k >= 0; --k)
             {
                 sum = flux[k];
                 for (i = 1; i <= hbw; ++i)
-                    if ((k + i) < n) sum -= R[k][c + i]*(design.tfield[k + i].temp);
-                design.tfield[k].temp = sum;
+                    if ((k + i) < n) sum -= r[k][c + i]*(design.Tfield[k + i].Temp);
+                design.Tfield[k].Temp = sum;
             }
         }
 
@@ -574,7 +574,7 @@ namespace _3D_LayoutOpt
         /* THIS IS AN ITERATIVE MATRIX SOLVER FOR THE VECTOR OF NODES IN TFIELD.              */
         /* ---------------------------------------------------------------------------------- */
 
-        void GaussSeidel(Design design, double[][] R, double[] flux, int tot_nodes, int hbw, int znodes)
+        void GaussSeidel(Design design, double[][] r, double[] flux, int totNodes, int hbw, int znodes)
         {
             int i, k;
             int[] pos = {1, 0, 0};
@@ -585,38 +585,38 @@ namespace _3D_LayoutOpt
             pos[1] = znodes;
             pos[2] = hbw;
 
-            GetInitialGuess(design, tot_nodes, hbw);
+            GetInitialGuess(design, totNodes, hbw);
 
             /*      Guass - Seidel iteration with SOR      */
             do
             {
                 ++iter;
                 tol = 0.0;
-                for (k = 0; k < tot_nodes; ++k)
+                for (k = 0; k < totNodes; ++k)
                 {
-                    design.tfield[k].prev_temp = design.tfield[k].temp;
+                    design.Tfield[k].PrevTemp = design.Tfield[k].Temp;
                     rtot = flux[k];
                     for (i = 0; i <= 2; ++i)
                     {
                         if ((k - pos[i]) >= 0)
                         {
-                            rtot -= R[k][hbw - pos[i]]*design.tfield[k - pos[i]].temp;
+                            rtot -= r[k][hbw - pos[i]]*design.Tfield[k - pos[i]].Temp;
                         }
-                        if ((k + pos[i]) < tot_nodes)
+                        if ((k + pos[i]) < totNodes)
                         {
-                            rtot -= R[k][hbw + pos[i]]*design.tfield[k + pos[i]].temp;
+                            rtot -= r[k][hbw + pos[i]]*design.Tfield[k + pos[i]].Temp;
                         }
                     }
-                    design.tfield[k].temp = rtot/(R[k][hbw]);
+                    design.Tfield[k].Temp = rtot/(r[k][hbw]);
                     /*   SOR   */
-                    design.tfield[k].temp = Constants.OMEGA*design.tfield[k].temp +
-                                            (1 - Constants.OMEGA)*design.tfield[k].prev_temp;
+                    design.Tfield[k].Temp = Constants.Omega*design.Tfield[k].Temp +
+                                            (1 - Constants.Omega)*design.Tfield[k].PrevTemp;
                     /* Absolute Tolerance tabulation. */
-                    tol += Math.Abs(design.tfield[k].temp - design.tfield[k].prev_temp)/tot_nodes;
+                    tol += Math.Abs(design.Tfield[k].Temp - design.Tfield[k].PrevTemp)/totNodes;
                 }
                 /*Console.WriteLine("Iteration %d: Component #1 temperature = %.2f  %f", iter, 
 	design.tfield[0].temp, tol);*/
-            } while ((tol > design.tolerance) && (iter < design.max_iter));
+            } while ((tol > design.Tolerance) && (iter < design.MaxIter));
             /*Console.WriteLine("Iterations = %d: Component #1 temperature = %.2f  %f", iter, 
 	design.tfield[design.first_comp.node_center].temp, tol);*/
         }
@@ -626,20 +626,20 @@ namespace _3D_LayoutOpt
         /* ARE FROM THE PREVIOUS ITERATION.                                                   */
         /* ---------------------------------------------------------------------------------- */
 
-        void GetInitialGuess(Design design, int tot_nodes, int hbw)
+        void GetInitialGuess(Design design, int totNodes, int hbw)
         {
             int k;
             Component comp;
 
-            for (k = 0; k < tot_nodes; k++)
+            for (k = 0; k < totNodes; k++)
             {
-                design.tfield[k].temp = design.tfield[k].old_temp;
+                design.Tfield[k].Temp = design.Tfield[k].OldTemp;
             }
             
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.components[i];
-                design.tfield[comp.node_center].temp = comp.temp;
+                comp = design.Components[i];
+                design.Tfield[comp.NodeCenter].Temp = comp.Temp;
             }
         }
     }

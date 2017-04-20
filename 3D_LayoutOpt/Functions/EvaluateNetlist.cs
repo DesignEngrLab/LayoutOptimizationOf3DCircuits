@@ -8,24 +8,24 @@ namespace _3D_LayoutOpt.Functions
 {
     internal class EvaluateNetlist : IObjectiveFunction
     {
-        private Design design;
+        private Design _design;
 
        internal EvaluateNetlist(Design design)
         {
-            this.design = design;
+            this._design = design;
         }
 
         public double calculate(double[] x)
         {
             double sum = 0;
 
-            foreach (var net in design.Netlist)
+            foreach (var net in _design.Netlist)
             {
-                net.CalcNetDirectLineLength(design);
+                net.CalcNetDirectLineLength(_design);
                 sum += net.NetLength;
             }
 
-            design.new_obj_values[3] = sum;
+            _design.NewObjValues[3] = sum;
             return sum;
         }
         

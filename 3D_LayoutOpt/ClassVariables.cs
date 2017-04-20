@@ -9,33 +9,33 @@ namespace _3D_LayoutOpt
 
     public class Component
     {
-        public TessellatedSolid ts = null;
-        public TessellatedSolid backup_ts = null;
-        public Footprint footprint = null;
-        public Footprint backup_footprint = null;
-        public int node_center, nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
-        public double temp, tempcrit, q, k;
-        public string name;
-        public int index;
+        public TessellatedSolid Ts = null;
+        public TessellatedSolid BackupTs = null;
+        public Footprint Footprint = null;
+        public Footprint BackupFootprint = null;
+        public int NodeCenter, Nodes;                        //TO DO: WHAT ARE NODE and NODE CENTER?
+        public double Temp, Tempcrit, Q, K;
+        public string Name;
+        public int Index;
 
 
-        public Component(string CmpName, Footprint FP, int CmpIndex)
+        public Component(string cmpName, Footprint fp, int cmpIndex)
         {
-            name = CmpName;
-            footprint = FP;
-            index = CmpIndex;
+            Name = cmpName;
+            Footprint = fp;
+            Index = cmpIndex;
         }
 
         public void BackupComponent()
         {
-            backup_ts = ts;
-            backup_footprint = footprint;
+            BackupTs = Ts;
+            BackupFootprint = Footprint;
         }
 
         public void RevertComponent()
         {
-            ts = backup_ts;
-            footprint = backup_footprint;
+            Ts = BackupTs;
+            Footprint = BackupFootprint;
         }
 
         internal void Update(double[] coord)
@@ -46,7 +46,7 @@ namespace _3D_LayoutOpt
             var thetaX = coord[3];
             var thetaY = coord[4];
             var thetaZ = coord[5];
-            var TransformMatrix = new double[,]
+            var transformMatrix = new double[,]
                  {
                     {
                          Math.Cos(thetaX) * Math.Cos(thetaY),
@@ -65,48 +65,48 @@ namespace _3D_LayoutOpt
                          z },
                     {0.0, 0.0, 0.0, 1.0}
                  };
-            ts.Transform(TransformMatrix);
+            Ts.Transform(transformMatrix);
             //UPDATING THE PIN COORDINATES
-            foreach (SMD smd in footprint.pads)
-                smd.coord = TransformMatrix.multiply(new[] { smd.coord[0], smd.coord[0], smd.coord[0], 1 });
+            foreach (var smd in Footprint.Pads)
+                smd.Coord = transformMatrix.multiply(new[] { smd.Coord[0], smd.Coord[0], smd.Coord[0], 1 });
         }
     }
 
     public class Container
     {
         public string Name;
-        public TessellatedSolid ts;
+        public TessellatedSolid Ts;
 
         public Container(string containername, TessellatedSolid tessellatedSolid)
         {
             Name = containername;
-            ts = tessellatedSolid;
+            Ts = tessellatedSolid;
         }
     }
 
     public class Footprint
     {
-        public string name;
-        public List<SMD> pads = null;
+        public string Name;
+        public List<Smd> Pads = null;
 
-        public Footprint(string FPname, List<SMD> SMDpads)
+        public Footprint(string fPname, List<Smd> smDpads)
         {
-            name = FPname;
-            pads = SMDpads;
+            Name = fPname;
+            Pads = smDpads;
         }
     }
 
-    public class SMD
+    public class Smd
     {
-        public string name;
-        public double[] coord;
-        public double[] dim;
+        public string Name;
+        public double[] Coord;
+        public double[] Dim;
 
-        public SMD(string SMDname, double[] coordinates, double[] dimensions)
+        public Smd(string smDname, double[] coordinates, double[] dimensions)
         {
-            name = SMDname;
-            coord = coordinates;
-            dim = dimensions;
+            Name = smDname;
+            Coord = coordinates;
+            Dim = dimensions;
         }
     }
 
@@ -116,28 +116,28 @@ namespace _3D_LayoutOpt
         public string CompName;
         public string PinName;
 
-        public PinRef(string Component, string Pin)
+        public PinRef(string component, string pin)
         {
-            CompName = Component;
-            PinName = Pin;
+            CompName = component;
+            PinName = pin;
         }
     }
 
     public class Net
     {
         public string Netname;
-        public List<PinRef> PinRefs = null;
+        public List<PinRef> PinRefs = new List<PinRef>();
         public double NetLength = 0;
 
         public void CalcNetDirectLineLength(Design design)
         {
-            for (int i = 0; i < PinRefs.Count - 1; i++)
+            for (var i = 0; i < PinRefs.Count - 1; i++)
             {
-                for (int j = i + 1; j < PinRefs.Count; j++)
+                for (var j = i + 1; j < PinRefs.Count; j++)
                 {
-                    SMD PinJ = design.components[PinRefs[j].CompIndex].footprint.pads.Find(smd => smd.name == PinRefs[j].PinName);
-                    SMD PinI = design.components[PinRefs[i].CompIndex].footprint.pads.Find(smd => smd.name == PinRefs[i].PinName);
-                    double d = (PinJ.coord[0] - PinI.coord[0]) * (PinJ.coord[0] - PinI.coord[0]) + (PinJ.coord[1] - PinI.coord[1]) * (PinJ.coord[1] - PinI.coord[1]) + (PinJ.coord[2] - PinI.coord[2]) * (PinJ.coord[2] - PinI.coord[2]);
+                    var pinJ = design.Components[PinRefs[j].CompIndex].Footprint.Pads.Find(smd => smd.Name == PinRefs[j].PinName);
+                    var pinI = design.Components[PinRefs[i].CompIndex].Footprint.Pads.Find(smd => smd.Name == PinRefs[i].PinName);
+                    var d = (pinJ.Coord[0] - pinI.Coord[0]) * (pinJ.Coord[0] - pinI.Coord[0]) + (pinJ.Coord[1] - pinI.Coord[1]) * (pinJ.Coord[1] - pinI.Coord[1]) + (pinJ.Coord[2] - pinI.Coord[2]) * (pinJ.Coord[2] - pinI.Coord[2]);
                     NetLength += Math.Sqrt(d);
                 }
             }
@@ -153,9 +153,9 @@ namespace _3D_LayoutOpt
         /* means that the node does not refer to the center of a component but merely to a    */
         /* a resistor junction.  A non-zero number refers to that component in the list of    */
         /* components.                                                                        */
-        public Component comp, innercomp;
-        public double[] coord = new double[3];
-        public double prev_temp, old_temp, temp;
-        public double vol, k;
+        public Component Comp, Innercomp;
+        public double[] Coord = new double[3];
+        public double PrevTemp, OldTemp, Temp;
+        public double Vol, K;
     }
 }

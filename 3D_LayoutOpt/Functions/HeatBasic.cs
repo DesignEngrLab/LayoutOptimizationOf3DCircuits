@@ -8,64 +8,64 @@ namespace _3D_LayoutOpt
 {
     class HeatBasic : IInequality
     {
-        private Design design;
-        const int DUMMY = 100; //todo: remove this!
+        private Design _design;
+        const int Dummy = 100; //todo: remove this!
 
         internal HeatBasic(Design design)
         {
-            this.design = design;
-            design.tolerance = 0.001;
-            design.min_node_space = 50.0;
-            design.hcf = 0.1;
-            design.gaussMove = 0.0;
-            design.gauss = 0;
-            design.hcf_per_temp = 4;
-            design.max_iter = 100;
-            design.choice = 0;
+            this._design = design;
+            design.Tolerance = 0.001;
+            design.MinNodeSpace = 50.0;
+            design.Hcf = 0.1;
+            design.GaussMove = 0.0;
+            design.Gauss = 0;
+            design.HcfPerTemp = 4;
+            design.MaxIter = 100;
+            design.Choice = 0;
         }
         public double calculate(double[] x)
         {
-            int steps_at_t = DUMMY;
-            int gen_limit = DUMMY;
+            var stepsAtT = Dummy;
+            var genLimit = Dummy;
 
             int correction;
             Component comp;
-            correction = (steps_at_t - 1) % ((int)(gen_limit / design.hcf_per_temp) + 1);
+            correction = (stepsAtT - 1) % ((int)(genLimit / _design.HcfPerTemp) + 1);
 
-            switch (design.choice)
+            switch (_design.Choice)
             {
                 case 0:
                     /*if (correction == 0)
 		            correct_APP_by_LU(design);*/
-                    HeatAPP.thermal_analysis_APP(design);
+                    HeatApp.thermal_analysis_APP(_design);
                     break;
                 case 1:
                     if (correction == 0)
-                        HeatSS.correct_SS_by_LU(design);
-                    HeatSS.thermal_analysis_SS(design);
+                        HeatSs.correct_SS_by_LU(_design);
+                    HeatSs.thermal_analysis_SS(_design);
                     break;
                 case 2:
                     if (correction == 0)
-                        HeatSS.correct_SS_by_LU(design);
-                    HeatSS.thermal_analysis_SS(design);
+                        HeatSs.correct_SS_by_LU(_design);
+                    HeatSs.thermal_analysis_SS(_design);
                     break;
                 case 3:
-                    HeatMM.thermal_analysis_MM(design);
+                    HeatMm.thermal_analysis_MM(_design);
                     break;
                 default:
                     Console.WriteLine("ERROR in Thermal Analysis Choice.");
                     break;
             }
 
-            design.new_obj_values[3] = 0.0;
-            design.new_obj_values[4] = 0.0;
+            _design.NewObjValues[3] = 0.0;
+            _design.NewObjValues[4] = 0.0;
 
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < _design.CompCount; i++)
             {
-                comp = design.components[i];
-                design.new_obj_values[3] += calc_temp_penalty(design, comp.temp, comp.tempcrit);
+                comp = _design.Components[i];
+                _design.NewObjValues[3] += calc_temp_penalty(_design, comp.Temp, comp.Tempcrit);
             }
-            return design.new_obj_values[3];
+            return _design.NewObjValues[3];
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -110,11 +110,11 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         public static double calc_temp_penalty(Design design, double temp, double tempcrit)
         {
-            double value = 0.0;
+            var value = 0.0;
 
             if (temp > tempcrit)
             {
-                value = (temp - tempcrit) * (temp - tempcrit) / (design.comp_count);
+                value = (temp - tempcrit) * (temp - tempcrit) / (design.CompCount);
             }
             return (value);
         }
@@ -128,8 +128,8 @@ namespace _3D_LayoutOpt
         {
             int k;
 
-            for (k = 0; k < Constants.NODE_NUM; ++k)
-                design.tfield[k].temp = design.tfield[k].old_temp;
+            for (k = 0; k < Constants.NodeNum; ++k)
+                design.Tfield[k].Temp = design.Tfield[k].OldTemp;
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -140,8 +140,8 @@ namespace _3D_LayoutOpt
         {
             int k;
 
-            for (k = 0; k < Constants.NODE_NUM; ++k)
-                design.tfield[k].old_temp = design.tfield[k].temp;
+            for (k = 0; k < Constants.NodeNum; ++k)
+                design.Tfield[k].OldTemp = design.Tfield[k].Temp;
         }
 
 
@@ -156,19 +156,19 @@ namespace _3D_LayoutOpt
             Console.WriteLine("\nPlease define thermal anaylses changes.\n");
             Console.WriteLine("After how many temperature drops should switch to more exact Lumped Method?");
             i = Convert.ToInt16(Console.ReadLine());
-            design.analysis_switch[0] = Math.Pow(0.95, i);
+            design.AnalysisSwitch[0] = Math.Pow(0.95, i);
             Console.WriteLine("After how many temperature drops should switch from Lumped Method to Sub-Space Method?");
             i = Convert.ToInt16(Console.ReadLine());
-            design.analysis_switch[1] = Math.Pow(0.95, i);
+            design.AnalysisSwitch[1] = Math.Pow(0.95, i);
             Console.WriteLine("After how many temperature drops should switch to more exact Sub-Space Method?");
             i = Convert.ToInt16(Console.ReadLine());
-            design.analysis_switch[2] = Math.Pow(0.95, i);
+            design.AnalysisSwitch[2] = Math.Pow(0.95, i);
             Console.WriteLine("After how many temperature drops should switch from Sub-Space Method to Matrix Method?");
             i = Convert.ToInt16(Console.ReadLine());
-            design.analysis_switch[3] = Math.Pow(0.95, i);
+            design.AnalysisSwitch[3] = Math.Pow(0.95, i);
             Console.WriteLine("After how many temperature drops should switch to more exact Matrix Method?");
             i = Convert.ToInt16(Console.ReadLine());
-            design.analysis_switch[4] = Math.Pow(0.95, i);
+            design.AnalysisSwitch[4] = Math.Pow(0.95, i);
         }
 
     }

@@ -14,24 +14,24 @@ namespace _3D_LayoutOpt.Functions
         public static void CalcCenterofGravity(Design design)
         {
             double mass;
-            double[] sum = new double[3];
+            var sum = new double[3];
 
             mass = 0.0;
             sum[0] = 0.0;
             sum[1] = 0.0;
             sum[2] = 0.0;
 
-            foreach (var comp in design.components)
+            foreach (var comp in design.Components)
             {
-                mass += comp.ts.Mass;
-                for (int i = 0; i < 3; i++)
+                mass += comp.Ts.Mass;
+                for (var i = 0; i < 3; i++)
                 {
-                    sum[i] += comp.ts.Mass * comp.ts.Center[i];
+                    sum[i] += comp.Ts.Mass * comp.Ts.Center[i];
                 }
             }
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                design.c_grav[i] = sum[i] / mass;
+                design.CGrav[i] = sum[i] / mass;
             }
         }
 

@@ -50,10 +50,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TessellationAndVoxelizationGeometryLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\TVGL.1.0.17.0226\lib\portable-net45+win8\TessellationAndVoxelizationGeometryLibrary.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Design.cs" />
@@ -78,7 +74,20 @@
   <ItemGroup>
     <Content Include="OptimizationToolbox.XML" />
     <Content Include="StarMath.XML" />
-    <Content Include="TessellationAndVoxelizationGeometryLibrary.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MIConvexHull\MIConvexHull.csproj">
+      <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
+      <Name>MIConvexHull</Name>
+    </ProjectReference>
+    <ProjectReference Include="TessellationAndVoxelizationGeometryLibrary.NET4.5\TessellationAndVoxelizationGeometryLibrary.NET4.5.csproj">
+      <Project>{b2d2586a-5f3b-4122-b10e-4ac143c05ea4}</Project>
+      <Name>TessellationAndVoxelizationGeometryLibrary.NET4.5</Name>
+    </ProjectReference>
+    <ProjectReference Include="TessellationAndVoxelizationGeometryLibrary\TessellationAndVoxelizationGeometryLibraryUniversal.csproj">
+      <Project>{e3489019-d590-46a8-b2c2-e3481e8db77c}</Project>
+      <Name>TessellationAndVoxelizationGeometryLibraryUniversal</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

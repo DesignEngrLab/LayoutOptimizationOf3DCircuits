@@ -13,20 +13,20 @@ namespace _3D_LayoutOpt
 {
     class Program
     {
-
-        private static readonly string[] FileNames = {
+        private static readonly string[] FileNames =
+        {
             "../../../TestFiles/ABF.ply"
             // "../../../TestFiles/Beam_Boss.STL",
             // //"../../../TestFiles/bigmotor.amf",
             // //"../../../TestFiles/DxTopLevelPart2.shell",
-            };
+        };
 
         static void Main(string[] args)
         {
-            int i, which;
+            int i;
             double eval, h, w, l;
             char wait;
-            Design design = new Design();
+            var design = new Design();
             Component comp;
 
 
@@ -37,7 +37,7 @@ namespace _3D_LayoutOpt
 
             // IMPORTING CAD MODELS, COMPONENT AND CONTAINER FEATURES
             IO.ImportData(design);
-            Console.WriteLine("{0} components were read in from the file.\n", design.comp_count);
+            Console.WriteLine("{0} components were read in from the file.\n", design.CompCount);
 
             //INITIALIZING THE PROCESS
 
@@ -47,7 +47,7 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Initializing weights.\n");
             InitWeights(design);
 
-            optimize(design);
+            Optimize(design);
 
             IO.SaveDesign(design);
             IO.SaveContainer(design);
@@ -56,9 +56,9 @@ namespace _3D_LayoutOpt
             /* DownHill(design, MIN_MOVE_DIST);      */
             stopwatch.Stop();
             var timeElapsed = stopwatch.Elapsed;
-            using (StreamWriter writetext = new StreamWriter("results"))
+            using (var writetext = new StreamWriter("results"))
             {
-                if (design.new_obj_values[1] != 0.0)
+                if (design.NewObjValues[1] != 0.0)
                 {
                     writetext.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!");
                     Console.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!");
@@ -67,11 +67,9 @@ namespace _3D_LayoutOpt
                 Console.WriteLine("The elapsed time was {0} seconds", timeElapsed);
             }
             Console.ReadKey();
-
-
         }
 
-        private static void optimize(Design design)
+        private static void Optimize(Design design)
         {
             //var opty = new GradientBasedOptimization();
             //var opty = new HillClimbing();
@@ -91,17 +89,17 @@ namespace _3D_LayoutOpt
             /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
              * location parameters should be continuous though. Consider removing the 800's below
              * when using a mixed optimization method. */
-            var dsd = new DesignSpaceDescription(design.comp_count * 6);
-            var bounds = design.container.ts.Bounds;
-            for (var i = 0; i < design.comp_count; i++)
+            var dsd = new DesignSpaceDescription(design.CompCount*6);
+            var bounds = design.Container.Ts.Bounds;
+            for (var i = 0; i < design.CompCount; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < 3; j++)
                 {
-                    dsd[4 * i + j] = new VariableDescriptor(bounds[j][0], bounds[j][1], 0.1);
+                    dsd[4*i + j] = new VariableDescriptor(bounds[j][0], bounds[j][1], 0.1);
                 }
-                for (int j = 0; j < 3; j++)
+                for (var j = 0; j < 3; j++)
                 {
-                    dsd[4 * i + 3 + j] = new VariableDescriptor(0, 360, 36);
+                    dsd[4*i + 3 + j] = new VariableDescriptor(0, 360, 36);
                 }
             }
             opty.Add(dsd);
@@ -127,33 +125,34 @@ namespace _3D_LayoutOpt
             // this next line is to set the Debug statements from OOOT to the Console.
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             var timer = Stopwatch.StartNew();
-            var fStar = opty.Run(out xStar, design.comp_count * 6);
+            var fStar = opty.Run(out xStar, design.CompCount*6);
         }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function sets the initial objective function weights to 1.0.                  */
         /* ---------------------------------------------------------------------------------- */
+
         static void InitWeights(Design design)
         {
             int i;
-            for (i = 0; i < Constants.OBJ_NUM; ++i)
-                design.weight[i] = 1.0;
-            design.weight[3] = 0.01;
-            design.weight[1] = 2.5;
-
+            for (i = 0; i < Constants.ObjNum; ++i)
+                design.Weight[i] = 1.0;
+            design.Weight[3] = 0.01;
+            design.Weight[1] = 2.5;
         }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function initializes the component locations.                                 */
         /* ---------------------------------------------------------------------------------- */
+
         static void InitLocations(Design design)
         {
-            Component temp_comp = null;
+            Component tempComp = null;
             Console.WriteLine("Placing components at zero");
 
-            double[,] BackTransformMatrix = null;
-            foreach (var comp in design.components)
-                comp.ts.SetToOriginAndSquareTesselatedSolid(out BackTransformMatrix);
+            double[,] backTransformMatrix = null;
+            foreach (var comp in design.Components)
+                comp.Ts.SetToOriginAndSquareTesselatedSolid(out backTransformMatrix);
         }
     }
 }

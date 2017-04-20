@@ -12,36 +12,43 @@ using TVGL.IOFunctions;
 
 namespace _3D_LayoutOpt
 {
-    static class IO
+    internal static class IO
     {
+
         private static readonly string[] CompNames =
         {
-            "../../TestFiles/DxTopLevelPart2.shell"
+            "Designs/IC1.STL",
+            "Designs/R1.STL",
+            "Designs/R2.STL",
+            "Designs/R3.STL",
+            "Designs/C1.STL",
+            "Designs/D1.STL"
         };
         private static readonly string ContainerName =
-            "../../TestFiles/DxTopLevelPart2.shell";
+            "Designs/Container1.STL";
 
 
         public static void ImportData(Design design)
         {
             ImportComponents(design);
             ImportContainer(design);
+            ImportNetlist(design);
         }
 
-        static void ImportComponents(Design design)
+        private static void ImportComponents(Design design)
         {
             ImportFootprints(design);
             ImportCompModels(design);
-            ImportCompFeatures(design);
+            //ImportCompFeatures(design);
         }
 
-        static void ImportContainer(Design design)
+        private static void ImportContainer(Design design)
         {
             ImportContModel(design);
-            ImportContFeatures(design);
+            //ImportContFeatures(design);
         }
 
-        static void ImportContModel(Design design)
+        private static void ImportContModel(Design design)
         {
             var filename = ContainerName;
             Console.WriteLine("Attempting: " + filename);
@@ -49,30 +56,30 @@ namespace _3D_LayoutOpt
             TessellatedSolid ts;
             using (fileStream = File.OpenRead(filename))
                 ts = TVGL.IOFunctions.IO.Open(fileStream, filename)[0];
-            string name = GetNameFromFileName(filename);
+            var name = GetNameFromFileName(filename);
             var container = new Container(name, ts);
-            design.container = container;
+            design.Container = container;
         }
 
-        static void ImportCompFeatures(Design design)
+        private static void ImportCompFeatures(Design design)
         {
             try
             {
-                using (StreamReader readtext = new StreamReader("datafile1"))
+                using (var readtext = new StreamReader("datafile1"))
                 {
                     Console.WriteLine("Reading component data from file.");
                     string line;
                     while ((line = readtext.ReadLine()) != null)
                     {
-                        string[] items = line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                        var items = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                         var compname = items[0];
                         var tempcrit = Convert.ToDouble(items[1]);
                         var q = Convert.ToDouble(items[2]);
                         var k = Convert.ToDouble(items[3]);
-                        var comp = design.components.Find(x => x.name == compname);
-                        comp.tempcrit = tempcrit;
-                        comp.q = q;
-                        comp.k = k;
+                        var comp = design.Components.Find(x => x.Name == compname);
+                        comp.Tempcrit = tempcrit;
+                        comp.Q = q;
+                        comp.K = k;
                     }
                     Console.WriteLine("EOF reached in the input file.\n");
                 }
@@ -83,28 +90,28 @@ namespace _3D_LayoutOpt
 
         }
 
-        static void ImportContFeatures(Design design)
+        private static void ImportContFeatures(Design design)
         {
             try
             {
-                using (StreamReader readtext = new StreamReader("datafile2"))
+                using (var readtext = new StreamReader("datafile2"))
                 {
                     Console.WriteLine("Reading container dimensions from file.");
                     string line;
                     while ((line = readtext.ReadLine()) != null)
                     {
-                        string[] items = line.Split(' ');
+                        var items = line.Split(' ');
                         var kb = Convert.ToDouble(items[0]);
                         var h0 = Convert.ToDouble(items[1]);
                         var h1 = Convert.ToDouble(items[2]);
                         var h2 = Convert.ToDouble(items[3]);
                         var tamb = Convert.ToDouble(items[4]);
 
-                        design.kb = kb;
-                        design.h[0] = h0;
-                        design.h[1] = h1;
-                        design.h[2] = h2;
-                        design.tamb = tamb;
+                        design.Kb = kb;
+                        design.H[0] = h0;
+                        design.H[1] = h1;
+                        design.H[2] = h2;
+                        design.Tamb = tamb;
 
                     }
                 }
@@ -120,61 +127,66 @@ namespace _3D_LayoutOpt
         public static void ImportFootprints(Design design)
         {
 
-            XDocument doc = XDocument.Load("arduino_Uno.sch");
-            XElement Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
-            XElement Parts = doc.Element("eagle").Element("drawing").Element("schematic").Element("parts");
-            IEnumerable<XElement> parts = Parts.Elements("part");
+            var doc = XDocument.Load("Designs/555LED.sch");
+            var Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
+            var Parts = doc.Element("eagle").Element("drawing").Element("schematic").Element("parts");
+            var parts = Parts.Elements("part");
             if (Sheets != null)
             {
-                IEnumerable<XElement> sheets = Sheets.Elements("sheet");
+                var sheets = Sheets.Elements("sheet");
                 var sheet = sheets.First();
-                IEnumerable<XElement> instances = sheet.Element("instances").Elements("instance");
-                int index = 0;
+                var instances = sheet.Element("instances").Elements("instance");
+                var index = 0;
                 foreach (var instance in instances) 
                 {
-                    string PartName = instance.FirstAttribute.Value;
-                    var part = (doc.Element("eagle").Element("drawing").Element("schematic").Element("parts").Elements("part").Where(n => n.Attribute("name").Value == PartName)).First();
-                    var library = (doc.Element("eagle").Element("drawing").Element("schematic").Element("libraries").Elements("library").Where(n => n.Attribute("name").Value == part.Attribute("library").Value)).First();
-                    var deviceset = library.Element("devicesets").Elements("deviceset").Where(n => n.Attribute("name").Value == part.Attribute("deviceset").Value).First();
-                    var device = deviceset.Element("devices").Elements("device").Where(n => n.Attribute("name").Value == part.Attribute("device").Value).First();
-                    if (device.Attribute("package") != null)
+                    var partName = instance.FirstAttribute.Value;
+                    var xElement = doc.Element("eagle");
+                    if (xElement != null)
                     {
-
-                        var Packages = library.Element("packages");
-                        if (Packages.HasElements)
+                        var part = (xElement.Element("drawing").Element("schematic").Element("parts").Elements("part").Where(n => n.Attribute("name").Value == partName)).First();
+                        var library = (xElement.Element("drawing").Element("schematic").Element("libraries").Elements("library").Where(n => n.Attribute("name").Value == part.Attribute("library").Value)).First();
+                        var deviceset = library.Element("devicesets").Elements("deviceset").First(n => n.Attribute("name").Value == part.Attribute("deviceset").Value);
+                        var device = deviceset.Element("devices").Elements("device").First(n => n.Attribute("name").Value == part.Attribute("device").Value);
+                        if (device.Attribute("package") != null)
                         {
-                            var package = Packages.Elements("package").Where(n => n.Attribute("name").Value == device.Attribute("package").Value).First();
-                            var SMDs = package.Elements("smd");
-                            if (SMDs.Count() != 0)
+
+                            var packages = library.Element("packages");
+                            if (packages.HasElements)
                             {
-                                List<SMD> SMDlsit = new List<SMD>();
-                                foreach (var smd in SMDs)
+                                var package = packages.Elements("package").First(n => n.Attribute("name").Value == device.Attribute("package").Value);
+                                var smDs = package.Elements("smd");
+                                if (smDs.Count() != 0)
                                 {
-                                    string SMDname = smd.Attribute("name").Value;
-                                    double[] coords = new double[] { Convert.ToDouble(smd.Attribute("x").Value), Convert.ToDouble(smd.Attribute("y").Value),  };
-                                    double[] dims = new double[] { Convert.ToDouble(smd.Attribute("dx").Value), Convert.ToDouble(smd.Attribute("dy").Value) };
-                                    var SMD = new SMD(SMDname, coords, dims);
-                                    SMDlsit.Add(SMD);
+                                    var smDlsit = new List<Smd>();
+                                    foreach (var smd in smDs)
+                                    {
+                                        var smDname = smd.Attribute("name").Value;
+                                        double[] coords = { Convert.ToDouble(smd.Attribute("x").Value), Convert.ToDouble(smd.Attribute("y").Value), 0};
+                                        double[] dims = { Convert.ToDouble(smd.Attribute("dx").Value), Convert.ToDouble(smd.Attribute("dy").Value) };
+                                        var SMD = new Smd(smDname, coords, dims);
+                                        smDlsit.Add(SMD);
+                                    }
+
+                                    var fPname = package.Attribute("name").Value;
+                                    var footprint = new Footprint(fPname, smDlsit);
+
+                                    var comp = new Component(partName, footprint, index);
+                                    design.add_comp(comp);
+                                    index++;
                                 }
-
-                                string FPname = package.Attribute("name").Value;
-                                var Footprint = new Footprint(FPname, SMDlsit);
-
-                                var comp = new Component(PartName, Footprint, index);
-                                design.add_comp(comp);
-                                index++;
                             }
-                        }
                                                
+                        }
                     }
-                    
                 }
-                design.comp_count = index;
+                design.CompCount = index;
             }
 
         }
 
-        static void ImportCompModels(Design design)
+        
+
+        private static void ImportCompModels(Design design)
         {
             for (var i = 0; i < CompNames.Count(); i++)
             {
@@ -183,18 +195,20 @@ namespace _3D_LayoutOpt
                 Stream fileStream;
                 TessellatedSolid ts;
                 using (fileStream = File.OpenRead(filename))
-                    ts = TVGL.IOFunctions.IO.Open(fileStream, filename)[0];
-                string name = GetNameFromFileName(filename);
-                var comp = design.components.Find(x => x.name == name);
-                comp.ts = ts;
-                foreach (var smd in comp.footprint.pads)
+                      ts = TVGL.IOFunctions.IO.Open(fileStream, filename)[0];
+                var name = GetNameFromFileName(filename);
+                var comp = design.Components.Find(x => x.Name == name);
+                comp.Ts = ts;
+                foreach (var smd in comp.Footprint.Pads)
                 {
-                    smd.coord[2] = comp.ts.ZMin;
+                    smd.Coord[0] += smd.Coord[0] + comp.Ts.Center[0];
+                    smd.Coord[1] += smd.Coord[1] + comp.Ts.Center[1];
+                    smd.Coord[2] = comp.Ts.ZMin;
                 }
             }
         }
 
-        static string GetNameFromFileName(string filename)
+        private static string GetNameFromFileName(string filename)
         {
             var startIndex = filename.LastIndexOf('/') + 1;
             if (startIndex == -1) startIndex = filename.LastIndexOf('\\') + 1;
@@ -207,16 +221,16 @@ namespace _3D_LayoutOpt
 
         public static void ImportNetlist(Design desgin)
         {
-            XDocument doc = XDocument.Load("arduino_Uno.sch");
-            XElement Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
+            var doc = XDocument.Load("Designs/555LED.sch");
+            var Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
             if (Sheets != null)
             {
-                IEnumerable<XElement> sheets = Sheets.Elements("sheet");
+                var sheets = Sheets.Elements("sheet");
                 var sheet = sheets.First();
-                IEnumerable<XElement> nets = sheet.Element("nets").Elements("net");
+                var nets = sheet.Element("nets").Elements("net");
                 foreach (var net in nets)
                 {
-                    Net Net = new Net();
+                    var Net = new Net();
                     Net.Netname = net.Attribute("name").Value;
                     var segments = net.Elements("segment");
                     foreach (var segment in segments)
@@ -224,7 +238,7 @@ namespace _3D_LayoutOpt
                         var pinrefs = segment.Elements("pinref");
                         foreach (var pinref in pinrefs)
                         {
-                            PinRef Pinref = new PinRef(pinref.Attribute("part").Value, pinref.Attribute("pin").Value);
+                            var Pinref = new PinRef(pinref.Attribute("part").Value, pinref.Attribute("pin").Value);
                             Net.PinRefs.Add(Pinref);
                         }
                     }
@@ -237,14 +251,14 @@ namespace _3D_LayoutOpt
         /* This function prints out component information.                                    */
         /* ---------------------------------------------------------------------------------- */
 
-        static void FprintData(Design design, Component comp)
+        private static void FprintData(Design design, Component comp)
         {
-            using (StreamWriter writetext = new StreamWriter("/comp.out"))
+            using (var writetext = new StreamWriter("/comp.out"))
             {
-                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name);
-                for (int i = 0; i < 3; i++)
+                writetext.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.Name);
+                for (var i = 0; i < 3; i++)
                 {
-                    Console.WriteLine("coord {0} is {1}", i, comp.ts.Center[i]);
+                    Console.WriteLine("coord {0} is {1}", i, comp.Ts.Center[i]);
                 }
                 writetext.WriteLine("");
             }
@@ -254,32 +268,32 @@ namespace _3D_LayoutOpt
         /* This function writes Accepted steps to a file.                                     */
         /* ---------------------------------------------------------------------------------- */
 
-        static void WriteStep(Design design, int iteration, int flag)
+        private static void WriteStep(Design design, int iteration, int flag)
         {
 
             if (iteration == 0)         //????????????????????
             {
-                StreamWriter F1 = new StreamWriter("/ratio.out");
-                StreamWriter F2 = new StreamWriter("/container.out");
-                StreamWriter F3 = new StreamWriter("/overlap.out");
-                StreamWriter F4 = new StreamWriter("/coef.out");
-                StreamWriter F5 = new StreamWriter("/overlap2.out");
+                var f1 = new StreamWriter("/ratio.out");
+                var f2 = new StreamWriter("/container.out");
+                var f3 = new StreamWriter("/overlap.out");
+                var f4 = new StreamWriter("/coef.out");
+                var f5 = new StreamWriter("/overlap2.out");
 
 
                 if (flag != 0)
                 {
 
-                    F1.WriteLine("", iteration, design.new_obj_values[0]);
+                    f1.WriteLine("", iteration, design.NewObjValues[0]);
 
-                    F3.WriteLine("", iteration,
-                        (design.new_obj_values[1] * design.weight[1]));
+                    f3.WriteLine("", iteration,
+                        (design.NewObjValues[1] * design.Weight[1]));
                 }
 
-                F1.Close();
-                F2.Close();
-                F3.Close();
-                F4.Close();
-                F5.Close();
+                f1.Close();
+                f2.Close();
+                f3.Close();
+                f4.Close();
+                f5.Close();
             }
         }
 
@@ -287,18 +301,18 @@ namespace _3D_LayoutOpt
         /* This function writes data regarding the last temperature to a file.                */
         /* ---------------------------------------------------------------------------------- */
 
-        public static void WriteLoopData(double t, int steps_at_t, int Accept_count, int bad_Accept_count, int gen_limit, int flag)
+        public static void WriteLoopData(double t, int stepsAtT, int acceptCount, int badAcceptCount, int genLimit, int flag)
         {
-            using (StreamWriter writetext = new StreamWriter("/temperature.out"))
+            using (var writetext = new StreamWriter("/temperature.out"))
             {
                 if (flag == 1)
                 {
                     writetext.WriteLine("Temperature set at {0}", t);
                     writetext.WriteLine("At this temperature {0} steps were taken.  {1} were Accepted",
-                        steps_at_t, Accept_count);
-                    writetext.WriteLine("Of the Accepted steps, {0} were inferior steps", bad_Accept_count);
+                        stepsAtT, acceptCount);
+                    writetext.WriteLine("Of the Accepted steps, {0} were inferior steps", badAcceptCount);
                     writetext.WriteLine("Equilibrium was ");
-                    if (steps_at_t > gen_limit)
+                    if (stepsAtT > genLimit)
 
                         writetext.WriteLine("not ");
                     writetext.WriteLine("reached at this temperature\n");
@@ -308,7 +322,7 @@ namespace _3D_LayoutOpt
                 else if (flag == 3)
                 {
                     writetext.WriteLine("Temperature set at infinity (DownHill search)");
-                    writetext.WriteLine("{0} steps were taken.  {1} were Accepted\n\n", steps_at_t, Accept_count);
+                    writetext.WriteLine("{0} steps were taken.  {1} were Accepted\n\n", stepsAtT, acceptCount);
                 }
             }
         }
@@ -317,10 +331,10 @@ namespace _3D_LayoutOpt
         /* THIS FUNCTION PRINTS OUT COMPONENT INFORMATION.                                    */
         /* ---------------------------------------------------------------------------------- */
 
-        static void PrintData(Design design, Component comp)
+        private static void PrintData(Design design, Component comp)
         {
 
-            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.name);
+            Console.WriteLine("\nComponent name is {0} and the orientation is {1}", comp.Name);
 
             //i = -1;
             //while (++i < 3)
@@ -330,9 +344,9 @@ namespace _3D_LayoutOpt
             //while (++i < 3)
             //    Console.WriteLine("dim_initial {0} is {1}", i, comp.dim_initial[i]);
 
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                Console.WriteLine("coord {0} is {1}", i, comp.ts.Center[i]);
+                Console.WriteLine("coord {0} is {1}", i, comp.Ts.Center[i]);
             }
             Console.WriteLine("");
         }
@@ -341,10 +355,10 @@ namespace _3D_LayoutOpt
         /* This function writes component data to a file.                                     */
         /* ---------------------------------------------------------------------------------- */
 
-        static void PrintCompData(Design design)
+        private static void PrintCompData(Design design)
         {
 
-            foreach (var comp in design.components)
+            foreach (var comp in design.Components)
             {
                 FprintData(design, comp);
             }
@@ -354,16 +368,16 @@ namespace _3D_LayoutOpt
         /* This function prints out overlap data.                                             */
         /* ---------------------------------------------------------------------------------- */
 
-        static void PrintOverlaps(Design design)
+        private static void PrintOverlaps(Design design)
         {
             int i, j;
 
             i = -1;
-            while (++i < design.comp_count)
+            while (++i < design.CompCount)
             {
                 j = -1;
                 while (++j <= i)
-                    Console.WriteLine("{0} ", design.overlap[i, j]);
+                    Console.WriteLine("{0} ", design.Overlap[i, j]);
                 Console.WriteLine("");
             }
         }
@@ -375,34 +389,34 @@ namespace _3D_LayoutOpt
         public static void SaveDesign(Design design)
         {
             int i, j;
-            double avg_old_value;
+            double avgOldValue;
             Component comp;
 
             Console.WriteLine("Saving current design");
 
             i = -1;
-            avg_old_value = 0.0;
-            while (++i < Constants.BALANCE_AVG)
-                avg_old_value += design.old_obj_values[1, i];
-            avg_old_value /= Constants.BALANCE_AVG;
+            avgOldValue = 0.0;
+            while (++i < Constants.BalanceAvg)
+                avgOldValue += design.OldObjValues[1, i];
+            avgOldValue /= Constants.BalanceAvg;
 
-            using (StreamWriter writetext = new StreamWriter("/design.data"))
+            using (var writetext = new StreamWriter("/design.data"))
             {
                 i = 0;
-                comp = design.components[0];
-                while (++i <= design.comp_count)
+                comp = design.Components[0];
+                while (++i <= design.CompCount)
                 {
                     //writetext.WriteLine("{0} {1} {2}", comp.name, comp.shape_type, comp.orientation);
                     //writetext.WriteLine("{0} {1} {2}", comp.dim_initial[0], comp.dim_initial[1], comp.dim_initial[2]);
                     //writetext.WriteLine("{0} {1} {2}", comp.dim[0], comp.dim[1], comp.dim[2]);
                     //writetext.WriteLine("{0} {1} {2}", comp.ts[0].Center[0], comp.ts[0].Center[1], comp.ts[0].Center[2]);
                     //writetext.WriteLine("{0} {1}  {2}", comp.half_area, comp.mass, comp.temp);
-                    if (i < design.comp_count)
+                    if (i < design.CompCount)
 
-                        comp = design.components[i];
+                        comp = design.Components[i];
                 }
-                writetext.WriteLine("{0} {1} {2} {3}", design.new_obj_values[1], design.coef[1],
-                    design.weight[1], avg_old_value);
+                writetext.WriteLine("{0} {1} {2} {3}", design.NewObjValues[1], design.Coef[1],
+                    design.Weight[1], avgOldValue);
 
             }
 
@@ -415,21 +429,21 @@ namespace _3D_LayoutOpt
         public static void SaveContainer(Design design)
         {
             int i, j;
-            double avg_old_value;
-            double[] box_dim = new double[3];
+            double avgOldValue;
+            var boxDim = new double[3];
             Component comp;
 
             Console.WriteLine("Saving current container");
 
-            using (StreamWriter writetext = new StreamWriter("/container.data"))
+            using (var writetext = new StreamWriter("/container.data"))
             {
-                box_dim[0] = design.box_max[0] - design.box_min[0];
-                box_dim[1] = design.box_max[1] - design.box_min[1];
-                box_dim[2] = design.box_max[2] - design.box_min[2];
+                boxDim[0] = design.BoxMax[0] - design.BoxMin[0];
+                boxDim[1] = design.BoxMax[1] - design.BoxMin[1];
+                boxDim[2] = design.BoxMax[2] - design.BoxMin[2];
 
                 writetext.WriteLine("container B {0}", 1);
-                writetext.WriteLine("{0} {1} {2}", box_dim[0], box_dim[1], box_dim[2]);
-                writetext.WriteLine("{0} {1} {2}", box_dim[0], box_dim[1], box_dim[2]);
+                writetext.WriteLine("{0} {1} {2}", boxDim[0], boxDim[1], boxDim[2]);
+                writetext.WriteLine("{0} {1} {2}", boxDim[0], boxDim[1], boxDim[2]);
                
             }
         }
@@ -441,21 +455,21 @@ namespace _3D_LayoutOpt
         public static void RestoreDesign(Design design)
         {
             int i, j;
-            double avg_old_value;
+            double avgOldValue;
             Component comp;
 
             Console.WriteLine("Restoring saved design");
 
-            using (StreamReader readtext = new StreamReader("/design.data"))
+            using (var readtext = new StreamReader("/design.data"))
             {
                 i = 0;
-                comp = design.components[0];
+                comp = design.Components[0];
                 string line;
-                while (++i <= design.comp_count)
+                while (++i <= design.CompCount)
                 {
                     line = readtext.ReadLine();
-                    string[] items = line.Split(' ');
-                    comp.name = items[0];
+                    var items = line.Split(' ');
+                    comp.Name = items[0];
                     //comp.shape_type = items[1];
                     //comp.orientation = Convert.ToInt16(items[2]);
 
@@ -481,26 +495,26 @@ namespace _3D_LayoutOpt
                     items = line.Split(' ');
                     //comp.half_area = Convert.ToDouble(items[0]);
                     //comp.mass = Convert.ToDouble(items[1]);
-                    comp.temp = Convert.ToDouble(items[2]);
-                    if (i < design.comp_count)
-                        comp = design.components[i];
+                    comp.Temp = Convert.ToDouble(items[2]);
+                    if (i < design.CompCount)
+                        comp = design.Components[i];
                 }
                 line = readtext.ReadLine();
-                string[] items2 = line.Split(' ');
-                design.new_obj_values[1] = Convert.ToDouble(items2[0]);
-                design.coef[1] = Convert.ToDouble(items2[1]);
-                design.weight[1] = Convert.ToDouble(items2[2]);
-                avg_old_value = Convert.ToDouble(items2[3]);
+                var items2 = line.Split(' ');
+                design.NewObjValues[1] = Convert.ToDouble(items2[0]);
+                design.Coef[1] = Convert.ToDouble(items2[1]);
+                design.Weight[1] = Convert.ToDouble(items2[2]);
+                avgOldValue = Convert.ToDouble(items2[3]);
             }
 
             //Program.InitBounds(design);
             //ObjFunction.InitOverlaps(design);
             i = -1;
-            while (++i < Constants.OBJ_NUM)
+            while (++i < Constants.ObjNum)
             {
                 j = -1;
-                while (++j < Constants.BALANCE_AVG)
-                    design.old_obj_values[i, j] = avg_old_value;
+                while (++j < Constants.BalanceAvg)
+                    design.OldObjValues[i, j] = avgOldValue;
             }
         }
 
@@ -511,42 +525,42 @@ namespace _3D_LayoutOpt
 
         public static void SaveTfield(Design design)
         {
-            int k = 0;
+            var k = 0;
             Console.WriteLine("Saving current tfield");
-            StreamWriter F1 = new StreamWriter("/tfield.data");
+            var f1 = new StreamWriter("/tfield.data");
 
-            while (design.tfield[k].temp != 0.0)
+            while (design.Tfield[k].Temp != 0.0)
             {
-                F1.WriteLine("", design.tfield[k].coord[0],
-                    design.tfield[k].coord[1], design.tfield[k].coord[2],
-                    design.tfield[k].temp);
+                f1.WriteLine("", design.Tfield[k].Coord[0],
+                    design.Tfield[k].Coord[1], design.Tfield[k].Coord[2],
+                    design.Tfield[k].Temp);
                 /*if (design.tfield[k].coord[2] == 0.0) 
     fprintf(fptr, "%lf %lf %lf", design.tfield[k].coord[0], 
     design.tfield[k].coord[1], design.tfield[k].temp);*/
                 ++k;
             }
-            F1.Close();
+            f1.Close();
         }
 
         /* ---------------------------------------------------------------------------------- */
         /* This function restores the temperature field to a old_temp's.                       */
         /* ---------------------------------------------------------------------------------- */
 
-        static void RestoreTfield(Design design)
+        private static void RestoreTfield(Design design)
         {
-            int k = 0;
+            var k = 0;
             Console.WriteLine("Restoring tfield");
 
-            using (StreamReader readtext = new StreamReader("datafile1"))
+            using (var readtext = new StreamReader("datafile1"))
             {
                 string line;
                 while ((line = readtext.ReadLine()) != null)
                 {
-                    string[] items = line.Split('\t', ' ');
-                    design.tfield[k].coord[0] = Convert.ToDouble(items[0]);
-                    design.tfield[k].coord[1] = Convert.ToDouble(items[1]);
-                    design.tfield[k].coord[2] = Convert.ToDouble(items[2]);
-                    design.tfield[k].old_temp = Convert.ToDouble(items[3]);
+                    var items = line.Split('\t', ' ');
+                    design.Tfield[k].Coord[0] = Convert.ToDouble(items[0]);
+                    design.Tfield[k].Coord[1] = Convert.ToDouble(items[1]);
+                    design.Tfield[k].Coord[2] = Convert.ToDouble(items[2]);
+                    design.Tfield[k].OldTemp = Convert.ToDouble(items[3]);
                 }
             }
 

@@ -16,7 +16,7 @@ namespace _3D_LayoutOpt
     public static class Constants
     {
 
-        public const int DESGIN_VAR_NUM = 6;
+        public const int DesginVarNum = 6;
         
 
         /* ---------------------------------------------------------------------------------- */
@@ -36,13 +36,13 @@ namespace _3D_LayoutOpt
         /* UPDATE_INTERVAL: How often (# of iterations) balancing coefficients are updated    */
         /* BOX_LIMIT: The value that the bounding box dimensions are not allowed to exceed.   */
         /* ---------------------------------------------------------------------------------- */
-        public const int MAX_NAME_LENGTH = 25;
-        public const double INITIAL_BOX_SIZE = 10.0;
-        public const int OBJ_NUM = 4;
-        public const int BALANCE_AVG = 45;
-        public const int UPDATE_INTERVAL = 1;
-        public const double BOX_LIMIT = 30.0;
-        public const double TINY = 0.0001;
+        public const int MaxNameLength = 25;
+        public const double InitialBoxSize = 10.0;
+        public const int ObjNum = 4;
+        public const int BalanceAvg = 45;
+        public const int UpdateInterval = 1;
+        public const double BoxLimit = 30.0;
+        public const double Tiny = 0.0001;
 
         /* ---------------------------------------------------------------------------------- */
         /*                                 ANNEALING SCHEDULE                                 */
@@ -58,14 +58,14 @@ namespace _3D_LayoutOpt
         /* T_RATIO_MAX: The maximum allowable ratio of Tn to Tn-1 to prevent slow cooling.    */
         /* T_RATIO_MIN: The minimum allowable ratio of Tn to Tn-1 to prevent rapid cooling.   */
         /* ---------------------------------------------------------------------------------- */
-        public const int SAMPLE = 500;
-        public const int MIN_SAMPLE  =100;
+        public const int Sample = 500;
+        public const int MinSample  =100;
         public const int K = 37;
-        public const double RANGE = 0.2;
-        public const double ERF_RANGE = 0.18;
-        public const double LAMBDA = 10.0;
-        public const double T_RATIO_MAX = 0.97;
-        public const double T_RATIO_MIN = 0.6;
+        public const double Range = 0.2;
+        public const double ErfRange = 0.18;
+        public const double Lambda = 10.0;
+        public const double RatioMax = 0.97;
+        public const double RatioMin = 0.6;
 
         /* ---------------------------------------------------------------------------------- */
         /*                                  CONTROL OF MOVES                                  */
@@ -78,31 +78,31 @@ namespace _3D_LayoutOpt
         /* MMIN_MOVE_DIST: is the minimum distance a component will be Moved.                 */
         /* DIMENSION: dimensions of problem, either 2 or 3                                    */
         /* ---------------------------------------------------------------------------------- */
-        public const int PERTURB = 90;
-        public const int M_PROB = 80;
-        public const double MAX_MOVE_DIST = 15.0;
-        public const double MIN_MOVE_DIST = 0.1;
-        public const int I_LIMIT = 25000;
-        public const int MOVE_NUM = 17;                                                         //WHAT IS THIS
-        public const int TRANS_NUM = 15;                                                       //WHAT IS THIS
-        public const int ROT_NUM = 10;
-        public const double MIN_PROB = 0.03;
-        public const int DIMENSION = 3;
+        public const int Perturb = 90;
+        public const int MProb = 80;
+        public const double MaxMoveDist = 15.0;
+        public const double MinMoveDist = 0.1;
+        public const int Limit = 25000;
+        public const int MoveNum = 17;                                                         //WHAT IS THIS
+        public const int TransNum = 15;                                                       //WHAT IS THIS
+        public const int RotNum = 10;
+        public const double MinProb = 0.03;
+        public const int Dimension = 3;
 
         /* ---------------------------------------------------------------------------------- */
         /*                                CONTROL OF WEIGHTS                                  */
         /*                                                                                    */
         /* ---------------------------------------------------------------------------------- */
-        public const double MAX_WEIGHT_1 = 1.0;
-        public const double MIN_WEIGHT_1 = 0.1;
-        public const int WEIGHT_I_LIMIT = 5000;
+        public const double MaxWeight1 = 1.0;
+        public const double MinWeight1 = 0.1;
+        public const int WeightILimit = 5000;
 
         /* ---------------------------------------------------------------------------------- */
         /*                                 NOODLES CONSTANTS                                  */
         /*                                                                                    */
         /* FACETS: The number of sides used to approximate a cylinder.                        */
         /* ---------------------------------------------------------------------------------- */
-        public const int FACETS = 24;
+        public const int Facets = 24;
 
         /* ---------------------------------------------------------------------------------- */
         /*                                 THERMAL CONSTANTS                                  */
@@ -113,11 +113,11 @@ namespace _3D_LayoutOpt
         /* E: The amount of space to the boundary of the PCB from the nearest component. */
         /* CLOSE_NODE: If nodes are this close than they are combined as one.                 */
         /* ---------------------------------------------------------------------------------- */
-        public const double OMEGA = 1.85;
-        public const double CFRINGE = 1.0;
-        public const int NODE_NUM = 15;
-        public const double CLOSE_NODE = 0.1;
-        public const int SWITCH_NUM = 5;
+        public const double Omega = 1.85;
+        public const double Cfringe = 1.0;
+        public const int NodeNum = 15;
+        public const double CloseNode = 0.1;
+        public const int SwitchNum = 5;
 
     }
 }

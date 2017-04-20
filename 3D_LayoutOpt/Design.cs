@@ -10,7 +10,7 @@ namespace _3D_LayoutOpt
     {
         public double[][] DesignVars;
         public double[][] OldDesignVars;
-        public List<Net> Netlist = null;
+        public List<Net> Netlist = new List<Net>();
 
 
         /* Box_min and box_max are the x, y, z bounds for the bounding box.  Overlap is a     */
@@ -18,17 +18,17 @@ namespace _3D_LayoutOpt
         /* that only the top half of the overlap matrix is used.  half_area is half of the    */
         /* total of all the surface areas of the components.                                  */
 
-        public int comp_count;
-        public double[] old_orientation;
-        public double[] box_min = new double[3];
-        public double[] box_max = new double[3];
-        public double[,] overlap;
-        public double[] old_coord = new double[3];
-        public double[] old_dim = new double[3];
-        public double[] c_grav = new double[3];
+        public int CompCount;
+        public double[] OldOrientation;
+        public double[] BoxMin = new double[3];
+        public double[] BoxMax = new double[3];
+        public double[,] Overlap;
+        public double[] OldCoord = new double[3];
+        public double[] OldDim = new double[3];
+        public double[] CGrav = new double[3];
         //public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
-        public Container container;
-        public double half_area, volume, mass;
+        public Container Container;
+        public double HalfArea, Volume, Mass;
 
         /* First comp is a pointer to the first component in the component list.  Min_comp    */
         /* and max_comp are pointers to the components which contribute to the x, y, z max    */
@@ -36,9 +36,9 @@ namespace _3D_LayoutOpt
         /* contains backup information in case we reject a step and need to revert to a       */
         /* previous design.                                                                   */
 
-        public Component[] min_comp = new Component[3];
-        public Component[] max_comp = new Component[3];
-        public List<Component> components = new List<Component>();
+        public Component[] MinComp = new Component[3];
+        public Component[] MaxComp = new Component[3];
+        public List<Component> Components = new List<Component>();
 
         /* THESE HAVE BEEN ADDED FOR BALANCING THE COMPONENTS OF THE OBJECTIVE FUNCTION       */
         /* new_obj_values are the latest values of the components of the objective function.  */
@@ -53,11 +53,11 @@ namespace _3D_LayoutOpt
         /* new_obj_values before taking a step.  When a step is rejected, the revert function */
         /* copies the backed up values to new_obj_values to restore the previous state.       */
 
-        public double[] new_obj_values = new double[Constants.OBJ_NUM];
-        public double[,] old_obj_values = new double[Constants.OBJ_NUM, Constants.BALANCE_AVG];
-        public double[] backup_obj_values = new double[Constants.OBJ_NUM];
-        public double[] coef = new double[Constants.OBJ_NUM];
-        public double[] weight = new double[Constants.OBJ_NUM];
+        public double[] NewObjValues = new double[Constants.ObjNum];
+        public double[,] OldObjValues = new double[Constants.ObjNum, Constants.BalanceAvg];
+        public double[] BackupObjValues = new double[Constants.ObjNum];
+        public double[] Coef = new double[Constants.ObjNum];
+        public double[] Weight = new double[Constants.ObjNum];
 
         /* These variables have been added for the thermal analysis.                          */
         /* tfield is the vector of temperature nodes.  It is constrained to NODE_NUM in each  */
@@ -78,17 +78,17 @@ namespace _3D_LayoutOpt
         /* choice is the flag for the HeatEval H.T. chooser.                                 */
 
         //public TemperatureNode[] tfield = new TemperatureNode[Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM];
-        public TemperatureNode[] tfield = InitializeArray<TemperatureNode>(Constants.NODE_NUM * Constants.NODE_NUM * Constants.NODE_NUM);
-        public double kb, tamb, tolerance, min_node_space;
-        public double hcf, gaussMove;
-        public double[] h = new double[3];
-        public double[] analysis_switch = new double[Constants.SWITCH_NUM];
-        public int hcf_per_temp, gauss, max_iter, choice;
+        public TemperatureNode[] Tfield = InitializeArray<TemperatureNode>(Constants.NodeNum * Constants.NodeNum * Constants.NodeNum);
+        public double Kb, Tamb, Tolerance, MinNodeSpace;
+        public double Hcf, GaussMove;
+        public double[] H = new double[3];
+        public double[] AnalysisSwitch = new double[Constants.SwitchNum];
+        public int HcfPerTemp, Gauss, MaxIter, Choice;
 
         static T[] InitializeArray<T>(int length) where T : new()
         {
-            T[] array = new T[length];
-            for (int i = 0; i < length; ++i)
+            var array = new T[length];
+            for (var i = 0; i < length; ++i)
             {
                 array[i] = new T();
             }
@@ -98,30 +98,30 @@ namespace _3D_LayoutOpt
 
         public void add_comp(Component comp)
         {
-            components.Add(comp);
+            Components.Add(comp);
         }
 
         public void calculate(double[] x)
         {
-            box_max = new[] { double.NegativeInfinity, double.NegativeInfinity, double.NegativeInfinity };
-            box_min = new[] { double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity };
+            BoxMax = new[] { double.NegativeInfinity, double.NegativeInfinity, double.NegativeInfinity };
+            BoxMin = new[] { double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity };
             OldDesignVars = (double[][])DesignVars.Clone();
-            int k = 0;
-            for (int i = 0; i < comp_count; i++)
+            var k = 0;
+            for (var i = 0; i < CompCount; i++)
             {
                 var move = new double[6];
-                for (int j = 0; j < 6; j++)
+                for (var j = 0; j < 6; j++)
                 {
                     DesignVars[i][j] = x[k++];
                     move[j] = DesignVars[i][j] - OldDesignVars[i][j];
                 }
-                components[i].Update(move);
-                for (int j = 0; j < 3; j++)
+                Components[i].Update(move);
+                for (var j = 0; j < 3; j++)
                 {
-                    if (box_min[j] < components[j].ts.Bounds[j][0])
-                        box_min[j] = components[j].ts.Bounds[j][0];
-                    if (box_max[j] > components[j].ts.Bounds[j][1])
-                        box_max[j] = components[j].ts.Bounds[j][1];
+                    if (BoxMin[j] < Components[j].Ts.Bounds[j][0])
+                        BoxMin[j] = Components[j].Ts.Bounds[j][0];
+                    if (BoxMax[j] > Components[j].Ts.Bounds[j][1])
+                        BoxMax[j] = Components[j].Ts.Bounds[j][1];
                 }
             }
         }

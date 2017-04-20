@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    class HeatSS
+    class HeatSs
     {
 
         /* ---------------------------------------------------------------------------------- */
@@ -17,13 +17,13 @@ namespace _3D_LayoutOpt
         public static void thermal_analysis_SS(Design design)
         {
             double[] flux;
-            double[][] R;
-            double[] ss_dim = new double[3];
-            double[] fringe = new double[3];
-            int i, j, tot_nodes;
-            int[] divisions = new int[3];
+            double[][] r;
+            var ssDim = new double[3];
+            var fringe = new double[3];
+            int i, j, totNodes;
+            var divisions = new int[3];
 
-            tot_nodes = (design.choice)*100;
+            totNodes = (design.Choice)*100;
 #if SFRINGE
             for (i = 0; i<Constants.DIMENSION; i++)
             {
@@ -40,44 +40,44 @@ namespace _3D_LayoutOpt
             }
 #endif
 
-            define_divisions(design, divisions, ss_dim, tot_nodes, fringe);
-            tot_nodes = divisions[0]* divisions[1]* divisions[2];
+            define_divisions(design, divisions, ssDim, totNodes, fringe);
+            totNodes = divisions[0]* divisions[1]* divisions[2];
             /* total nodes might change from predicted amount. */
             /*  These commands set up the flux vector and R matrix using dynamic memory */
             /*  allocation.                                                             */
-            flux = new double[tot_nodes]; 
-            for (i = 0; i<tot_nodes; i++)
+            flux = new double[totNodes]; 
+            for (i = 0; i<totNodes; i++)
 	            flux[i] = 0.0;
-            R =new double[tot_nodes][];
-            for (i = 0; i<tot_nodes; i++)
+            r =new double[totNodes][];
+            for (i = 0; i<totNodes; i++)
             {
 	            for (j = 0; j< (2* divisions[1]* divisions[2] +1); ++j)
-	            R[i][j] = 0.0;
+	            r[i][j] = 0.0;
             }
-            find_k_and_q(design, divisions, tot_nodes, ss_dim, flux, fringe);
-            set_up_SS_matrix(design, flux, R, ss_dim, divisions, tot_nodes);
-            HeatMM.LU_Decomp(design, R, flux, tot_nodes, divisions[1]*divisions[2]);
-            find_avg_temp(design, tot_nodes, ss_dim);
+            find_k_and_q(design, divisions, totNodes, ssDim, flux, fringe);
+            set_up_SS_matrix(design, flux, r, ssDim, divisions, totNodes);
+            HeatMm.LU_Decomp(design, r, flux, totNodes, divisions[1]*divisions[2]);
+            find_avg_temp(design, totNodes, ssDim);
         }
 
         /* ---------------------------------------------------------------------------------- */
         /* THIS FUNCTION DEFINES THE DIVISIONS OF THE SIDES AND THE LENGTHS OF THE DIVISIONS. */
         /* ---------------------------------------------------------------------------------- */
-        public static void define_divisions(Design design, int[] divisions, double[] ss_dim, int tot_nodes, double[] fringe)
+        public static void define_divisions(Design design, int[] divisions, double[] ssDim, int totNodes, double[] fringe)
         {
             double ratio;
-            double[] contain_dim = new double[3];
+            var containDim = new double[3];
             int i;
  
             for (i = 0; i< 3; i++)
             {
-	            contain_dim[i] = (2* fringe[i] + design.box_max[i] - design.box_min[i]);
+	            containDim[i] = (2* fringe[i] + design.BoxMax[i] - design.BoxMin[i]);
             }
-            ratio = Math.Pow((tot_nodes/(contain_dim[0]*contain_dim[1]*contain_dim[2])), (1.0/3.0));
+            ratio = Math.Pow((totNodes/(containDim[0]*containDim[1]*containDim[2])), (1.0/3.0));
             for (i = 0; i< 3; i++)
             {
-	            divisions[i] = ((int) (contain_dim[i]* ratio + 0.5));
-	            ss_dim[i] = contain_dim[i]/divisions[i];
+	            divisions[i] = ((int) (containDim[i]* ratio + 0.5));
+	            ssDim[i] = containDim[i]/divisions[i];
             }
     
         }
@@ -88,38 +88,38 @@ namespace _3D_LayoutOpt
         /* TFIELD STRUCTURE REFERS TO THE NUMBER OF THE COMPONENT IN THE LIST.  IF ZERO, THEN */
         /* CORRESPONDS TO A SIMPLE RESISTOR JUNCTION.                                         */
         /* ---------------------------------------------------------------------------------- */
-        public static void find_k_and_q(Design design, int[] divisions, int tot_nodes, double[] ss_dim, double[] flux, double[] fringe)
+        public static void find_k_and_q(Design design, int[] divisions, int totNodes, double[] ssDim, double[] flux, double[] fringe)
         {
             Component comp;
-            double subspace_vol, ktot, vol, comp_vol;
+            double subspaceVol, ktot, vol, compVol;
             int i, j, k, m = 0;
 
-            subspace_vol = ss_dim[0]* ss_dim[1]* ss_dim[2];
+            subspaceVol = ssDim[0]* ssDim[1]* ssDim[2];
             for (i = 0; i<divisions[0]; i++)
             {
 	            for (j = 0; j<divisions[1]; j++)
                 {
 	                for (k = 0; k<divisions[2]; k++)
                     {
-		                design.tfield[m].coord[0] = (design.box_min[0] - fringe[0]) + (0.5* ss_dim[0] + i* ss_dim[0]);
-		                design.tfield[m].coord[1] = (design.box_min[1] - fringe[1]) + (0.5* ss_dim[1] + j* ss_dim[1]);
-		                design.tfield[m].coord[2] = (design.box_min[2] - fringe[2]) + (0.5* ss_dim[2] + k* ss_dim[2]);
+		                design.Tfield[m].Coord[0] = (design.BoxMin[0] - fringe[0]) + (0.5* ssDim[0] + i* ssDim[0]);
+		                design.Tfield[m].Coord[1] = (design.BoxMin[1] - fringe[1]) + (0.5* ssDim[1] + j* ssDim[1]);
+		                design.Tfield[m].Coord[2] = (design.BoxMin[2] - fringe[2]) + (0.5* ssDim[2] + k* ssDim[2]);
 
 		                ktot = 0.0;
 		                vol = 0.0;
 		                flux[m] = 0.0;
 
-                        for (int n = 0; n < design.comp_count; n++)
+                        for (var n = 0; n < design.CompCount; n++)
                         {
-                            comp = design.components[n];
-                            comp_vol = find_vol(comp, design.tfield[m].coord, ss_dim);
-                            flux[m] += (comp.q) * ((comp_vol) / ((comp.ts.XMax - comp.ts.XMin) * (comp.ts.YMax - comp.ts.YMin) * (comp.ts.ZMax - comp.ts.ZMin)));
-                            ktot += (comp_vol) * (comp.k);
-                            vol += comp_vol;
+                            comp = design.Components[n];
+                            compVol = find_vol(comp, design.Tfield[m].Coord, ssDim);
+                            flux[m] += (comp.Q) * ((compVol) / ((comp.Ts.XMax - comp.Ts.XMin) * (comp.Ts.YMax - comp.Ts.YMin) * (comp.Ts.ZMax - comp.Ts.ZMin)));
+                            ktot += (compVol) * (comp.K);
+                            vol += compVol;
                         }
 
-		                design.tfield[m].vol = vol;
-		                design.tfield[m].k = (ktot/subspace_vol) + (design.kb)*(1 - (vol/subspace_vol));
+		                design.Tfield[m].Vol = vol;
+		                design.Tfield[m].K = (ktot/subspaceVol) + (design.Kb)*(1 - (vol/subspaceVol));
 		                ++m;
 	                }
 	            }
@@ -131,21 +131,21 @@ namespace _3D_LayoutOpt
         /* A IN AX = B.  CALCULATIONS OF ALL THE THERMAL RESISTANCES AND BOUNDARY CONDITIONS  */
         /* ARE DONE IN THIS SUBROUTINE.                                                       */
         /* ---------------------------------------------------------------------------------- */
-        public static double find_vol(Component comp, double[] sscoord, double[] ss_dim)
+        public static double find_vol(Component comp, double[] sscoord, double[] ssDim)
         {
             double dx, dy, dz;
-            dx = ((comp.ts.XMax - comp.ts.XMin) + ss_dim[0])/2.0 - Math.Abs(comp.ts.Center[0] - sscoord[0]);
+            dx = ((comp.Ts.XMax - comp.Ts.XMin) + ssDim[0])/2.0 - Math.Abs(comp.Ts.Center[0] - sscoord[0]);
             if (dx < 0) dx = 0;
-            if (dx > (comp.ts.XMax - comp.ts.XMin)) dx = (comp.ts.XMax - comp.ts.XMin);
-            if (dx > ss_dim[0]) dx = ss_dim[0];
-            dy = ((comp.ts.YMax - comp.ts.YMin) + ss_dim[1])/2.0 - Math.Abs(comp.ts.Center[1] - sscoord[1]);
+            if (dx > (comp.Ts.XMax - comp.Ts.XMin)) dx = (comp.Ts.XMax - comp.Ts.XMin);
+            if (dx > ssDim[0]) dx = ssDim[0];
+            dy = ((comp.Ts.YMax - comp.Ts.YMin) + ssDim[1])/2.0 - Math.Abs(comp.Ts.Center[1] - sscoord[1]);
             if (dy< 0) dy = 0;
-            if (dy > (comp.ts.YMax - comp.ts.YMin)) dy = (comp.ts.YMax - comp.ts.YMin);
-            if (dy > ss_dim[1]) dy = ss_dim[1];
-            dz = ((comp.ts.ZMax - comp.ts.ZMin) + ss_dim[2])/2.0 - Math.Abs(comp.ts.Center[2] - sscoord[2]);
+            if (dy > (comp.Ts.YMax - comp.Ts.YMin)) dy = (comp.Ts.YMax - comp.Ts.YMin);
+            if (dy > ssDim[1]) dy = ssDim[1];
+            dz = ((comp.Ts.ZMax - comp.Ts.ZMin) + ssDim[2])/2.0 - Math.Abs(comp.Ts.Center[2] - sscoord[2]);
             if (dz< 0) dz = 0;
-            if (dz > (comp.ts.ZMax - comp.ts.ZMin)) dz = (comp.ts.ZMax - comp.ts.ZMin);
-            if (dz > ss_dim[2]) dz = ss_dim[2];
+            if (dz > (comp.Ts.ZMax - comp.Ts.ZMin)) dz = (comp.Ts.ZMax - comp.Ts.ZMin);
+            if (dz > ssDim[2]) dz = ssDim[2];
 
             return(dx* dy* dz);
         }    
@@ -155,15 +155,15 @@ namespace _3D_LayoutOpt
         /* A IN AX = B.  CALCULATIONS OF ALL THE THERMAL RESISTANCES AND BOUNDARY CONDITIONS  */
         /* ARE DONE IN THIS SUBROUTINE.                                                       */
         /* ---------------------------------------------------------------------------------- */
-        public static void set_up_SS_matrix(Design design, double[] flux, double[][] R, double[] ss_dim, int[] divisions, int tot_nodes)
+        public static void set_up_SS_matrix(Design design, double[] flux, double[][] r, double[] ssDim, int[] divisions, int totNodes)
         {
             int i, j, k, c;
 
-            tot_nodes = divisions[0]* divisions[1]* divisions[2];
+            totNodes = divisions[0]* divisions[1]* divisions[2];
             c = divisions[1]* divisions[2];
-            for (i = 0; i<tot_nodes; ++i) 
+            for (i = 0; i<totNodes; ++i) 
 	        for (j = 0; j< (2* divisions[1]* divisions[2] +1); j++) 
-	    R[i][j] = 0.0;
+	    r[i][j] = 0.0;
 /* The combination of simple resistances is of the form:
  *     2*k1*k2*A
  * R = ---------     for resistances between two subspaces
@@ -176,78 +176,78 @@ namespace _3D_LayoutOpt
  *  R = --------    -h is the boundary convection coefficient
  *	2*k1+h*l 
  */
-    for (i = 0; i<tot_nodes; ++i) {
+    for (i = 0; i<totNodes; ++i) {
 	/* West */
 	if ((i-divisions[1]* divisions[2]) >= 0) {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.tfield[(i - divisions[1] * divisions[2])].k)*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.tfield[i].k + design.tfield[(i - divisions[1] * divisions[2])].k));
-	    R[i][(c - divisions[1] * divisions[2])] = -2*(design.tfield[i].k)*(design.tfield[(i - divisions[1] * divisions[2])].k)*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.tfield[i].k + design.tfield[(i - divisions[1] * divisions[2])].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.Tfield[(i - divisions[1] * divisions[2])].K)*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.Tfield[i].K + design.Tfield[(i - divisions[1] * divisions[2])].K));
+	    r[i][(c - divisions[1] * divisions[2])] = -2*(design.Tfield[i].K)*(design.Tfield[(i - divisions[1] * divisions[2])].K)*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.Tfield[i].K + design.Tfield[(i - divisions[1] * divisions[2])].K));
 	} else {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.h[0])*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.h[0]) + 2*(design.tfield[i].k));
-	    flux[i] += (design.tamb)*2*(design.tfield[i].k)*(design.h[0])*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.h[0]) + 2*(design.tfield[i].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.H[0])*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.H[0]) + 2*(design.Tfield[i].K));
+	    flux[i] += (design.Tamb)*2*(design.Tfield[i].K)*(design.H[0])*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.H[0]) + 2*(design.Tfield[i].K));
 	}
 	/* East */
-	if ((i+divisions[1]* divisions[2]) < tot_nodes) {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.tfield[(i + divisions[1] * divisions[2])].k)*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.tfield[i].k + design.tfield[(i + divisions[1] * divisions[2])].k));
-	    R[i][(c + divisions[1] * divisions[2])] = -2*(design.tfield[i].k)*(design.tfield[(i + divisions[1] * divisions[2])].k)*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.tfield[i].k + design.tfield[(i + divisions[1] * divisions[2])].k));
+	if ((i+divisions[1]* divisions[2]) < totNodes) {
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.Tfield[(i + divisions[1] * divisions[2])].K)*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.Tfield[i].K + design.Tfield[(i + divisions[1] * divisions[2])].K));
+	    r[i][(c + divisions[1] * divisions[2])] = -2*(design.Tfield[i].K)*(design.Tfield[(i + divisions[1] * divisions[2])].K)*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.Tfield[i].K + design.Tfield[(i + divisions[1] * divisions[2])].K));
 	} else {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.h[0])*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.h[0]) + 2*(design.tfield[i].k));
-	    flux[i] += (design.tamb)*2*(design.tfield[i].k)*(design.h[0])*(ss_dim[1]* ss_dim[2])/
-			((ss_dim[0])*(design.h[0]) + 2*(design.tfield[i].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.H[0])*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.H[0]) + 2*(design.Tfield[i].K));
+	    flux[i] += (design.Tamb)*2*(design.Tfield[i].K)*(design.H[0])*(ssDim[1]* ssDim[2])/
+			((ssDim[0])*(design.H[0]) + 2*(design.Tfield[i].K));
 	}
 	/* South */
 	if ((i % (divisions[1]* divisions[2])) >= divisions[2]) {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.tfield[(i - divisions[2])].k)*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.tfield[i].k + design.tfield[(i - divisions[2])].k));
-	    R[i][(c - divisions[2])] = -2*(design.tfield[i].k)*(design.tfield[(i - divisions[2])].k)*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.tfield[i].k + design.tfield[(i - divisions[2])].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.Tfield[(i - divisions[2])].K)*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.Tfield[i].K + design.Tfield[(i - divisions[2])].K));
+	    r[i][(c - divisions[2])] = -2*(design.Tfield[i].K)*(design.Tfield[(i - divisions[2])].K)*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.Tfield[i].K + design.Tfield[(i - divisions[2])].K));
 	} else {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.h[1])*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.h[1]) + 2*(design.tfield[i].k));
-	    flux[i] += (design.tamb)*2*(design.tfield[i].k)*(design.h[1])*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.h[1]) + 2*(design.tfield[i].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.H[1])*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.H[1]) + 2*(design.Tfield[i].K));
+	    flux[i] += (design.Tamb)*2*(design.Tfield[i].K)*(design.H[1])*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.H[1]) + 2*(design.Tfield[i].K));
 	}
 	/* North */
 	if (((i+divisions[2]) % (divisions[1]* divisions[2])) >= divisions[2]) {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.tfield[(i + divisions[2])].k)*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.tfield[i].k + design.tfield[(i + divisions[2])].k));
-	    R[i][(c + divisions[2])] = -2*(design.tfield[i].k)*(design.tfield[(i + divisions[2])].k)*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.tfield[i].k + design.tfield[(i + divisions[2])].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.Tfield[(i + divisions[2])].K)*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.Tfield[i].K + design.Tfield[(i + divisions[2])].K));
+	    r[i][(c + divisions[2])] = -2*(design.Tfield[i].K)*(design.Tfield[(i + divisions[2])].K)*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.Tfield[i].K + design.Tfield[(i + divisions[2])].K));
 	} else {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.h[1])*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.h[1]) + 2*(design.tfield[i].k));
-	    flux[i] += (design.tamb)*2*(design.tfield[i].k)*(design.h[1])*(ss_dim[0]* ss_dim[2])/
-			((ss_dim[1])*(design.h[1]) + 2*(design.tfield[i].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.H[1])*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.H[1]) + 2*(design.Tfield[i].K));
+	    flux[i] += (design.Tamb)*2*(design.Tfield[i].K)*(design.H[1])*(ssDim[0]* ssDim[2])/
+			((ssDim[1])*(design.H[1]) + 2*(design.Tfield[i].K));
 	}
 	/* Down */
 	if ((i % divisions[2]) != 0) {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.tfield[(i - 1)].k)*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.tfield[i].k + design.tfield[(i - 1)].k));
-	    R[i][(c - 1)] = -2*(design.tfield[i].k)*(design.tfield[(i - 1)].k)*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.tfield[i].k + design.tfield[(i - 1)].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.Tfield[(i - 1)].K)*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.Tfield[i].K + design.Tfield[(i - 1)].K));
+	    r[i][(c - 1)] = -2*(design.Tfield[i].K)*(design.Tfield[(i - 1)].K)*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.Tfield[i].K + design.Tfield[(i - 1)].K));
 	} else {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.h[2])*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.h[2]) + 2*(design.tfield[i].k));
-	    flux[i] += (design.tamb)*2*(design.tfield[i].k)*(design.h[2])*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.h[2]) + 2*(design.tfield[i].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.H[2])*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.H[2]) + 2*(design.Tfield[i].K));
+	    flux[i] += (design.Tamb)*2*(design.Tfield[i].K)*(design.H[2])*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.H[2]) + 2*(design.Tfield[i].K));
 	}
 	/* Up */
 	if (((i+1) % divisions[2]) != 0) {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.tfield[(i + 1)].k)*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.tfield[i].k + design.tfield[(i + 1)].k));
-	    R[i][(c + 1)] = -2*(design.tfield[i].k)*(design.tfield[(i + 1)].k)*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.tfield[i].k + design.tfield[(i + 1)].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.Tfield[(i + 1)].K)*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.Tfield[i].K + design.Tfield[(i + 1)].K));
+	    r[i][(c + 1)] = -2*(design.Tfield[i].K)*(design.Tfield[(i + 1)].K)*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.Tfield[i].K + design.Tfield[(i + 1)].K));
 	} else {
-	    R[i][c] += 2*(design.tfield[i].k)*(design.h[2])*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.h[2]) + 2*(design.tfield[i].k));
-	    flux[i] += (design.tamb)*2*(design.tfield[i].k)*(design.h[2])*(ss_dim[0]* ss_dim[1])/
-			((ss_dim[2])*(design.h[2]) + 2*(design.tfield[i].k));
+	    r[i][c] += 2*(design.Tfield[i].K)*(design.H[2])*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.H[2]) + 2*(design.Tfield[i].K));
+	    flux[i] += (design.Tamb)*2*(design.Tfield[i].K)*(design.H[2])*(ssDim[0]* ssDim[1])/
+			((ssDim[2])*(design.H[2]) + 2*(design.Tfield[i].K));
 	}
     }
 }
@@ -256,27 +256,27 @@ namespace _3D_LayoutOpt
  * This function returns the average temperature of the components based on the
  * weighted average of the sub spaces that they occupy.
  */
-        public static void find_avg_temp(Design design, int tot_nodes,double[] ss_dim)
+        public static void find_avg_temp(Design design, int totNodes,double[] ssDim)
         {
             int i;
-            double tot_vol, tot_temp;
-            double temp_avg, vol;
+            double totVol, totTemp;
+            double tempAvg, vol;
             Component comp;
 
 
-            for (int j = 0; j < design.comp_count; j++)
+            for (var j = 0; j < design.CompCount; j++)
             {
-                comp = design.components[j];
-                tot_vol = 0.0;
-                tot_temp = 0.0;
-                for (i = 0; i < tot_nodes; i++)
+                comp = design.Components[j];
+                totVol = 0.0;
+                totTemp = 0.0;
+                for (i = 0; i < totNodes; i++)
                 {
-                    vol = find_vol(comp, design.tfield[i].coord, ss_dim);
-                    tot_temp += (vol) * (design.tfield[i].temp);
-                    tot_vol += vol;
+                    vol = find_vol(comp, design.Tfield[i].Coord, ssDim);
+                    totTemp += (vol) * (design.Tfield[i].Temp);
+                    totVol += vol;
                 }
-                temp_avg = tot_temp / tot_vol;
-                comp.temp = design.hcf * temp_avg;
+                tempAvg = totTemp / totVol;
+                comp.Temp = design.Hcf * tempAvg;
 
             }
         }
@@ -288,33 +288,33 @@ namespace _3D_LayoutOpt
         public static void correct_SS_by_LU(Design design)
         {
             Component comp;
-            double tempSS, tempMM;
+            double tempSs, tempMm;
 
-            tempMM = 0.0;
-            tempSS = 0.0;
-            design.hcf = 1.0;
-            design.gauss = 0;
+            tempMm = 0.0;
+            tempSs = 0.0;
+            design.Hcf = 1.0;
+            design.Gauss = 0;
 
 
             thermal_analysis_SS(design);
 
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.components[i];
-                tempSS += comp.temp / design.comp_count;
+                comp = design.Components[i];
+                tempSs += comp.Temp / design.CompCount;
             }
 
        
-            tempSS = design.components[0].temp;
-            HeatMM.thermal_analysis_MM(design);
+            tempSs = design.Components[0].Temp;
+            HeatMm.thermal_analysis_MM(design);
 
-            for (int i = 0; i < design.comp_count; i++)
+            for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.components[i];
-                tempMM += comp.temp / design.comp_count;
+                comp = design.Components[i];
+                tempMm += comp.Temp / design.CompCount;
             }
             
-            design.hcf = tempMM/tempSS;
+            design.Hcf = tempMm/tempSs;
         }
     }
 }
