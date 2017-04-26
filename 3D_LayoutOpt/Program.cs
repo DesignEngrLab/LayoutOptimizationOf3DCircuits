@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StarMathLib;
 using TVGL;
 
 namespace _3D_LayoutOpt
@@ -140,12 +141,10 @@ namespace _3D_LayoutOpt
 
         static void InitLocations(Design design)
         {
-            Component tempComp = null;
             Console.WriteLine("Placing components at zero");
 
-            double[,] backTransformMatrix = null;
             foreach (var comp in design.Components)
-                comp.Ts.SetToOriginAndSquareTesselatedSolid(out backTransformMatrix);
+                comp.SetCompToZero();
         }
     }
 }

@@ -38,6 +38,14 @@ namespace _3D_LayoutOpt
             Footprint = BackupFootprint;
         }
 
+        internal void SetCompToZero()
+        {
+            double[,] backTransformMatrix = null;
+            Ts.SetToOriginAndSquareTesselatedSolid(out backTransformMatrix);
+            foreach (var smd in Footprint.Pads)
+                smd.Coord = backTransformMatrix.multiply(-1).multiply(new[] { smd.Coord[0], smd.Coord[0], smd.Coord[0], 1 });
+        }
+
         internal void Update(double[] coord)
         {
             var x = coord[0];
@@ -65,6 +73,7 @@ namespace _3D_LayoutOpt
                          z },
                     {0.0, 0.0, 0.0, 1.0}
                  };
+            SetCompToZero();
             Ts.Transform(transformMatrix);
             //UPDATING THE PIN COORDINATES
             foreach (var smd in Footprint.Pads)

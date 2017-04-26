@@ -39,13 +39,13 @@ namespace _3D_LayoutOpt
         {
             ImportFootprints(design);
             ImportCompModels(design);
-            //ImportCompFeatures(design);
+            ImportCompFeatures(design);
         }
 
         private static void ImportContainer(Design design)
         {
             ImportContModel(design);
-            //ImportContFeatures(design);
+            ImportContFeatures(design);
         }
 
         private static void ImportContModel(Design design)
