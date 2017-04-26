@@ -1,0 +1,31 @@
+Netlist
+
+Exported from untitled.sch at 4/20/2017 3:49 PM
+
+EAGLE Version 8.1.1 Copyright (c) 1988-2017 Autodesk, Inc.
+
+Net      Part     Pad      Pin        Sheet
+
+N$1      IC1      3        OUT        1
+         R3       1        1          1
+
+N$2      D1       A        A          1
+         R3       2        2          1
+
+N$3      IC1      4        /RES       1
+         IC1      8        VCC+       1
+         R2       2        2          1
+
+N$4      C1       C        -          1
+         D1       C        C          1
+         IC1      1        GND        1
+
+N$5      C1       A        +          1
+         IC1      2        TRI        1
+         IC1      6        TRE        1
+         R1       1        1          1
+
+N$7      IC1      7        DIS        1
+         R1       2        2          1
+         R2       1        1          1
+

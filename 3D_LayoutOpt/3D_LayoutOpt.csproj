@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Design.cs" />
-    <Compile Include="ClassVariables.cs" />
+    <Compile Include="Classes.cs" />
     <Compile Include="Functions\CenterOfGravity.cs" />
     <Compile Include="Functions\ComponentToContainerOverlap.cs" />
     <Compile Include="Functions\ComponentToComponentOverlap.cs" />

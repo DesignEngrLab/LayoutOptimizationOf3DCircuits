@@ -77,9 +77,9 @@ namespace _3D_LayoutOpt
         public string Name;
         public TessellatedSolid Ts;
 
-        public Container(string containername, TessellatedSolid tessellatedSolid)
+        public Container(string containerName, TessellatedSolid tessellatedSolid)
         {
-            Name = containername;
+            Name = containerName;
             Ts = tessellatedSolid;
         }
     }
@@ -89,10 +89,10 @@ namespace _3D_LayoutOpt
         public string Name;
         public List<Smd> Pads = null;
 
-        public Footprint(string fPname, List<Smd> smDpads)
+        public Footprint(string fpName, List<Smd> smdPads)
         {
-            Name = fPname;
-            Pads = smDpads;
+            Name = fpName;
+            Pads = smdPads;
         }
     }
 

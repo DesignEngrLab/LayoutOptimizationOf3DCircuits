@@ -1,0 +1,16 @@
+Partlist
+
+Exported from untitled.sch at 4/20/2017 3:59 PM
+
+EAGLE Version 8.1.1 Copyright (c) 1988-2017 Autodesk, Inc.
+
+Assembly variant: 
+
+Part     Value          Device                     Package     Library                      Sheet
+
+C1       10µF           10UF-POLAR-EIA6032-25V-10% EIA6032-NOM SparkFun-Capacitors          1
+D1                      LED1206                    LED-1206    SparkFun-LED                 1
+IC1      555            555D                       SO08        SparkFun-IC-Special-Function 1
+R1       470k           BVS                        BVS         resistor-shunt               1
+R2       1k             BVS                        BVS         resistor-shunt               1
+R3       1K             BVS                        BVS         resistor-shunt               1

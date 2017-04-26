@@ -13,13 +13,6 @@ namespace _3D_LayoutOpt
 {
     class Program
     {
-        private static readonly string[] FileNames =
-        {
-            "../../../TestFiles/ABF.ply"
-            // "../../../TestFiles/Beam_Boss.STL",
-            // //"../../../TestFiles/bigmotor.amf",
-            // //"../../../TestFiles/DxTopLevelPart2.shell",
-        };
 
         static void Main(string[] args)
         {
@@ -41,7 +34,7 @@ namespace _3D_LayoutOpt
 
             //INITIALIZING THE PROCESS
 
-            Console.WriteLine("Initializing locations.\n");
+            Console.WriteLine("INITIALIZING LOCATIONS.\n");
             InitLocations(design);
 
             Console.WriteLine("Initializing weights.\n");
