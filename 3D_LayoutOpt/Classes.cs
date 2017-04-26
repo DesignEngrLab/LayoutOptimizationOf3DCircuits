@@ -2,6 +2,7 @@
 using TVGL;
 using OptimizationToolbox;
 using System;
+using System.Linq;
 using StarMathLib;
 
 namespace _3D_LayoutOpt
@@ -43,7 +44,12 @@ namespace _3D_LayoutOpt
             double[,] backTransformMatrix = null;
             Ts.SetToOriginAndSquareTesselatedSolid(out backTransformMatrix);
             foreach (var smd in Footprint.Pads)
-                smd.Coord = backTransformMatrix.multiply(-1).multiply(new[] { smd.Coord[0], smd.Coord[0], smd.Coord[0], 1 });
+            {
+                var dummyCoord = backTransformMatrix.inverse().multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
+                smd.Coord = dummyCoord.Take(dummyCoord.Count() - 1).ToArray();
+            }
+                
+                
         }
 
         internal void Update(double[] coord)
