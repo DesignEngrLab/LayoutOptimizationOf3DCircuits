@@ -142,9 +142,15 @@ namespace _3D_LayoutOpt
         static void InitLocations(Design design)
         {
             Console.WriteLine("Placing components at zero");
-
+            design.DesignVars = new double[design.CompCount][];
+            design.OldDesignVars = new double[design.CompCount][];
             foreach (var comp in design.Components)
+            {
                 comp.SetCompToZero();
+                design.DesignVars[comp.Index] = new double[] {0,0,0,0,0,0};
+                design.OldDesignVars[comp.Index] = new double[] { 0, 0, 0, 0, 0, 0 };
+            }
+  
         }
     }
 }

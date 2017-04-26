@@ -8,8 +8,8 @@ namespace _3D_LayoutOpt
 {
     public class Design : IDependentAnalysis
     {
-        public double[][] DesignVars;
-        public double[][] OldDesignVars;
+        public double[][] DesignVars = null;
+        public double[][] OldDesignVars = null;
         public List<Net> Netlist = new List<Net>();
 
 
@@ -105,7 +105,7 @@ namespace _3D_LayoutOpt
         {
             BoxMax = new[] { double.NegativeInfinity, double.NegativeInfinity, double.NegativeInfinity };
             BoxMin = new[] { double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity };
-            OldDesignVars = (double[][])DesignVars.Clone();
+            //OldDesignVars = DesignVars;
             var k = 0;
             for (var i = 0; i < CompCount; i++)
             {
@@ -118,12 +118,13 @@ namespace _3D_LayoutOpt
                 Components[i].Update(move);
                 for (var j = 0; j < 3; j++)
                 {
-                    if (BoxMin[j] < Components[j].Ts.Bounds[j][0])
-                        BoxMin[j] = Components[j].Ts.Bounds[j][0];
-                    if (BoxMax[j] > Components[j].Ts.Bounds[j][1])
-                        BoxMax[j] = Components[j].Ts.Bounds[j][1];
+                    if (BoxMin[j] < Components[i].Ts.Bounds[0][j])
+                        BoxMin[j] = Components[i].Ts.Bounds[0][j];
+                    if (BoxMax[j] > Components[i].Ts.Bounds[1][j])
+                        BoxMax[j] = Components[i].Ts.Bounds[1][j];
                 }
             }
+            OldDesignVars = (double[][])DesignVars.Clone();
         }
     }
 }
