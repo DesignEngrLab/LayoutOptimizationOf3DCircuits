@@ -89,11 +89,11 @@ namespace _3D_LayoutOpt
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[4*i + j] = new VariableDescriptor(bounds[j][0], bounds[j][1], 0.1);
+                    dsd[6*i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.1);
                 }
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[4*i + 3 + j] = new VariableDescriptor(0, 360, 36);
+                    dsd[6*i + 3 + j] = new VariableDescriptor(0, 360, 36);
                 }
             }
             opty.Add(dsd);
