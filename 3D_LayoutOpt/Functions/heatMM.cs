@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
@@ -22,28 +18,27 @@ namespace _3D_LayoutOpt
 
         public static void thermal_analysis_MM(Design design)
         {
-            double[] flux;
-            double[][] r;
-            int i, j, totNodes, hbw, width;
+            int i;
             var nodeDim = new int[Constants.Dimension];
 
             SetUpTfield(design, nodeDim);
-            hbw = nodeDim[1]*nodeDim[2];
-            width = 2*hbw + 1;
-            totNodes = nodeDim[0]*hbw;
+            var hbw = nodeDim[1]*nodeDim[2];
+            var width = 2*hbw + 1;
+            var totNodes = nodeDim[0]*hbw;
 
 
             FindContainedNodes(design, hbw, nodeDim[2]);
 
             /* These commands set up the flux vector and R matrix using dynamic memory */
             /* allocation.                                                             */
-            flux = new double[totNodes];
+            var flux = new double[totNodes];
             for (i = 0; i < totNodes; i++)
                 flux[i] = 0.0;
-            r = new double[totNodes][];
+            var r = new double[totNodes][];
             for (i = 0; i < totNodes; i++)
             {
                 r[i] = new double[width];
+                int j;
                 for (j = 0; j < width; ++j)
                     r[i][j] = 0.0;
             }

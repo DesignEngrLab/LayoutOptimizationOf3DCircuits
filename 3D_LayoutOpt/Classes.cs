@@ -112,12 +112,14 @@ namespace _3D_LayoutOpt
 
     public class Smd
     {
+        public string pinName;
         public string Name;
         public double[] Coord;
         public double[] Dim;
 
-        public Smd(string smDname, double[] coordinates, double[] dimensions)
+        public Smd(string pinname ,string smDname, double[] coordinates, double[] dimensions)
         {
+            pinName = pinname;
             Name = smDname;
             Coord = coordinates;
             Dim = dimensions;
@@ -149,8 +151,8 @@ namespace _3D_LayoutOpt
             {
                 for (var j = i + 1; j < PinRefs.Count; j++)
                 {
-                    var pinJ = design.Components[PinRefs[j].CompIndex].Footprint.Pads.Find(smd => smd.Name == PinRefs[j].PinName);
-                    var pinI = design.Components[PinRefs[i].CompIndex].Footprint.Pads.Find(smd => smd.Name == PinRefs[i].PinName);
+                    var pinJ = design.Components[PinRefs[j].CompIndex].Footprint.Pads.Find(smd => smd.pinName == PinRefs[j].PinName);
+                    var pinI = design.Components[PinRefs[i].CompIndex].Footprint.Pads.Find(smd => smd.pinName == PinRefs[i].PinName);
                     var d = (pinJ.Coord[0] - pinI.Coord[0]) * (pinJ.Coord[0] - pinI.Coord[0]) + (pinJ.Coord[1] - pinI.Coord[1]) * (pinJ.Coord[1] - pinI.Coord[1]) + (pinJ.Coord[2] - pinI.Coord[2]) * (pinJ.Coord[2] - pinI.Coord[2]);
                     NetLength += Math.Sqrt(d);
                 }

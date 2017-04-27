@@ -126,5 +126,18 @@ namespace _3D_LayoutOpt
             }
             OldDesignVars = (double[][])DesignVars.Clone();
         }
+
+        public void InitializeOverlapMatrix()
+        {
+            Overlap = new double[CompCount,CompCount];
+            for (int i = 0; i < CompCount; i++)
+            {
+                for (int j = 0; j < CompCount; j++)
+                {
+                    Overlap[i, j] = 0;
+                }
+            }
+
+        }
     }
 }

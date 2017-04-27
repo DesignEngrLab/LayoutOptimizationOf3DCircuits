@@ -35,12 +35,12 @@ namespace TVGL
             ///     Initializes a new instance of the <see cref="PlanningSurface" /> class.
             /// </summary>
             /// <param name="SurfaceType">Type of the surface.</param>
-            /// <param name="Faces">The faces.</param>
-            internal PlanningSurface(PrimitiveSurfaceType SurfaceType, params FaceWithScores[] Faces)
+            /// <param name="faces">The faces.</param>
+            internal PlanningSurface(PrimitiveSurfaceType SurfaceType, params FaceWithScores[] faces)
             {
                 this.SurfaceType = SurfaceType;
-                this.Faces = new List<FaceWithScores>(Faces);
-                foreach (var polygonalFace in Faces)
+                this.Faces = new List<FaceWithScores>(faces);
+                foreach (var polygonalFace in faces)
                     Area += polygonalFace.Face.Area;
             }
 

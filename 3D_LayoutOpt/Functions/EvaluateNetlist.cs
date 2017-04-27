@@ -13,6 +13,7 @@ namespace _3D_LayoutOpt.Functions
        internal EvaluateNetlist(Design design)
         {
             this._design = design;
+
         }
 
         public double calculate(double[] x)
@@ -28,6 +29,14 @@ namespace _3D_LayoutOpt.Functions
             _design.NewObjValues[3] = sum;
             return sum;
         }
-        
+
+        //public double deriv_wrt_xi(double[] x, int i)
+        //{
+        //    switch (i)
+        //    {
+        //        case 0:
+                                        
+        //    }
+        //}
     }
 }

@@ -483,20 +483,20 @@ namespace TVGL
         /// Edges the classifier2.
         /// </summary>
         /// <param name="ABNProbs">The abn probs.</param>
-        /// <param name="MCMProbs">The MCM probs.</param>
-        /// <param name="SMProbs">The sm probs.</param>
+        /// <param name="mcmProbs">The MCM probs.</param>
+        /// <param name="smProbs">The sm probs.</param>
         /// <param name="rulesArray">The rules array.</param>
         /// <param name="prob">The prob.</param>
         /// <returns>System.Int32.</returns>
-        private static int EdgeClassifier2(double[] ABNProbs, double[] MCMProbs, double[] SMProbs,
+        private static int EdgeClassifier2(double[] ABNProbs, double[] mcmProbs, double[] smProbs,
             int[,] rulesArray, out double prob)
         {
             // go to the rules and and return an int corresponding to each region.
             // This function must be rewrited. It's crazy!!!!!!!!!
             prob = 0;
             var ABN = Convert.ToInt32(ABNProbs[0]);
-            var MCM = Convert.ToInt32(MCMProbs[0]);
-            var SM = Convert.ToInt32(SMProbs[0]);
+            var MCM = Convert.ToInt32(mcmProbs[0]);
+            var SM = Convert.ToInt32(smProbs[0]);
             var t = 0;
             bool probabilityNotFound;
             do
@@ -505,19 +505,19 @@ namespace TVGL
                 if (rulesArray[0, t] == ABN && rulesArray[1, t] == 10 && rulesArray[2, t] == 10)
                     prob = ABNProbs[1];
                 else if (rulesArray[1, t] == MCM && rulesArray[0, t] == 10 && rulesArray[2, t] == 10)
-                    prob = MCMProbs[1];
+                    prob = mcmProbs[1];
                 else if (rulesArray[2, t] == SM && rulesArray[0, t] == 10 && rulesArray[1, t] == 10)
-                    prob = SMProbs[1];
+                    prob = smProbs[1];
                 else if (rulesArray[0, t] == ABN && rulesArray[1, t] == MCM && rulesArray[2, t] == 10)
-                    prob = Math.Min(ABNProbs[1], MCMProbs[1]);
+                    prob = Math.Min(ABNProbs[1], mcmProbs[1]);
                 else if (rulesArray[0, t] == ABN && rulesArray[1, t] == 10 && rulesArray[2, t] == SM)
-                    prob = Math.Min(ABNProbs[1], SMProbs[1]);
+                    prob = Math.Min(ABNProbs[1], smProbs[1]);
                 else if (rulesArray[0, t] == 10 && rulesArray[1, t] == MCM && rulesArray[2, t] == SM)
-                    prob = Math.Min(MCMProbs[1], SMProbs[1]);
+                    prob = Math.Min(mcmProbs[1], smProbs[1]);
                 else if (rulesArray[0, t] == ABN && rulesArray[1, t] == MCM && rulesArray[2, t] == SM)
                 {
-                    var m = Math.Min(ABNProbs[1], MCMProbs[1]);
-                    prob = Math.Min(m, SMProbs[1]);
+                    var m = Math.Min(ABNProbs[1], mcmProbs[1]);
+                    prob = Math.Min(m, smProbs[1]);
                 }
                 else probabilityNotFound = true;
             } while (probabilityNotFound && ++t < rulesArray.GetLength(1));

@@ -30,10 +30,11 @@ namespace _3D_LayoutOpt
 
 
             // IMPORTING CAD MODELS, COMPONENT AND CONTAINER FEATURES
-            IO.ImportData(design);
+            Io.ImportData(design);
             Console.WriteLine("{0} components were read in from the file.\n", design.CompCount);
 
             //INITIALIZING THE PROCESS
+            design.InitializeOverlapMatrix();
 
             Console.WriteLine("INITIALIZING LOCATIONS.\n");
             InitLocations(design);
@@ -43,9 +44,9 @@ namespace _3D_LayoutOpt
 
             Optimize(design);
 
-            IO.SaveDesign(design);
-            IO.SaveContainer(design);
-            IO.SaveTfield(design);
+            Io.SaveDesign(design);
+            Io.SaveContainer(design);
+            Io.SaveTfield(design);
 
             /* DownHill(design, MIN_MOVE_DIST);      */
             stopwatch.Stop();

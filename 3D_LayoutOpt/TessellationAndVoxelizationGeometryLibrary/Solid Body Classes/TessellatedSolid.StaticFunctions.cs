@@ -115,7 +115,7 @@ namespace TVGL
         #region Define Inertia Tensor
         const double oneSixtieth = 1.0 / 60.0;
 
-        private static double[,] DefineInertiaTensor(IEnumerable<PolygonalFace> Faces, double[] Center, double Volume)
+        private static double[,] DefineInertiaTensor(IEnumerable<PolygonalFace> Faces, double[] center, double volume)
         {
             var matrixA = StarMath.makeZero(3, 3);
             var matrixCtotal = StarMath.makeZero(3, 3);
@@ -129,20 +129,20 @@ namespace TVGL
                 matrixA.SetRow(0,
                     new[]
                     {
-                        face.Vertices[0].Position[0] - Center[0], face.Vertices[0].Position[1] - Center[1],
-                        face.Vertices[0].Position[2] - Center[2]
+                        face.Vertices[0].Position[0] - center[0], face.Vertices[0].Position[1] - center[1],
+                        face.Vertices[0].Position[2] - center[2]
                     });
                 matrixA.SetRow(1,
                     new[]
                     {
-                        face.Vertices[1].Position[0] - Center[0], face.Vertices[1].Position[1] - Center[1],
-                        face.Vertices[1].Position[2] - Center[2]
+                        face.Vertices[1].Position[0] - center[0], face.Vertices[1].Position[1] - center[1],
+                        face.Vertices[1].Position[2] - center[2]
                     });
                 matrixA.SetRow(2,
                     new[]
                     {
-                        face.Vertices[2].Position[0] - Center[0], face.Vertices[2].Position[1] - Center[1],
-                        face.Vertices[2].Position[2] - Center[2]
+                        face.Vertices[2].Position[0] - center[0], face.Vertices[2].Position[1] - center[1],
+                        face.Vertices[2].Position[2] - center[2]
                     });
 
                 var matrixC = matrixA.transpose().multiply(canonicalMatrix);
@@ -156,7 +156,7 @@ namespace TVGL
                     .multiply(translateMatrix.transpose())
                     .add(translateMatrix.multiply(translateMatrix.multiply(-1).transpose()))
                     .add(translateMatrix.multiply(-1).multiply(translateMatrix.multiply(-1).transpose()))
-                    .multiply(Volume);
+                    .multiply(volume);
             matrixCprime = matrixCprime.add(matrixCtotal);
             var result =
                 StarMath.makeIdentity(3).multiply(matrixCprime[0, 0] + matrixCprime[1, 1] + matrixCprime[2, 2]);

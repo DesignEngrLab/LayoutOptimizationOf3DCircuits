@@ -918,7 +918,7 @@ namespace TVGL
         #region Compute Paths
         //This can return paths that contain the same point more than once (does this instead of making + and - loop).
         //Could chop them up, but I'm not sure that this is necessary.
-        private static List<Point> ComputePath(SweepEvent startEvent, int pathID, int depth, int parentID, IList<SweepEvent> result)
+        private static List<Point> ComputePath(SweepEvent startEvent, int pathID, int depth, int parentId, IList<SweepEvent> result)
         {
             //First, get the proper start event, given the current guess.
             //The proper start event will be the lowest OtherEvent.Y from neighbors at the startEvent.Point.
@@ -989,7 +989,7 @@ namespace TVGL
             {
                 sweepEvent.PathID = pathID;
                 sweepEvent.Depth = depth;
-                sweepEvent.ParentPathID = parentID;
+                sweepEvent.ParentPathID = parentId;
                 
             }
 

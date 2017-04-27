@@ -12,7 +12,7 @@ using TVGL.IOFunctions;
 
 namespace _3D_LayoutOpt
 {
-    internal static class IO
+    internal static class Io
     {
 
         private static readonly string[] CompNames =
@@ -147,6 +147,7 @@ namespace _3D_LayoutOpt
                         var library = (xElement.Element("drawing").Element("schematic").Element("libraries").Elements("library").Where(n => n.Attribute("name").Value == part.Attribute("library").Value)).First();
                         var deviceset = library.Element("devicesets").Elements("deviceset").First(n => n.Attribute("name").Value == part.Attribute("deviceset").Value);
                         var device = deviceset.Element("devices").Elements("device").First(n => n.Attribute("name").Value == part.Attribute("device").Value);
+                        var connects = device.Element("connects"); 
                         if (device.Attribute("package") != null)
                         {
 
@@ -160,10 +161,11 @@ namespace _3D_LayoutOpt
                                     var smDlsit = new List<Smd>();
                                     foreach (var smd in smDs)
                                     {
-                                        var smDname = smd.Attribute("name").Value;
+                                        var smdName = smd.Attribute("name").Value;
                                         double[] coords = { Convert.ToDouble(smd.Attribute("x").Value), Convert.ToDouble(smd.Attribute("y").Value), 0};
                                         double[] dims = { Convert.ToDouble(smd.Attribute("dx").Value), Convert.ToDouble(smd.Attribute("dy").Value) };
-                                        var SMD = new Smd(smDname, coords, dims);
+                                        var pinName = connects.Elements("connect").First(n => n.Attribute("pad").Value == smd.Attribute("name").Value).Attribute("pin").Value;        
+                                        var SMD = new Smd(pinName, smdName, coords, dims);
                                         smDlsit.Add(SMD);
                                     }
 
@@ -219,7 +221,7 @@ namespace _3D_LayoutOpt
 
 
 
-        public static void ImportNetlist(Design desgin)
+        public static void ImportNetlist(Design design)
         {
             var doc = XDocument.Load("Designs/555LED.sch");
             var Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
@@ -242,7 +244,7 @@ namespace _3D_LayoutOpt
                             Net.PinRefs.Add(Pinref);
                         }
                     }
-                    desgin.Netlist.Add(Net);
+                    design.Netlist.Add(Net);
                 }
             }
         }

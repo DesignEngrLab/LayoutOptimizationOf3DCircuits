@@ -21,7 +21,7 @@ namespace _3D_LayoutOpt
             design.Gauss = 0;
             design.HcfPerTemp = 4;
             design.MaxIter = 100;
-            design.Choice = 0;
+            design.Choice = 3;
         }
         public double calculate(double[] x)
         {
@@ -58,12 +58,11 @@ namespace _3D_LayoutOpt
             }
 
             _design.NewObjValues[3] = 0.0;
-            _design.NewObjValues[4] = 0.0;
 
             for (var i = 0; i < _design.CompCount; i++)
             {
                 comp = _design.Components[i];
-                _design.NewObjValues[3] += calc_temp_penalty(_design, comp.Temp, comp.Tempcrit);
+                _design.NewObjValues[3] += CalcTempPenalty(_design, comp);
             }
             return _design.NewObjValues[3];
         }
@@ -108,13 +107,13 @@ namespace _3D_LayoutOpt
         /* This function returns the value of the penalty function for a temperature in       */
         /* excess of the critical temperature.                                                */
         /* ---------------------------------------------------------------------------------- */
-        public static double calc_temp_penalty(Design design, double temp, double tempcrit)
+        public static double CalcTempPenalty(Design design, Component comp)
         {
             var value = 0.0;
 
-            if (temp > tempcrit)
+            if (comp.Temp > comp.Tempcrit)
             {
-                value = (temp - tempcrit) * (temp - tempcrit) / (design.CompCount);
+                value = (comp.Temp - comp.Tempcrit) * (comp.Temp - comp.Tempcrit) / (design.CompCount);
             }
             return (value);
         }

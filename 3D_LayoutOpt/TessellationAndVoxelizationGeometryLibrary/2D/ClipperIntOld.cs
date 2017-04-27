@@ -349,9 +349,9 @@ namespace TVGL.ClipperIntOld
     {
         internal cInt X;
         internal cInt Y;
-        internal IntPoint(cInt X, cInt Y)
+        internal IntPoint(cInt X, cInt y)
         {
-            this.X = X; this.Y = Y;
+            this.X = X; this.Y = y;
         }
         internal IntPoint(double x, double y)
         {
@@ -1421,21 +1421,21 @@ namespace TVGL.ClipperIntOld
         }
         //------------------------------------------------------------------------------
 
-        private void AddJoin(OutPt Op1, OutPt Op2, IntPoint OffPt)
+        private void AddJoin(OutPt Op1, OutPt op2, IntPoint offPt)
         {
             Join j = new Join();
             j.OutPt1 = Op1;
-            j.OutPt2 = Op2;
-            j.OffPt = OffPt;
+            j.OutPt2 = op2;
+            j.OffPt = offPt;
             m_Joins.Add(j);
         }
         //------------------------------------------------------------------------------
 
-        private void AddGhostJoin(OutPt Op, IntPoint OffPt)
+        private void AddGhostJoin(OutPt Op, IntPoint offPt)
         {
             Join j = new Join();
             j.OutPt1 = Op;
-            j.OffPt = OffPt;
+            j.OffPt = offPt;
             m_GhostJoins.Add(j);
         }
         //------------------------------------------------------------------------------
@@ -2071,11 +2071,11 @@ namespace TVGL.ClipperIntOld
         }
         //------------------------------------------------------------------------------
 
-        private bool HorzSegmentsOverlap(cInt seg1a, cInt seg1b, cInt seg2a, cInt seg2b)
+        private bool HorzSegmentsOverlap(cInt seg1a, cInt seg1B, cInt seg2A, cInt seg2B)
         {
-            if (seg1a > seg1b) Swap(ref seg1a, ref seg1b);
-            if (seg2a > seg2b) Swap(ref seg2a, ref seg2b);
-            return (seg1a < seg2b) && (seg2a < seg1b);
+            if (seg1a > seg1B) Swap(ref seg1a, ref seg1B);
+            if (seg2A > seg2B) Swap(ref seg2A, ref seg2B);
+            return (seg1a < seg2B) && (seg2A < seg1B);
         }
         //------------------------------------------------------------------------------
 
@@ -2604,19 +2604,19 @@ namespace TVGL.ClipperIntOld
         }
         //------------------------------------------------------------------------------
 
-        void GetHorzDirection(TEdge HorzEdge, out Direction Dir, out cInt Left, out cInt Right)
+        void GetHorzDirection(TEdge HorzEdge, out Direction dir, out cInt left, out cInt right)
         {
             if (HorzEdge.Bot.X < HorzEdge.Top.X)
             {
-                Left = HorzEdge.Bot.X;
-                Right = HorzEdge.Top.X;
-                Dir = Direction.dLeftToRight;
+                left = HorzEdge.Bot.X;
+                right = HorzEdge.Top.X;
+                dir = Direction.dLeftToRight;
             }
             else
             {
-                Left = HorzEdge.Top.X;
-                Right = HorzEdge.Bot.X;
-                Dir = Direction.dRightToLeft;
+                left = HorzEdge.Top.X;
+                right = HorzEdge.Bot.X;
+                dir = Direction.dRightToLeft;
             }
         }
         //------------------------------------------------------------------------
@@ -2743,9 +2743,9 @@ namespace TVGL.ClipperIntOld
         }
         //------------------------------------------------------------------------------
 
-        private TEdge GetNextInAEL(TEdge e, Direction Direction)
+        private TEdge GetNextInAEL(TEdge e, Direction direction)
         {
-            return Direction == Direction.dLeftToRight ? e.NextInAEL : e.PrevInAEL;
+            return direction == Direction.dLeftToRight ? e.NextInAEL : e.PrevInAEL;
         }
         //------------------------------------------------------------------------------
 
@@ -3301,28 +3301,28 @@ namespace TVGL.ClipperIntOld
         }
         //------------------------------------------------------------------------------
 
-        bool GetOverlap(cInt a1, cInt a2, cInt b1, cInt b2, out cInt Left, out cInt Right)
+        bool GetOverlap(cInt a1, cInt a2, cInt b1, cInt b2, out cInt Left, out cInt right)
         {
             if (a1 < a2)
             {
-                if (b1 < b2) { Left = Math.Max(a1, b1); Right = Math.Min(a2, b2); }
-                else { Left = Math.Max(a1, b2); Right = Math.Min(a2, b1); }
+                if (b1 < b2) { Left = Math.Max(a1, b1); right = Math.Min(a2, b2); }
+                else { Left = Math.Max(a1, b2); right = Math.Min(a2, b1); }
             }
             else
             {
-                if (b1 < b2) { Left = Math.Max(a2, b1); Right = Math.Min(a1, b2); }
-                else { Left = Math.Max(a2, b2); Right = Math.Min(a1, b1); }
+                if (b1 < b2) { Left = Math.Max(a2, b1); right = Math.Min(a1, b2); }
+                else { Left = Math.Max(a2, b2); right = Math.Min(a1, b1); }
             }
-            return Left < Right;
+            return Left < right;
         }
         //------------------------------------------------------------------------------
 
-        bool JoinHorz(OutPt op1, OutPt op1b, OutPt op2, OutPt op2b,
-          IntPoint Pt, bool DiscardLeft)
+        bool JoinHorz(OutPt op1, OutPt op1b, OutPt op2, OutPt op2B,
+          IntPoint pt, bool discardLeft)
         {
             Direction Dir1 = (op1.Pt.X > op1b.Pt.X ?
               Direction.dRightToLeft : Direction.dLeftToRight);
-            Direction Dir2 = (op2.Pt.X > op2b.Pt.X ?
+            Direction Dir2 = (op2.Pt.X > op2B.Pt.X ?
               Direction.dRightToLeft : Direction.dLeftToRight);
             if (Dir1 == Dir2) return false;
 
@@ -3333,75 +3333,75 @@ namespace TVGL.ClipperIntOld
             //otherwise make sure we're AT or LEFT of Pt. (Likewise with Op2b.)
             if (Dir1 == Direction.dLeftToRight)
             {
-                while (op1.Next.Pt.X <= Pt.X &&
-                  op1.Next.Pt.X >= op1.Pt.X && op1.Next.Pt.Y == Pt.Y)
+                while (op1.Next.Pt.X <= pt.X &&
+                  op1.Next.Pt.X >= op1.Pt.X && op1.Next.Pt.Y == pt.Y)
                     op1 = op1.Next;
-                if (DiscardLeft && (op1.Pt.X != Pt.X)) op1 = op1.Next;
-                op1b = DupOutPt(op1, !DiscardLeft);
-                if (op1b.Pt != Pt)
+                if (discardLeft && (op1.Pt.X != pt.X)) op1 = op1.Next;
+                op1b = DupOutPt(op1, !discardLeft);
+                if (op1b.Pt != pt)
                 {
                     op1 = op1b;
-                    op1.Pt = Pt;
-                    op1b = DupOutPt(op1, !DiscardLeft);
+                    op1.Pt = pt;
+                    op1b = DupOutPt(op1, !discardLeft);
                 }
             }
             else
             {
-                while (op1.Next.Pt.X >= Pt.X &&
-                  op1.Next.Pt.X <= op1.Pt.X && op1.Next.Pt.Y == Pt.Y)
+                while (op1.Next.Pt.X >= pt.X &&
+                  op1.Next.Pt.X <= op1.Pt.X && op1.Next.Pt.Y == pt.Y)
                     op1 = op1.Next;
-                if (!DiscardLeft && (op1.Pt.X != Pt.X)) op1 = op1.Next;
-                op1b = DupOutPt(op1, DiscardLeft);
-                if (op1b.Pt != Pt)
+                if (!discardLeft && (op1.Pt.X != pt.X)) op1 = op1.Next;
+                op1b = DupOutPt(op1, discardLeft);
+                if (op1b.Pt != pt)
                 {
                     op1 = op1b;
-                    op1.Pt = Pt;
-                    op1b = DupOutPt(op1, DiscardLeft);
+                    op1.Pt = pt;
+                    op1b = DupOutPt(op1, discardLeft);
                 }
             }
 
             if (Dir2 == Direction.dLeftToRight)
             {
-                while (op2.Next.Pt.X <= Pt.X &&
-                  op2.Next.Pt.X >= op2.Pt.X && op2.Next.Pt.Y == Pt.Y)
+                while (op2.Next.Pt.X <= pt.X &&
+                  op2.Next.Pt.X >= op2.Pt.X && op2.Next.Pt.Y == pt.Y)
                     op2 = op2.Next;
-                if (DiscardLeft && (op2.Pt.X != Pt.X)) op2 = op2.Next;
-                op2b = DupOutPt(op2, !DiscardLeft);
-                if (op2b.Pt != Pt)
+                if (discardLeft && (op2.Pt.X != pt.X)) op2 = op2.Next;
+                op2B = DupOutPt(op2, !discardLeft);
+                if (op2B.Pt != pt)
                 {
-                    op2 = op2b;
-                    op2.Pt = Pt;
-                    op2b = DupOutPt(op2, !DiscardLeft);
+                    op2 = op2B;
+                    op2.Pt = pt;
+                    op2B = DupOutPt(op2, !discardLeft);
                 };
             }
             else
             {
-                while (op2.Next.Pt.X >= Pt.X &&
-                  op2.Next.Pt.X <= op2.Pt.X && op2.Next.Pt.Y == Pt.Y)
+                while (op2.Next.Pt.X >= pt.X &&
+                  op2.Next.Pt.X <= op2.Pt.X && op2.Next.Pt.Y == pt.Y)
                     op2 = op2.Next;
-                if (!DiscardLeft && (op2.Pt.X != Pt.X)) op2 = op2.Next;
-                op2b = DupOutPt(op2, DiscardLeft);
-                if (op2b.Pt != Pt)
+                if (!discardLeft && (op2.Pt.X != pt.X)) op2 = op2.Next;
+                op2B = DupOutPt(op2, discardLeft);
+                if (op2B.Pt != pt)
                 {
-                    op2 = op2b;
-                    op2.Pt = Pt;
-                    op2b = DupOutPt(op2, DiscardLeft);
+                    op2 = op2B;
+                    op2.Pt = pt;
+                    op2B = DupOutPt(op2, discardLeft);
                 };
             };
 
-            if ((Dir1 == Direction.dLeftToRight) == DiscardLeft)
+            if ((Dir1 == Direction.dLeftToRight) == discardLeft)
             {
                 op1.Prev = op2;
                 op2.Next = op1;
-                op1b.Next = op2b;
-                op2b.Prev = op1b;
+                op1b.Next = op2B;
+                op2B.Prev = op1b;
             }
             else
             {
                 op1.Next = op2;
                 op2.Prev = op1;
-                op1b.Prev = op2b;
-                op2b.Next = op1b;
+                op1b.Prev = op2B;
+                op2B.Next = op1b;
             }
             return true;
         }
@@ -3679,7 +3679,7 @@ namespace TVGL.ClipperIntOld
         }
         //----------------------------------------------------------------------
 
-        private void FixupFirstLefts1(OutRec OldOutRec, OutRec NewOutRec)
+        private void FixupFirstLefts1(OutRec OldOutRec, OutRec newOutRec)
         {
             for (int i = 0; i < m_PolyOuts.Count; i++)
             {
@@ -3688,17 +3688,17 @@ namespace TVGL.ClipperIntOld
                 OutRec firstLeft = ParseFirstLeft(outRec.FirstLeft);
                 if (firstLeft == OldOutRec)
                 {
-                    if (Poly2ContainsPoly1(outRec.Pts, NewOutRec.Pts))
-                        outRec.FirstLeft = NewOutRec;
+                    if (Poly2ContainsPoly1(outRec.Pts, newOutRec.Pts))
+                        outRec.FirstLeft = newOutRec;
                 }
             }
         }
         //----------------------------------------------------------------------
 
-        private void FixupFirstLefts2(OutRec OldOutRec, OutRec NewOutRec)
+        private void FixupFirstLefts2(OutRec OldOutRec, OutRec newOutRec)
         {
             foreach (OutRec outRec in m_PolyOuts)
-                if (outRec.FirstLeft == OldOutRec) outRec.FirstLeft = NewOutRec;
+                if (outRec.FirstLeft == OldOutRec) outRec.FirstLeft = newOutRec;
         }
         //----------------------------------------------------------------------
 
@@ -4082,9 +4082,9 @@ namespace TVGL.ClipperIntOld
         }
         //------------------------------------------------------------------------------
 
-        internal static Paths Minkowski(Path pattern, Path path, bool IsSum, bool IsClosed)
+        internal static Paths Minkowski(Path pattern, Path path, bool IsSum, bool isClosed)
         {
-            int delta = (IsClosed ? 1 : 0);
+            int delta = (isClosed ? 1 : 0);
             int polyCnt = pattern.Count;
             int pathCnt = path.Count;
             Paths result = new Paths(pathCnt);
