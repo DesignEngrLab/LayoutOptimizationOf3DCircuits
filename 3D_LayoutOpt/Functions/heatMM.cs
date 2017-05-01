@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace _3D_LayoutOpt
 {
@@ -16,12 +17,11 @@ namespace _3D_LayoutOpt
         /* updated.                                                                  */
         /* ------------------------------------------------------------------------- */
 
-        public static void thermal_analysis_MM(Design design)
+        public static void ThermalAnalysisMM(Design design)
         {
             int i;
             var nodeDim = new int[Constants.Dimension];
-
-            SetUpTfield(design, nodeDim);
+            SetUpTfield(design, out nodeDim);
             var hbw = nodeDim[1]*nodeDim[2];
             var width = 2*hbw + 1;
             var totNodes = nodeDim[0]*hbw;
@@ -65,16 +65,19 @@ namespace _3D_LayoutOpt
         /* CORRESPONDS TO A SIMPLE RESISTOR JUNCTION.                                         */
         /* ---------------------------------------------------------------------------------- */
 
-        static void SetUpTfield(Design design, int[] nodeDim)
+        static void SetUpTfield(Design design, out int[] nodeDim)
         {
+            var nodeDimensions = new int[Constants.Dimension];
             Component comp;
-            var xx = new double[3][];
+            List<double>[] xx = new List<double>[3];
+            //var xx = new double[3][];
             var fringe = new double[3];
             int j, k, m;
-            var i = new int[3];
+            var dim = new int[3];
             for (m = 0; m < Constants.Dimension; m++)
             {
-                i[m] = 0;
+                dim[m] = 0;
+                xx[m] = new List<double>();
             }
 
             for (var n = 0; n < design.CompCount; n++)
@@ -82,16 +85,19 @@ namespace _3D_LayoutOpt
                 comp = design.Components[n];
                 for (m = 0; m < Constants.Dimension; m++)
                 {
-                    if (NotDuplicate(comp.Ts.Center[m], xx[m], i[m]))
-                        xx[m][++i[m]] = comp.Ts.Center[m];
+                    
+                    if (IsNullOrEmpty(xx[m].ToArray()) || NotDuplicate(comp.Ts.Center[m], xx[m].ToArray()))
+                        xx[m].Add(comp.Ts.Center[m]); 
                 }
             }
          
             for (m = 0; m < Constants.Dimension; m++)
             {
-                nodeDim[m] = i[m];
-                PickSort(nodeDim[m], xx[m]);
+                nodeDimensions[m] = xx[m].Count;
+                xx[m].Sort();
             }
+
+            nodeDim = nodeDimensions;
 
 #if SFRINGE
             for (m = 0; m < Constants.DIMENSION; m++)
@@ -111,27 +117,28 @@ namespace _3D_LayoutOpt
 
             for (m = 0; m < Constants.Dimension; m++)
             {
-                xx[m][0] = design.BoxMin[m] - fringe[m];
-                xx[m][(++nodeDim[m])] = design.BoxMax[m] + fringe[m];
-                RefineMesh(nodeDim, xx[m], m, design.MinNodeSpace);
-                ++nodeDim[m];
+                xx[m].Insert(0, design.BoxMin[m] - fringe[m]); 
+                xx[m].Add(design.BoxMax[m] + fringe[m]);  
+                RefineMesh(nodeDimensions, xx[m].ToArray(), m, design.MinNodeSpace);
+                ++nodeDimensions[m];
             }
-            /*Console.WriteLine("%d %d %d  ", node_dim[0], node_dim[1], node_dim[2]);*/
-/* Put coordinates and component number in each node.                                 */
+           
+            // Put coordinates and component number in each node.
+
             k = 0;
-            for (i[0] = 0; i[0] < nodeDim[0]; ++i[0])
+            for (dim[0] = 0; dim[0] < nodeDimensions[0]; ++dim[0])
             {
-                for (i[1] = 0; i[1] < nodeDim[1]; ++i[1])
+                for (dim[1] = 0; dim[1] < nodeDimensions[1]; ++dim[1])
                 {
-                    for (i[2] = 0; i[2] < nodeDim[2]; ++i[2])
+                    for (dim[2] = 0; dim[2] < nodeDimensions[2]; ++dim[2])
                     {
                         for (m = 0; m < Constants.Dimension; m++)
                         {
-                            design.Tfield[k].Coord[m] = xx[m][i[m]];
+                            design.Tfield[k].Coord[m] = xx[m][dim[m]];
                         }
                         design.Tfield[k].Comp = null;
 
-                        //find_if_comp_center(design.first_comp, design.tfield, k);
+                        FindIfCompCenter(design, design.Tfield, k);
                         ++k;
                     }
                 }
@@ -143,11 +150,10 @@ namespace _3D_LayoutOpt
         /* IT RETURNS TRUE IF NO DUPLICATES AND FALSE IF DUPLICATES                           */
         /* ---------------------------------------------------------------------------------- */
 
-        static bool NotDuplicate(double num, double[] arr, int n)
+        static bool NotDuplicate(double num, double[] arr)
         {
-            int m;
 
-            for (m = 1; m <= n; ++m)
+            for (int m = 0; m < arr.Length; m++)
             {
                 if (Math.Abs(num - arr[m]) < Constants.CloseNode)
                     return false;
@@ -155,28 +161,13 @@ namespace _3D_LayoutOpt
             return true;
         }
 
-        /* ---------------------------------------------------------------------------------- */
-        /* THIS FUNCTION IS PICK SORT FROM NUMERICAL RECIPES IN C.  IT SORTS THE ARRAYS IN    */
-        /* ASCENDING ORDER.                                                                   */
-        /* ---------------------------------------------------------------------------------- */
 
-        static void PickSort(int n, double[] arr)
+        public static bool IsNullOrEmpty(Array array)
         {
-            int i, j;
-            double a;
-
-            for (j = 2; j <= n; j++)
-            {
-                a = arr[j];
-                i = j - 1;
-                while (i > 0 && arr[i] > a)
-                {
-                    arr[i + 1] = arr[i];
-                    i--;
-                }
-                arr[i + 1] = a;
-            }
+            return (array == null || array.Length == 0);
         }
+
+
 
         /* ---------------------------------------------------------------------------------- */
         /* THIS FUNCTION ADDS NODES IN GAPS WHERE THE SPACE IS BIGGER THAN MIN_NODE_SPACE.    */
@@ -202,32 +193,24 @@ namespace _3D_LayoutOpt
             }
         }
 
-/* ---------------------------------------------------------------------------------- */
-/* This function returns the index of the component specified by the coordinates      */
-/* x and y.  Returns zero if no such component.                                       */
-/* ---------------------------------------------------------------------------------- */
+        /* ---------------------------------------------------------------------------------- */
+        /* This function returns the index of the component specified by the coordinates      */
+        /* x and y.  Returns zero if no such component.                                       */
+        /* ---------------------------------------------------------------------------------- */
 
-        /*
-
-        static void find_if_comp_center(Component first_comp, TemperatureNode[] tfield, int k)
+        static void FindIfCompCenter(Design design, TemperatureNode[] tfield, int k)
         {
-            Component comp;
-
-            comp = first_comp;
-            while (comp != null)
+            foreach (var comp in design.Components)
             {
-                if ((Math.Abs(comp.ts.Center[0] - tfield[k].coord[0]) < Constants.CLOSE_NODE) &&
-                    (Math.Abs(comp.ts.Center[1] - tfield[k].coord[1]) < Constants.CLOSE_NODE) &&
-                    (Math.Abs(comp.ts.Center[2] - tfield[k].coord[2]) < Constants.CLOSE_NODE))
+                if ((Math.Abs(comp.Ts.Center[0] - tfield[k].Coord[0]) < Constants.CloseNode) &&
+                    (Math.Abs(comp.Ts.Center[1] - tfield[k].Coord[1]) < Constants.CloseNode) &&
+                    (Math.Abs(comp.Ts.Center[2] - tfield[k].Coord[2]) < Constants.CloseNode))
                 {
-                    comp.node_center = k;
-                    return;
+                    comp.NodeCenter = k;
                 }
-                comp = comp.next_comp;
-            }
+            }  
         }
          
-         */
 
         /* ---------------------------------------------------------------------------------- */
         /* THIS FUNCTION FINDS ALL THE NODES THAT ARE CONTAINED IN COMPONENTS AND INNER       */

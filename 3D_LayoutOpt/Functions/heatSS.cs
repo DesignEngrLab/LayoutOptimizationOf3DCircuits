@@ -14,7 +14,7 @@ namespace _3D_LayoutOpt
         /*                             HEATSS.C -- Sub-Space Method                           */
         /*                                                                                    */
         /* ---------------------------------------------------------------------------------- */
-        public static void thermal_analysis_SS(Design design)
+        public static void ThermalAnalysisSS(Design design)
         {
             double[] flux;
             double[][] r;
@@ -285,7 +285,7 @@ namespace _3D_LayoutOpt
 /* This function corrects the approximation method by comparing it to the LU method.  */
 /* The value for design.hcf (heat correction factor) will be used by the app_method. */
 /* ---------------------------------------------------------------------------------- */
-        public static void correct_SS_by_LU(Design design)
+        public static void CorrectSSbyLU(Design design)
         {
             Component comp;
             double tempSs, tempMm;
@@ -296,7 +296,7 @@ namespace _3D_LayoutOpt
             design.Gauss = 0;
 
 
-            thermal_analysis_SS(design);
+            ThermalAnalysisSS(design);
 
             for (var i = 0; i < design.CompCount; i++)
             {
@@ -306,7 +306,7 @@ namespace _3D_LayoutOpt
 
        
             tempSs = design.Components[0].Temp;
-            HeatMm.thermal_analysis_MM(design);
+            HeatMm.ThermalAnalysisMM(design);
 
             for (var i = 0; i < design.CompCount; i++)
             {

@@ -103,8 +103,8 @@ namespace _3D_LayoutOpt
 
         public void calculate(double[] x)
         {
-            BoxMax = new[] { double.NegativeInfinity, double.NegativeInfinity, double.NegativeInfinity };
-            BoxMin = new[] { double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity };
+            BoxMax = new[] { Container.Ts.XMax, Container.Ts.YMax, Container.Ts.ZMax };
+            BoxMin = new[] { Container.Ts.XMin, Container.Ts.YMin, Container.Ts.ZMin };
             //OldDesignVars = DesignVars;
             var k = 0;
             for (var i = 0; i < CompCount; i++)

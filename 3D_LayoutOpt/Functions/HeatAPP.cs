@@ -20,10 +20,10 @@
             tempMm = 0.0;
             design.Hcf = 1.0;
             design.Gauss = 0;
-            thermal_analysis_APP(design);
+            ThermalAnalysisAPP(design);
             tempapp = design.Components[0].Temp;
 
-            HeatMm.thermal_analysis_MM(design);
+            HeatMm.ThermalAnalysisMM(design);
 
             for (var i = 0; i < design.CompCount; i++)
             {
@@ -39,7 +39,7 @@
         /* that value in comp.temp.  Because of the nature of this function it needs to      */
         /* re-calculated for each iteration, instead of just being updated.                   */
         /* ---------------------------------------------------------------------------------- */
-        public static void thermal_analysis_APP(Design design)
+        public static void ThermalAnalysisAPP(Design design)
         {
             Component comp;
             double tave, rtot, qtot = 0.0, kave = 0.0, have = 0.0;

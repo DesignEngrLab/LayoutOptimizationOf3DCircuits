@@ -128,13 +128,12 @@ namespace _3D_LayoutOpt
 
     public class PinRef
     {
-        public int CompIndex;
-        public string CompName;
+        public Component Comp;
         public string PinName;
 
-        public PinRef(string component, string pin)
+        public PinRef(Component component, string pin)
         {
-            CompName = component;
+            Comp = component;
             PinName = pin;
         }
     }
@@ -151,8 +150,8 @@ namespace _3D_LayoutOpt
             {
                 for (var j = i + 1; j < PinRefs.Count; j++)
                 {
-                    var pinJ = design.Components[PinRefs[j].CompIndex].Footprint.Pads.Find(smd => smd.pinName == PinRefs[j].PinName);
-                    var pinI = design.Components[PinRefs[i].CompIndex].Footprint.Pads.Find(smd => smd.pinName == PinRefs[i].PinName);
+                    var pinJ = design.Components[PinRefs[j].Comp.Index].Footprint.Pads.Find(smd => smd.pinName == PinRefs[j].PinName);
+                    var pinI = design.Components[PinRefs[i].Comp.Index].Footprint.Pads.Find(smd => smd.pinName == PinRefs[i].PinName);
                     var d = (pinJ.Coord[0] - pinI.Coord[0]) * (pinJ.Coord[0] - pinI.Coord[0]) + (pinJ.Coord[1] - pinI.Coord[1]) * (pinJ.Coord[1] - pinI.Coord[1]) + (pinJ.Coord[2] - pinI.Coord[2]) * (pinJ.Coord[2] - pinI.Coord[2]);
                     NetLength += Math.Sqrt(d);
                 }
@@ -165,7 +164,7 @@ namespace _3D_LayoutOpt
     public class TemperatureNode
     {
         /* A matrix of such structures mark each node of the temperature field.  There will   */
-        /* be a total of COMP_NUM squared of these components.  A zero in the comp variable   */
+        /* be a total of COMP_NUM squared of these components.  A null value in the comp variable   */
         /* means that the node does not refer to the center of a component but merely to a    */
         /* a resistor junction.  A non-zero number refers to that component in the list of    */
         /* components.                                                                        */

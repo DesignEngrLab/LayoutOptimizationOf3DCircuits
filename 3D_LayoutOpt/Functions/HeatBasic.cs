@@ -37,20 +37,20 @@ namespace _3D_LayoutOpt
                 case 0:
                     /*if (correction == 0)
 		            correct_APP_by_LU(design);*/
-                    HeatApp.thermal_analysis_APP(_design);
+                    HeatApp.ThermalAnalysisAPP(_design);
                     break;
                 case 1:
                     if (correction == 0)
-                        HeatSs.correct_SS_by_LU(_design);
-                    HeatSs.thermal_analysis_SS(_design);
+                        HeatSs.CorrectSSbyLU(_design);
+                    HeatSs.ThermalAnalysisSS(_design);
                     break;
                 case 2:
                     if (correction == 0)
-                        HeatSs.correct_SS_by_LU(_design);
-                    HeatSs.thermal_analysis_SS(_design);
+                        HeatSs.CorrectSSbyLU(_design);
+                    HeatSs.ThermalAnalysisSS(_design);
                     break;
                 case 3:
-                    HeatMm.thermal_analysis_MM(_design);
+                    HeatMm.ThermalAnalysisMM(_design);
                     break;
                 default:
                     Console.WriteLine("ERROR in Thermal Analysis Choice.");
@@ -123,7 +123,7 @@ namespace _3D_LayoutOpt
         /* This function reverts to  the previous node temperatures if the new Move was       */
         /* rejected.                                                                          */
         /* ---------------------------------------------------------------------------------- */
-        public static void revert_tfield(Design design)
+        public static void RevertTfield(Design design)
         {
             int k;
 
@@ -135,7 +135,7 @@ namespace _3D_LayoutOpt
         /* This function backs up the current temperatures into old_temp if the step was      */
         /* Accepted.                                                                          */
         /* ---------------------------------------------------------------------------------- */
-        public static void back_up_tfield(Design design)
+        public static void BackUpTfield(Design design)
         {
             int k;
 
@@ -149,7 +149,7 @@ namespace _3D_LayoutOpt
         /* the beginning of the annealing run.  The sser provides input into when to
         /* switch between thermal anylses. */
         /* ---------------------------------------------------------------------------------- */
-        public static void establish_thermal_changes(Design design)
+        public static void EstablishThermalChanges(Design design)
         {
             int i;
             Console.WriteLine("\nPlease define thermal anaylses changes.\n");

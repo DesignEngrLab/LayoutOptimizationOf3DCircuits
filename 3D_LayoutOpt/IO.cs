@@ -240,7 +240,9 @@ namespace _3D_LayoutOpt
                         var pinrefs = segment.Elements("pinref");
                         foreach (var pinref in pinrefs)
                         {
-                            var Pinref = new PinRef(pinref.Attribute("part").Value, pinref.Attribute("pin").Value);
+                            var comp =
+                                design.Components.Find(component => component.Name == pinref.Attribute("part").Value);
+                            var Pinref = new PinRef(comp, pinref.Attribute("pin").Value);
                             Net.PinRefs.Add(Pinref);
                         }
                     }
