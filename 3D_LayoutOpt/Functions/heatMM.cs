@@ -297,16 +297,13 @@ namespace _3D_LayoutOpt
 
         static void SetupFlux(Design design, double[] flux, int totNodes)
         {
-            Component comp;
-            int k;
-            
             /*  flux[(comp.node_center)] = comp.q;*/
 
-
+            
             for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.Components[i];
-                for (k = 0; k < totNodes; k++)
+                var comp = design.Components[i];
+                for (int k = 0; k < totNodes; k++)
                 {
                     if (design.Tfield[k].Comp == comp)
                         flux[k] = comp.Q / comp.Nodes;

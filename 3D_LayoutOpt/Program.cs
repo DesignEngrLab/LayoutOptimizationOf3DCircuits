@@ -47,6 +47,10 @@ namespace _3D_LayoutOpt
             Io.SaveDesign(design);
             Io.SaveContainer(design);
             Io.SaveTfield(design);
+            foreach (var component in design.Components)
+            {
+                Presenter.ShowAndHang(component.Ts);
+            }
 
             /* DownHill(design, MIN_MOVE_DIST);      */
             stopwatch.Stop();
