@@ -7,12 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3D_LayoutOpt", "3D_LayoutOp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "importTester", "..\importTester\importTester.csproj", "{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TessellationAndVoxelizationGeometryLibraryUniversal", "TessellationAndVoxelizationGeometryLibrary\TessellationAndVoxelizationGeometryLibraryUniversal.csproj", "{E3489019-D590-46A8-B2C2-E3481E8DB77C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TessellationAndVoxelizationGeometryLibrary.NET4.5", "TessellationAndVoxelizationGeometryLibrary.NET4.5\TessellationAndVoxelizationGeometryLibrary.NET4.5.csproj", "{B2D2586A-5F3B-4122-B10E-4AC143C05EA4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MIConvexHull", "MIConvexHull\MIConvexHull.csproj", "{2337776D-7D0C-40AA-A439-C26C3CE24FAB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVGL Presenter", "TVGL Presenter\TVGL Presenter.csproj", "{8C1364CC-908A-4174-B62C-21EC4839584D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVGLPresenterDebugger", "TVGLPresenterDebugger\TVGLPresenterDebugger.csproj", "{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}"
@@ -31,18 +25,6 @@ Global
 		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3489019-D590-46A8-B2C2-E3481E8DB77C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3489019-D590-46A8-B2C2-E3481E8DB77C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3489019-D590-46A8-B2C2-E3481E8DB77C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3489019-D590-46A8-B2C2-E3481E8DB77C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B2D2586A-5F3B-4122-B10E-4AC143C05EA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2D2586A-5F3B-4122-B10E-4AC143C05EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2D2586A-5F3B-4122-B10E-4AC143C05EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2D2586A-5F3B-4122-B10E-4AC143C05EA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C1364CC-908A-4174-B62C-21EC4839584D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8C1364CC-908A-4174-B62C-21EC4839584D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C1364CC-908A-4174-B62C-21EC4839584D}.Release|Any CPU.ActiveCfg = Release|Any CPU

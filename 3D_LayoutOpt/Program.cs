@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using StarMathLib;
@@ -49,7 +50,7 @@ namespace _3D_LayoutOpt
             Io.SaveTfield(design);
             foreach (var component in design.Components)
             {
-                Presenter.ShowAndHang(component.Ts);
+                    Presenter.ShowAndHang(component.Ts);
             }
 
             /* DownHill(design, MIN_MOVE_DIST);      */

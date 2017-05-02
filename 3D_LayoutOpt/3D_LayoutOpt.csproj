@@ -39,6 +39,10 @@
       <HintPath>packages\Eto.OxyPlot.Wpf.1.0.5377.38510\lib\net45\Eto.OxyPlot.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MIConvexHull, Version=1.0.17.29089, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\MIConvexHull.1.1.17.0409\lib\portable-net45+wp8+win8\MIConvexHull.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OptimizationToolbox, Version=1.0.14.1031, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\OOOT.1.0.16.0419\lib\OptimizationToolbox.dll</HintPath>
       <Private>True</Private>
@@ -58,6 +62,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TessellationAndVoxelizationGeometryLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\TVGL.1.0.17.0419\lib\portable-net45+win8\TessellationAndVoxelizationGeometryLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Design.cs" />
@@ -80,22 +88,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MIConvexHull.xml" />
     <Content Include="OptimizationToolbox.XML" />
     <Content Include="StarMath.XML" />
+    <Content Include="TessellationAndVoxelizationGeometryLibrary.XML" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="MIConvexHull\MIConvexHull.csproj">
-      <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
-      <Name>MIConvexHull</Name>
-    </ProjectReference>
-    <ProjectReference Include="TessellationAndVoxelizationGeometryLibrary.NET4.5\TessellationAndVoxelizationGeometryLibrary.NET4.5.csproj">
-      <Project>{b2d2586a-5f3b-4122-b10e-4ac143c05ea4}</Project>
-      <Name>TessellationAndVoxelizationGeometryLibrary.NET4.5</Name>
-    </ProjectReference>
-    <ProjectReference Include="TessellationAndVoxelizationGeometryLibrary\TessellationAndVoxelizationGeometryLibraryUniversal.csproj">
-      <Project>{e3489019-d590-46a8-b2c2-e3481e8db77c}</Project>
-      <Name>TessellationAndVoxelizationGeometryLibraryUniversal</Name>
-    </ProjectReference>
     <ProjectReference Include="TVGL Presenter\TVGL Presenter.csproj">
       <Project>{8C1364CC-908A-4174-B62C-21EC4839584D}</Project>
       <Name>TVGL Presenter</Name>

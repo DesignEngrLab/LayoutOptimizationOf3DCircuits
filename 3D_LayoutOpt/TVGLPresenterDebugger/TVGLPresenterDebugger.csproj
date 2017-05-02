@@ -42,6 +42,10 @@
       <HintPath>F:\Layout Optimization 3D circuits\3D_LayoutOpt\packages\HelixToolkit.Wpf.2015.1.715\lib\net45\HelixToolkit.Wpf.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MIConvexHull.NET Standard, Version=1.0.17.411, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MIConvexHull.1.1.17.0411\lib\netstandard1.0\MIConvexHull.NET Standard.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>F:\Layout Optimization 3D circuits\3D_LayoutOpt\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
       <Private>True</Private>
@@ -75,6 +79,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TessellationAndVoxelizationGeometryLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TVGL.1.0.17.0419\lib\portable-net45+win8\TessellationAndVoxelizationGeometryLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -259,7 +267,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="MIConvexHull.xml" />
     <Content Include="StarMath.XML" />
+    <Content Include="TessellationAndVoxelizationGeometryLibrary.XML" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="..\TVGL Presenter\Window2DPlot.xaml">
@@ -272,20 +282,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="F:\Layout Optimization 3D circuits\3D_LayoutOpt\MIConvexHull\MIConvexHull.csproj">
-      <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
-      <Name>MIConvexHull</Name>
-    </ProjectReference>
-    <ProjectReference Include="F:\Layout Optimization 3D circuits\3D_LayoutOpt\TessellationAndVoxelizationGeometryLibrary.NET4.5\TessellationAndVoxelizationGeometryLibrary.NET4.5.csproj">
-      <Project>{b2d2586a-5f3b-4122-b10e-4ac143c05ea4}</Project>
-      <Name>TessellationAndVoxelizationGeometryLibrary.NET4.5</Name>
-    </ProjectReference>
-    <ProjectReference Include="F:\Layout Optimization 3D circuits\3D_LayoutOpt\TessellationAndVoxelizationGeometryLibrary\TessellationAndVoxelizationGeometryLibraryUniversal.csproj">
-      <Project>{e3489019-d590-46a8-b2c2-e3481e8db77c}</Project>
-      <Name>TessellationAndVoxelizationGeometryLibraryUniversal</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -82,7 +82,7 @@ namespace TVGL
                 AddLineSeriesToModel(points.ToList(), closeShape, marker);
             else
                 AddScatterSeriesToModel(points.ToList(), marker);
-            //InitializeComponent();
+            InitializeComponent();
         }
 
 
@@ -104,7 +104,7 @@ namespace TVGL
                 else
                     AddScatterSeriesToModel(points, marker);
             }
-            //InitializeComponent();
+            InitializeComponent();
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace TVGL
                 else
                     AddScatterSeriesToModel(listOfSeriesOfPoints[i], marker, color);
             }
-            //InitializeComponent();
+            InitializeComponent();
         }
 
 
@@ -154,7 +154,7 @@ namespace TVGL
                 else
                     AddScatterSeriesToModel(points, marker);
             }
-            //InitializeComponent();
+            InitializeComponent();
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace TVGL
                 else
                     AddScatterSeriesToModel(points, marker2);
             }
-            //InitializeComponent();
+            InitializeComponent();
         }
 
         public Window2DPlot(IEnumerable<List<List<Point>>> listofListOfListOfPoints, string title, Plot2DType plot2DType, bool closeShape,
@@ -229,7 +229,7 @@ namespace TVGL
                 }
             }
 
-            //InitializeComponent();
+            InitializeComponent();
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace TVGL
                 AddLineSeriesToModel(points, closeShape, marker);
             else
                 AddScatterSeriesToModel(points, marker);
-            //InitializeComponent();
+            InitializeComponent();
         }
 
         /// <summary>
