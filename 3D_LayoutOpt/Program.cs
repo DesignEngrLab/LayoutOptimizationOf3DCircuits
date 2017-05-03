@@ -16,6 +16,7 @@ namespace _3D_LayoutOpt
     class Program
     {
 
+        [STAThread]
         static void Main(string[] args)
         {
             int i;
@@ -43,15 +44,15 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Initializing weights.\n");
             InitWeights(design);
 
+            var shapes = design.Components.Select(c => c.Ts).ToList();
+            shapes.Add(design.Container.Ts);
+            Presenter.ShowAndHang(shapes);
             Optimize(design);
 
             Io.SaveDesign(design);
             Io.SaveContainer(design);
             Io.SaveTfield(design);
-            foreach (var component in design.Components)
-            {
-                    Presenter.ShowAndHang(component.Ts);
-            }
+            Presenter.ShowAndHang(shapes);
 
             /* DownHill(design, MIN_MOVE_DIST);      */
             stopwatch.Stop();
@@ -89,17 +90,17 @@ namespace _3D_LayoutOpt
             /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
              * location parameters should be continuous though. Consider removing the 800's below
              * when using a mixed optimization method. */
-            var dsd = new DesignSpaceDescription(design.CompCount*6);
+            var dsd = new DesignSpaceDescription(design.CompCount * 6);
             var bounds = design.Container.Ts.Bounds;
             for (var i = 0; i < design.CompCount; i++)
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[6*i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.1);
+                    dsd[6 * i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.1);
                 }
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[6*i + 3 + j] = new VariableDescriptor(0, 360, 36);
+                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 360, 36);
                 }
             }
             opty.Add(dsd);
@@ -119,13 +120,15 @@ namespace _3D_LayoutOpt
             opty.Add(new squaredExteriorPenalty(opty, 10));
             opty.Add(new MaxAgeConvergence(40, 0.001));
             opty.Add(new MaxFnEvalsConvergence(10000));
+            opty.Add(new MaxIterationsConvergence(3));
             opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
-            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
+            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.Everything;
             // this next line is to set the Debug statements from OOOT to the Console.
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             var timer = Stopwatch.StartNew();
-            var fStar = opty.Run(out xStar, design.CompCount*6);
+
+            var fStar = opty.Run(out xStar, design.CompCount * 6);
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -153,10 +156,10 @@ namespace _3D_LayoutOpt
             foreach (var comp in design.Components)
             {
                 comp.SetCompToZero();
-                design.DesignVars[comp.Index] = new double[] {0,0,0,0,0,0};
+                design.DesignVars[comp.Index] = new double[] { 0, 0, 0, 0, 0, 0 };
                 design.OldDesignVars[comp.Index] = new double[] { 0, 0, 0, 0, 0, 0 };
             }
-  
+
         }
     }
 }
