@@ -45,14 +45,14 @@ namespace _3D_LayoutOpt
             InitWeights(design);
 
             var shapes = design.Components.Select(c => c.Ts).ToList();
-            shapes.Add(design.Container.Ts);
-            Presenter.ShowAndHang(shapes);
+            //shapes.Add(design.Container.Ts);
+            Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
             Optimize(design);
 
             Io.SaveDesign(design);
             Io.SaveContainer(design);
             Io.SaveTfield(design);
-            Presenter.ShowAndHang(shapes);
+            Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
 
             /* DownHill(design, MIN_MOVE_DIST);      */
             stopwatch.Stop();
@@ -123,7 +123,7 @@ namespace _3D_LayoutOpt
             opty.Add(new MaxIterationsConvergence(3));
             opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
-            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.Everything;
+            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
             // this next line is to set the Debug statements from OOOT to the Console.
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             var timer = Stopwatch.StartNew();

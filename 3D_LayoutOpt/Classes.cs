@@ -42,14 +42,14 @@ namespace _3D_LayoutOpt
         internal void SetCompToZero()
         {
             double[,] backTransformMatrix = null;
-            Ts.SetToOriginAndSquareTesselatedSolid(out backTransformMatrix);
+            Ts = Ts.SetToOriginAndSquareTesselatedSolid(out backTransformMatrix);
             foreach (var smd in Footprint.Pads)
             {
                 var tempCoord = backTransformMatrix.inverse().multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
                 smd.Coord = tempCoord.Take(tempCoord.Count() - 1).ToArray();
             }
-                
-                
+
+
         }
 
         internal void Update(double[] coord)
@@ -117,7 +117,7 @@ namespace _3D_LayoutOpt
         public double[] Coord;
         public double[] Dim;
 
-        public Smd(string pinname ,string smDname, double[] coordinates, double[] dimensions)
+        public Smd(string pinname, string smDname, double[] coordinates, double[] dimensions)
         {
             pinName = pinname;
             Name = smDname;
