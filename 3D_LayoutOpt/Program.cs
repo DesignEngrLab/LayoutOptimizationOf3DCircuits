@@ -132,7 +132,7 @@ namespace _3D_LayoutOpt
         }
 
         /* ---------------------------------------------------------------------------------- */
-        /* This function sets the initial objective function weights to 1.0.                  */
+        /* THIS FUNCTION SETS THE INITIAL OBJECTIVE FUNCTION WEIGHTS TO 1.0.                  */
         /* ---------------------------------------------------------------------------------- */
 
         static void InitWeights(Design design)

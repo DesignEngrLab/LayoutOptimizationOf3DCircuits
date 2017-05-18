@@ -40,8 +40,8 @@ namespace _3D_LayoutOpt.Functions
                 boxPenalty += vol;
 
             }
-            _design.NewObjValues[2] = boxPenalty;
-            return boxPenalty;
+			_design.NewObjValues[2] = boxPenalty * 2;  //MANUALLY APPLYING A WEIGHT OF 2
+			return boxPenalty * 2;
         }
     }
 }
