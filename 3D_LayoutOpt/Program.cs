@@ -120,7 +120,7 @@ namespace _3D_LayoutOpt
             opty.Add(new squaredExteriorPenalty(opty, 10));
             opty.Add(new MaxAgeConvergence(40, 0.001));
             opty.Add(new MaxFnEvalsConvergence(10000));
-            opty.Add(new MaxIterationsConvergence(5));
+            opty.Add(new MaxIterationsConvergence(20));
             opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
             Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;

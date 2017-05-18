@@ -82,7 +82,7 @@ namespace _3D_LayoutOpt
             Ts.Transform(transformMatrix);
             //UPDATING THE PIN COORDINATES
             foreach (var smd in Footprint.Pads)
-                smd.Coord = transformMatrix.multiply(new[] { smd.Coord[0], smd.Coord[0], smd.Coord[0], 1 });
+                smd.Coord = transformMatrix.multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
         }
     }
 

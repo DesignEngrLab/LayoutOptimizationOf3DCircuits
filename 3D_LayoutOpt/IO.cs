@@ -25,7 +25,7 @@ namespace _3D_LayoutOpt
             "Designs/D1.STL"
         };
         private static readonly string ContainerName =
-            "Designs/Container2.STL";
+            "Designs/Container4.STL";
 
 
         public static void ImportData(Design design)
@@ -203,8 +203,8 @@ namespace _3D_LayoutOpt
                 comp.Ts = ts;
                 foreach (var smd in comp.Footprint.Pads)
                 {
-                    smd.Coord[0] += smd.Coord[0] + comp.Ts.Center[0];
-                    smd.Coord[1] += smd.Coord[1] + comp.Ts.Center[1];
+                    smd.Coord[0] = smd.Coord[0] + comp.Ts.Center[0];
+                    smd.Coord[1] = smd.Coord[1] + comp.Ts.Center[1];
                     smd.Coord[2] = comp.Ts.ZMin;
                 }
             }

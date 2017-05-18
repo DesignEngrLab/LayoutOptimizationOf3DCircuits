@@ -26,8 +26,8 @@ namespace _3D_LayoutOpt.Functions
                 sum += net.NetLength;
             }
 
-            _design.NewObjValues[3] = sum;
-            return sum;
+			_design.NewObjValues[3] = sum*.5;                 //MANUALLY APPLYING A WEIGHT OF 4
+			return sum*0.5 ;
         }
 
         //public double deriv_wrt_xi(double[] x, int i)
