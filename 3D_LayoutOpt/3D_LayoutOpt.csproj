@@ -88,6 +88,7 @@
   <ItemGroup>
     <Compile Include="Design.cs" />
     <Compile Include="Classes.cs" />
+    <Compile Include="Edge.cs" />
     <Compile Include="Functions\CenterOfGravity.cs" />
     <Compile Include="Functions\ComponentToContainerOverlap.cs" />
     <Compile Include="Functions\ComponentToComponentOverlap.cs" />
@@ -98,8 +99,10 @@
     <Compile Include="Functions\HeatSS.cs" />
     <Compile Include="IO.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RMST.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -96,6 +96,18 @@ namespace _3D_LayoutOpt
             Name = containerName;
             Ts = tessellatedSolid;
         }
+
+        internal void SetToZero()
+        {
+            var transformMatrix = new double[,]
+            {
+                {1, 0, 0, -Ts.Center[0]},
+                {0, 1, 0, -Ts.Center[1]},
+                {0, 0, 1, -Ts.Center[2]},
+                {0, 0, 0, 1},
+            };
+            Ts.Transform(transformMatrix);
+        }
     }
 
     public class Footprint

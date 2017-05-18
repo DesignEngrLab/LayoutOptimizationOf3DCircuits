@@ -25,7 +25,7 @@ namespace _3D_LayoutOpt
             "Designs/D1.STL"
         };
         private static readonly string ContainerName =
-            "Designs/Container1.STL";
+            "Designs/Container2.STL";
 
 
         public static void ImportData(Design design)

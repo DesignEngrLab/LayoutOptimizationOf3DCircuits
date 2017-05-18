@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3D_LayoutOpt", "3D_LayoutOpt.csproj", "{DFD48F70-3DC2-44F8-9188-3D501C215EDD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "importTester", "..\importTester\importTester.csproj", "{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVGLPresenterDebugger", "TVGLPresenterDebugger\TVGLPresenterDebugger.csproj", "{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}"
 EndProject
@@ -21,10 +19,6 @@ Global
 		{DFD48F70-3DC2-44F8-9188-3D501C215EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFD48F70-3DC2-44F8-9188-3D501C215EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFD48F70-3DC2-44F8-9188-3D501C215EDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D4D39D6-8AE3-4ADC-B070-BAE3C0FBD73B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
