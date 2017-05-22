@@ -96,7 +96,7 @@ namespace _3D_LayoutOpt.Functions
                 _design.NewObjValues[1] = (0.05 + sum) * _design.NewObjValues[0];
             else
                 _design.NewObjValues[1] = 0.0;
-            return sum;
+            return sum*100;
         }
     }
 }

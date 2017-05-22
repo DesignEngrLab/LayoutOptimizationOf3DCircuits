@@ -155,8 +155,52 @@ namespace _3D_LayoutOpt
         public string Netname;
         public List<PinRef> PinRefs = new List<PinRef>();
         public double NetLength = 0;
+		private Dictionary<Tuple<Smd, Smd>, double> TerminalNodesSortedQueue;
 
-        public void CalcNetDirectLineLength(Design design)
+		public void CreateEuclidianDistanceQueue(Design design)
+		{
+			var TerminalNodesQueue = new Dictionary<Tuple<Smd, Smd>, double>();
+			for (int i = 0; i < PinRefs.Count - 1; i++)
+			{
+				for (int j = i + 1; j < PinRefs.Count; j++)
+				{
+					var pinJ = design.Components[PinRefs[j].Comp.Index].Footprint.Pads.Find(smd => smd.pinName == PinRefs[j].PinName);
+					var pinI = design.Components[PinRefs[i].Comp.Index].Footprint.Pads.Find(smd => smd.pinName == PinRefs[i].PinName);
+					var distance = Math.Sqrt(
+						    (pinJ.Coord[0] - pinI.Coord[0]) * (pinJ.Coord[0] - pinI.Coord[0]) 
+						  + (pinJ.Coord[1] - pinI.Coord[1]) * (pinJ.Coord[1] - pinI.Coord[1]) 
+						  + (pinJ.Coord[2] - pinI.Coord[2]) * (pinJ.Coord[2] - pinI.Coord[2])
+						  );
+					var key = new Tuple<Smd, Smd>(pinI, pinJ);
+					TerminalNodesQueue.Add(key, distance);
+				}
+			}
+			TerminalNodesSortedQueue = TerminalNodesQueue.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+		}
+
+		public void Route(Design design)
+		{
+            List<Smd> visitedTermianlNodes = new List<Smd>();
+			foreach (var item in TerminalNodesSortedQueue)
+			{
+				var nodeA = item.Key.Item1;
+				var nodeB = item.Key.Item2;
+				var netSegment = new double[] {nodeA.Coord[0], nodeA.Coord[1], nodeA.Coord[2], nodeB.Coord[0], nodeB.Coord[1], nodeB.Coord[2]};
+				design.RatsNest.Add(netSegment);
+				NetLength += item.Value;
+                if (!visitedTermianlNodes.Contains(nodeA))
+                    visitedTermianlNodes.Add(nodeA);
+
+                if (!visitedTermianlNodes.Contains(nodeB))
+                    visitedTermianlNodes.Add(nodeB);
+
+				if (visitedTermianlNodes.Count == PinRefs.Count)
+					break;
+			}
+            TerminalNodesSortedQueue.Clear();
+		}
+
+		public void CalcNetDirectLineLength(Design design)
         {
             for (var i = 0; i < PinRefs.Count - 1; i++)
             {

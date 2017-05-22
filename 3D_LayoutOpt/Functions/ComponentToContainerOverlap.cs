@@ -1,10 +1,8 @@
-﻿using System;
+﻿using OptimizationToolbox;
+using StarMathLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OptimizationToolbox;
-using StarMathLib;
 using TVGL;
 
 namespace _3D_LayoutOpt.Functions
@@ -80,8 +78,8 @@ namespace _3D_LayoutOpt.Functions
 				}
                 boxPenalty += vol;
             }
-			_design.NewObjValues[2] = boxPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
-			return boxPenalty;
+			_design.NewObjValues[2] = boxPenalty*10;  //MANUALLY APPLYING A WEIGHT OF 2
+			return boxPenalty*1000;
         }
     }
 }

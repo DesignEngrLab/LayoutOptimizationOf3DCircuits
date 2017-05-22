@@ -44,6 +44,8 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Initializing weights.\n");
             InitWeights(design);
 
+			
+
             var shapes = design.Components.Select(c => c.Ts).ToList();
             //shapes.Add(design.Container.Ts);
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
@@ -53,9 +55,10 @@ namespace _3D_LayoutOpt
             Io.SaveContainer(design);
             Io.SaveTfield(design);
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
+			Presenter.ShowVertexPathsWithSolid(design.RatsNest, shapes);
 
-            /* DownHill(design, MIN_MOVE_DIST);      */
-            stopwatch.Stop();
+			/* DownHill(design, MIN_MOVE_DIST);      */
+			stopwatch.Stop();
             var timeElapsed = stopwatch.Elapsed;
             using (var writetext = new StreamWriter("results"))
             {
@@ -120,7 +123,7 @@ namespace _3D_LayoutOpt
             opty.Add(new squaredExteriorPenalty(opty, 10));
             opty.Add(new MaxAgeConvergence(40, 0.001));
             opty.Add(new MaxFnEvalsConvergence(10000));
-            opty.Add(new MaxIterationsConvergence(20));
+            opty.Add(new MaxIterationsConvergence(10));
             opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
             Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;

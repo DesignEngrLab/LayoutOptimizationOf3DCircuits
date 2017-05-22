@@ -11,6 +11,7 @@ namespace _3D_LayoutOpt
         public double[][] DesignVars = null;
         public double[][] OldDesignVars = null;
         public List<Net> Netlist = new List<Net>();
+		public IList<double[]> RatsNest = new List<double[]>();
 
 
         /* Box_min and box_max are the x, y, z bounds for the bounding box.  Overlap is a     */

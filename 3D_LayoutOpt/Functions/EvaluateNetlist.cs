@@ -22,12 +22,14 @@ namespace _3D_LayoutOpt.Functions
 
             foreach (var net in _design.Netlist)
             {
-                net.CalcNetDirectLineLength(_design);
+				net.CreateEuclidianDistanceQueue(_design);
+				net.Route(_design);
+				//net.CalcNetDirectLineLength(_design);
                 sum += net.NetLength;
             }
 
-			_design.NewObjValues[3] = sum*.5;                 //MANUALLY APPLYING A WEIGHT OF 4
-			return sum*0.5 ;
+			_design.NewObjValues[0] = sum*100000;                 //MANUALLY APPLYING A WEIGHT OF 4
+			return sum*10000 ;
         }
 
         //public double deriv_wrt_xi(double[] x, int i)

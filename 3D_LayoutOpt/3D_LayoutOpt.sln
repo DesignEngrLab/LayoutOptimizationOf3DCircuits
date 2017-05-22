@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3D_LayoutOpt", "3D_LayoutOpt.csproj", "{DFD48F70-3DC2-44F8-9188-3D501C215EDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVGLPresenterDebugger", "TVGLPresenterDebugger\TVGLPresenterDebugger.csproj", "{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizationToolbox", "OptimizationToolbox\OptimizationToolbox.csproj", "{A865CEF9-F16B-4D4A-A984-9934F87CF78D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVGLPresenterDebugger", "TVGLPresenterDebugger\TVGLPresenterDebugger.csproj", "{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +19,14 @@ Global
 		{DFD48F70-3DC2-44F8-9188-3D501C215EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFD48F70-3DC2-44F8-9188-3D501C215EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFD48F70-3DC2-44F8-9188-3D501C215EDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A865CEF9-F16B-4D4A-A984-9934F87CF78D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A865CEF9-F16B-4D4A-A984-9934F87CF78D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A865CEF9-F16B-4D4A-A984-9934F87CF78D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A865CEF9-F16B-4D4A-A984-9934F87CF78D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6678D6C-1F71-4F4E-AC77-22F5E133A6F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
