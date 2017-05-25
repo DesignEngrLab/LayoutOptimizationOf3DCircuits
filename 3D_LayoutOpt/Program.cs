@@ -49,7 +49,7 @@ namespace _3D_LayoutOpt
             var shapes = design.Components.Select(c => c.Ts).ToList();
             //shapes.Add(design.Container.Ts);
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
-            Optimize(design);
+            OptimizeByPattern(design);
 
             Io.SaveDesign(design);
             Io.SaveContainer(design);
@@ -57,7 +57,6 @@ namespace _3D_LayoutOpt
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
 			Presenter.ShowVertexPathsWithSolid(design.RatsNest, shapes);
 
-			/* DownHill(design, MIN_MOVE_DIST);      */
 			stopwatch.Stop();
             var timeElapsed = stopwatch.Elapsed;
             using (var writetext = new StreamWriter("results"))
@@ -73,7 +72,7 @@ namespace _3D_LayoutOpt
             Console.ReadKey();
         }
 
-        private static void Optimize(Design design)
+        private static void OptimizeByGA(Design design)
         {
             //var opty = new GradientBasedOptimization();
             //var opty = new HillClimbing();
@@ -117,7 +116,7 @@ namespace _3D_LayoutOpt
             opty.Add(new LatinHyperCube(dsd, VariablesInScope.BothDiscreteAndReal));
             opty.Add(new GACrossoverBitString(dsd));
             opty.Add(new GAMutationBitString(dsd));
-            opty.Add(new PNormProportionalSelection(OptimizationToolbox.optimize.minimize, true, 0.7));
+            opty.Add(new PNormProportionalSelection(OptimizationToolbox.optimize.minimize, true));
             //opty.Add(new RandomNeighborGenerator(dsd,3000));
             //opty.Add(new KeepSingleBest(optimize.minimize));
             opty.Add(new squaredExteriorPenalty(opty, 10));
@@ -125,6 +124,42 @@ namespace _3D_LayoutOpt
             opty.Add(new MaxFnEvalsConvergence(10000));
             opty.Add(new MaxIterationsConvergence(10));
             opty.Add(new MaxSpanInPopulationConvergence(15));
+            double[] xStar;
+            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
+            // this next line is to set the Debug statements from OOOT to the Console.
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            var timer = Stopwatch.StartNew();
+
+            var fStar = opty.Run(out xStar, design.CompCount * 6);
+        }
+
+        private static void OptimizeByPattern(Design design)
+        {
+            //var opty = new GradientBasedOptimization();
+            //var opty = new HillClimbing();
+            var opty = new NelderMead();
+
+
+            /* here is the Dependent Analysis. */
+            opty.Add(design);
+            // this is the objective function
+            opty.Add(new EvaluateNetlist(design));
+            // here are three inequality constraints
+            opty.Add(new ComponentToComponentOverlap(design));
+            opty.Add(new ComponentToContainerOverlap(design));
+            opty.Add(new HeatBasic(design));
+            opty.Add(new CenterOfGravity(design));
+
+
+            /******** Set up Optimization *************/
+            /* the following mish-mash is similiar to previous project - just trying to find a 
+             * combination of methods that'll lead to the optimial optimization algorithm. */
+
+            opty.Add(new squaredExteriorPenalty(opty, 10));
+           // opty.Add(new MaxAgeConvergence(40, 0.001));
+          //  opty.Add(new MaxFnEvalsConvergence(10000));
+            opty.Add(new MaxIterationsConvergence(50));
+          //  opty.Add(new MaxSpanInPopulationConvergence(1.5));
             double[] xStar;
             Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
             // this next line is to set the Debug statements from OOOT to the Console.

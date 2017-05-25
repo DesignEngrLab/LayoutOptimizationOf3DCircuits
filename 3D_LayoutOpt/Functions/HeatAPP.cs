@@ -59,7 +59,7 @@
                 kave += (comp.K) / design.CompCount;
             }
 
-            kave = kave*(design.Volume/boxVolume) + (design.Kb)*(1 - design.Volume/boxVolume);
+            kave = kave*(design.Container.Ts.Volume/boxVolume) + (design.Kb)*(1 - design.Container.Ts.Volume/boxVolume);
 
             have = ((design.H[0]) + (design.H[1]) + (design.H[2]))/Constants.Dimension;
 

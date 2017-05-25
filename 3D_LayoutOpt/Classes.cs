@@ -83,6 +83,7 @@ namespace _3D_LayoutOpt
             //UPDATING THE PIN COORDINATES
             foreach (var smd in Footprint.Pads)
                 smd.Coord = transformMatrix.multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
+
         }
     }
 
@@ -183,7 +184,9 @@ namespace _3D_LayoutOpt
             List<Smd> visitedTermianlNodes = new List<Smd>();
 			foreach (var item in TerminalNodesSortedQueue)
 			{
-				var nodeA = item.Key.Item1;
+                if (visitedTermianlNodes.Count == PinRefs.Count)
+                    break;
+                var nodeA = item.Key.Item1;
 				var nodeB = item.Key.Item2;
 				var netSegment = new double[] {nodeA.Coord[0], nodeA.Coord[1], nodeA.Coord[2], nodeB.Coord[0], nodeB.Coord[1], nodeB.Coord[2]};
 				design.RatsNest.Add(netSegment);
@@ -194,8 +197,7 @@ namespace _3D_LayoutOpt
                 if (!visitedTermianlNodes.Contains(nodeB))
                     visitedTermianlNodes.Add(nodeB);
 
-				if (visitedTermianlNodes.Count == PinRefs.Count)
-					break;
+				
 			}
             TerminalNodesSortedQueue.Clear();
 		}

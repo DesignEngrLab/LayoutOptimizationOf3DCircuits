@@ -62,24 +62,36 @@ namespace _3D_LayoutOpt.Functions
 			foreach (var comp in _design.Components)
             {
                 var ts1 = comp.Ts;
-				if (!BoundingBoxOverlap(ts0, ts1))
-					vol = ts1.Volume;
-				else if (!ConvexHullOverlap(ts0, ts1))
-					vol = ts1.Volume;
-				else
-				{
-					List<Vertex> ts1VertsInts0, ts0VertsInts1;
-					List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
-					TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
-								out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, false);
-					ts1VertsOutts0.AddRange(ts0VertsOutts1);
-					var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);
-					vol = convexHull.Volume;
-				}
+                if (!BoundingBoxOverlap(ts0, ts1))
+                    vol = ts1.Volume;
+                else if (!ConvexHullOverlap(ts0, ts1))
+                    vol = ts1.Volume;
+                else
+                {
+                    List<Vertex> ts1VertsInts0, ts0VertsInts1;
+                    List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
+                    TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
+                                out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, false);
+                    ts1VertsOutts0.AddRange(ts0VertsOutts1);
+                    var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);
+                    vol = convexHull.Volume;
+                }
                 boxPenalty += vol;
+
+                //var ts1 = comp.Ts;
+                //List<Vertex> ts1VertsInts0, ts0VertsInts1;
+                //List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
+                //TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
+                //            out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, false);
+                //ts1VertsOutts0.AddRange(ts0VertsOutts1);
+                //var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);
+                //vol = convexHull.Volume;
+                //boxPenalty += vol;
             }
-			_design.NewObjValues[2] = boxPenalty*10;  //MANUALLY APPLYING A WEIGHT OF 2
-			return boxPenalty*1000;
+			_design.NewObjValues[2] = boxPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
+            Console.Write("c2b = {0};  ", boxPenalty);
+
+            return boxPenalty;
         }
     }
 }

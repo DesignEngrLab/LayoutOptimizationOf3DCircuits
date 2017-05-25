@@ -2,7 +2,7 @@
 using TVGL;
 using OptimizationToolbox;
 using System;
-
+using System.Linq;
 
 namespace _3D_LayoutOpt
 {
@@ -29,7 +29,6 @@ namespace _3D_LayoutOpt
         public double[] CGrav = new double[3];
         //public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
         public Container Container;
-        public double HalfArea, Volume, Mass;
 
         /* First comp is a pointer to the first component in the component list.  Min_comp    */
         /* and max_comp are pointers to the components which contribute to the x, y, z max    */
@@ -106,7 +105,6 @@ namespace _3D_LayoutOpt
         {
             BoxMax = new[] { Container.Ts.XMax, Container.Ts.YMax, Container.Ts.ZMax };
             BoxMin = new[] { Container.Ts.XMin, Container.Ts.YMin, Container.Ts.ZMin };
-            //OldDesignVars = DesignVars;
             var k = 0;
             for (var i = 0; i < CompCount; i++)
             {
@@ -117,15 +115,19 @@ namespace _3D_LayoutOpt
                     move[j] = DesignVars[i][j] - OldDesignVars[i][j];
                 }
                 Components[i].Update(move);
-                for (var j = 0; j < 3; j++)
-                {
-                    if (BoxMin[j] < Components[i].Ts.Bounds[0][j])
-                        BoxMin[j] = Components[i].Ts.Bounds[0][j];
-                    if (BoxMax[j] > Components[i].Ts.Bounds[1][j])
-                        BoxMax[j] = Components[i].Ts.Bounds[1][j];
-                }
+                //for (var j = 0; j < 3; j++)
+                //{
+                //    if (BoxMin[j] < Components[i].Ts.Bounds[0][j])
+                //        BoxMin[j] = Components[i].Ts.Bounds[0][j];
+                //    if (BoxMax[j] > Components[i].Ts.Bounds[1][j])
+                //        BoxMax[j] = Components[i].Ts.Bounds[1][j];
+                //}
             }
             OldDesignVars = (double[][])DesignVars.Clone();
+
+            //var shapes = Components.Select(c => c.Ts).ToList();
+            //Presenter.ShowAndHangTransparentsAndSolids(new[] { Container.Ts }, shapes);
+            //Presenter.ShowVertexPathsWithSolid(RatsNest, shapes);
         }
 
         public void InitializeOverlapMatrix()

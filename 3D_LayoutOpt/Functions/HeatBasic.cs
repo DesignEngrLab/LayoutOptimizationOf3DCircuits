@@ -64,6 +64,8 @@ namespace _3D_LayoutOpt
                 comp = _design.Components[i];
                 _design.NewObjValues[3] += CalcTempPenalty(_design, comp);
             }
+            Console.Write("heat = {0};  ", _design.NewObjValues[3]);
+
             return _design.NewObjValues[3];
         }
 

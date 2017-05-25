@@ -72,14 +72,15 @@ namespace _3D_LayoutOpt.Functions
 						TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
 							out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, true);
 						ts1VertsInts0.AddRange(ts0VertsInts1);
-						if (ts1VertsInts0.Count == 0)
-							_design.Overlap[j, i] = 0;
-						else
-						{
-							var convexHull = new TVGLConvexHull(ts1VertsInts0, 0.000001);
-							var vol = convexHull.Volume;
-							_design.Overlap[j, i] = vol / (ts0.Volume + ts1.Volume);       //USING OVERLAP VOLUME PERCENTAGE
-						}
+                        if (ts1VertsInts0.Count == 0)
+                            _design.Overlap[j, i] = 0;
+                        else
+                        {
+                            var convexHull = new TVGLConvexHull(ts1VertsInts0, 0.000001);
+                            var vol = convexHull.Volume;
+                            /*_design.Overlap[j, i] = vol / (ts0.Volume + ts1.Volume);*/       //USING OVERLAP VOLUME PERCENTAGE
+                            _design.Overlap[j, i] = vol;
+                        }
 					}  
                 }
             }
@@ -92,11 +93,13 @@ namespace _3D_LayoutOpt.Functions
                     sum += _design.Overlap[j, i];
                 }
             }
-            if (sum > 0.0)
-                _design.NewObjValues[1] = (0.05 + sum) * _design.NewObjValues[0];
-            else
-                _design.NewObjValues[1] = 0.0;
-            return sum*100;
+            //if (sum > 0.0)
+            //    _design.NewObjValues[1] = (0.05 + sum) * _design.NewObjValues[0];
+            //else
+            //    _design.NewObjValues[1] = 0.0;
+            Console.Write("c2c = {0};  ", sum);
+
+            return sum;
         }
     }
 }

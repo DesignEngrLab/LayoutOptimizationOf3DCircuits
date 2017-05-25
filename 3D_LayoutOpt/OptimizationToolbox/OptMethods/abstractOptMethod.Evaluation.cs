@@ -108,7 +108,7 @@ namespace OptimizationToolbox
             /**************************************************/
             functionData[function].Add(pointClone, fValue);
             functionData[function].numEvals++;
-            SearchIO.output("f =" + fValue + " (f'n eval #" + numEvals + ")", 4);
+            SearchIO.output("f =" + fValue + " (f'n eval #" + numEvals + ")", 14);
             return fValue;
         }
 
