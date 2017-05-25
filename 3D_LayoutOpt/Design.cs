@@ -8,8 +8,8 @@ namespace _3D_LayoutOpt
 {
     public class Design : IDependentAnalysis
     {
-        public double[][] DesignVars = null;
-        public double[][] OldDesignVars = null;
+        public double[,] DesignVars = null;
+        public double[,] OldDesignVars = null;
         public List<Net> Netlist = new List<Net>();
 		public IList<double[]> RatsNest = new List<double[]>();
 
@@ -111,19 +111,19 @@ namespace _3D_LayoutOpt
                 var move = new double[6];
                 for (var j = 0; j < 6; j++)
                 {
-                    DesignVars[i][j] = x[k++];
-                    move[j] = DesignVars[i][j] - OldDesignVars[i][j];
+                    DesignVars[i,j] = x[k++];
+                    move[j] = DesignVars[i,j] - OldDesignVars[i,j];
                 }
                 Components[i].Update(move);
                 //for (var j = 0; j < 3; j++)
                 //{
-                //    if (BoxMin[j] < Components[i].Ts.Bounds[0][j])
+                //    if (BoxMin[j] > Components[i].Ts.Bounds[0][j])
                 //        BoxMin[j] = Components[i].Ts.Bounds[0][j];
-                //    if (BoxMax[j] > Components[i].Ts.Bounds[1][j])
+                //    if (BoxMax[j] < Components[i].Ts.Bounds[1][j])
                 //        BoxMax[j] = Components[i].Ts.Bounds[1][j];
                 //}
             }
-            OldDesignVars = (double[][])DesignVars.Clone();
+            OldDesignVars = (double[,])DesignVars.Clone();
 
             //var shapes = Components.Select(c => c.Ts).ToList();
             //Presenter.ShowAndHangTransparentsAndSolids(new[] { Container.Ts }, shapes);

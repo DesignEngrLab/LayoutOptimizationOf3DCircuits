@@ -49,7 +49,7 @@ namespace _3D_LayoutOpt
             var shapes = design.Components.Select(c => c.Ts).ToList();
             //shapes.Add(design.Container.Ts);
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
-            OptimizeByPattern(design);
+            OptimizeByGA(design);
 
             Io.SaveDesign(design);
             Io.SaveContainer(design);
@@ -87,6 +87,7 @@ namespace _3D_LayoutOpt
             opty.Add(new ComponentToComponentOverlap(design));
             opty.Add(new ComponentToContainerOverlap(design));
             opty.Add(new HeatBasic(design));
+            opty.Add(new CenterOfGravity(design));
 
             /******** Set up Design Space *************/
             /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
@@ -120,7 +121,7 @@ namespace _3D_LayoutOpt
             //opty.Add(new RandomNeighborGenerator(dsd,3000));
             //opty.Add(new KeepSingleBest(optimize.minimize));
             opty.Add(new squaredExteriorPenalty(opty, 10));
-            opty.Add(new MaxAgeConvergence(40, 0.001));
+            opty.Add(new MaxAgeConvergence(40, 0.01));
             opty.Add(new MaxFnEvalsConvergence(10000));
             opty.Add(new MaxIterationsConvergence(10));
             opty.Add(new MaxSpanInPopulationConvergence(15));
@@ -189,14 +190,18 @@ namespace _3D_LayoutOpt
         static void InitLocations(Design design)
         {
             Console.WriteLine("Placing components at zero");
-            design.DesignVars = new double[design.CompCount][];
-            design.OldDesignVars = new double[design.CompCount][];
+            design.DesignVars = new double[design.CompCount,6];
+            design.OldDesignVars = new double[design.CompCount,6];
             design.Container.SetToZero();
             foreach (var comp in design.Components)
             {
                 comp.SetCompToZero();
-                design.DesignVars[comp.Index] = new double[] { 0, 0, 0, 0, 0, 0 };
-                design.OldDesignVars[comp.Index] = new double[] { 0, 0, 0, 0, 0, 0 };
+                for (int i = 0; i < 6; i++)
+                {
+                    design.DesignVars[comp.Index, i] = 0;
+                    design.OldDesignVars[comp.Index, i] = 0;
+                }
+
             }
 
         }

@@ -52,7 +52,7 @@ namespace _3D_LayoutOpt.Functions
                 +   (CGrav[2] - _design.Container.Ts.Center[2]) * (CGrav[2] - _design.Container.Ts.Center[2])
                 );
 
-            _design.NewObjValues[2] = 1000*CenterofGravityPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
+            _design.NewObjValues[2] = 10*CenterofGravityPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
             Console.Write("CenterofGravityPenalty = {0};  ", 1000*CenterofGravityPenalty);
             return 1000*CenterofGravityPenalty;
         }

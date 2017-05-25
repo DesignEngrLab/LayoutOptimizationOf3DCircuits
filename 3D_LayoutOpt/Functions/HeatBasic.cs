@@ -15,7 +15,7 @@ namespace _3D_LayoutOpt
         {
             this._design = design;
             design.Tolerance = 0.001;
-            design.MinNodeSpace = 50.0;
+            design.MinNodeSpace = 5.0;
             design.Hcf = 0.1;
             design.GaussMove = 0.0;
             design.Gauss = 0;

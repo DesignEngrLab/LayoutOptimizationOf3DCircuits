@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace _3D_LayoutOpt
 {
@@ -22,9 +23,9 @@ namespace _3D_LayoutOpt
             int i;
             var nodeDim = new int[Constants.Dimension];
             SetUpTfield(design, out nodeDim);
-            var hbw = nodeDim[1]*nodeDim[2];
-            var width = 2*hbw + 1;
-            var totNodes = nodeDim[0]*hbw;
+            var hbw = nodeDim[1] * nodeDim[2];
+            var width = 2 * hbw + 1;
+            var totNodes = nodeDim[0] * hbw;
 
 
             FindContainedNodes(design, hbw, nodeDim[2]);
@@ -65,9 +66,8 @@ namespace _3D_LayoutOpt
         /* CORRESPONDS TO A SIMPLE RESISTOR JUNCTION.                                         */
         /* ---------------------------------------------------------------------------------- */
 
-        static void SetUpTfield(Design design, out int[] nodeDim)
+        static void SetUpTfield(Design design, out int[] nodeDimensions)
         {
-            var nodeDimensions = new int[Constants.Dimension];
             Component comp;
             List<double>[] xx = new List<double>[3];
             //var xx = new double[3][];
@@ -85,19 +85,17 @@ namespace _3D_LayoutOpt
                 comp = design.Components[n];
                 for (m = 0; m < Constants.Dimension; m++)
                 {
-                    
+
                     if (IsNullOrEmpty(xx[m].ToArray()) || NotDuplicate(comp.Ts.Center[m], xx[m].ToArray()))
-                        xx[m].Add(comp.Ts.Center[m]); 
+                        xx[m].Add(comp.Ts.Center[m]);
                 }
             }
-         
+
             for (m = 0; m < Constants.Dimension; m++)
             {
-                nodeDimensions[m] = xx[m].Count;
                 xx[m].Sort();
             }
 
-            nodeDim = nodeDimensions;
 
 #if SFRINGE
             for (m = 0; m < Constants.DIMENSION; m++)
@@ -114,32 +112,31 @@ namespace _3D_LayoutOpt
                     fringe[m] = Constants.CFRINGE;
             }
 #endif
-
+            // refine mesh
             for (m = 0; m < Constants.Dimension; m++)
             {
-                xx[m].Insert(0, design.BoxMin[m] - fringe[m]); 
-                xx[m].Add(design.BoxMax[m] + fringe[m]);  
-                RefineMesh(nodeDimensions, xx[m].ToArray(), m, design.MinNodeSpace);
-                ++nodeDimensions[m];
+                xx[m].Insert(0, design.BoxMin[m] - fringe[m]);
+                xx[m].Add(design.BoxMax[m] + fringe[m]);
+                RefineMesh(xx[m], design.MinNodeSpace);
             }
-           
+            nodeDimensions = xx.Select(a => a.Count).ToArray();
             // Put coordinates and component number in each node.
 
             k = 0;
-            for (dim[0] = 0; dim[0] < nodeDimensions[0]; ++dim[0])
+            for (dim[0] = 0; dim[0] < nodeDimensions[0]; dim[0]++)
             {
-                for (dim[1] = 0; dim[1] < nodeDimensions[1]; ++dim[1])
+                for (dim[1] = 0; dim[1] < nodeDimensions[1]; dim[1]++)
                 {
-                    for (dim[2] = 0; dim[2] < nodeDimensions[2]; ++dim[2])
+                    for (dim[2] = 0; dim[2] < nodeDimensions[2]; dim[2]++)
                     {
                         for (m = 0; m < Constants.Dimension; m++)
                         {
                             design.Tfield[k].Coord[m] = xx[m][dim[m]];
                         }
                         design.Tfield[k].Comp = null;
-
-                        FindIfCompCenter(design, design.Tfield, k);
-                        ++k;
+                        if ((k > nodeDimensions[0] * nodeDimensions[1]) && (k < nodeDimensions[0] * nodeDimensions[1] * nodeDimensions[2] - nodeDimensions[0] * nodeDimensions[1])) 
+                            FindIfCompCenter(design, design.Tfield, k);          
+                        k++;
                     }
                 }
             }
@@ -174,22 +171,14 @@ namespace _3D_LayoutOpt
         /*                                                                                    */
         /* ---------------------------------------------------------------------------------- */
 
-        static void RefineMesh(int[] nodeDim, double[] arr, int vector, double minNodeSpace)
+        static void RefineMesh(List<double> arr, double minNodeSpace)
         {
-            int i, j;
-
-            i = nodeDim[vector];
-            while ((i > 0) && (1 + nodeDim[vector] < Constants.NodeNum))
+            int k = 1;
+            while (k < arr.Count && arr.Count < Constants.NodeNum - 1)
             {
-                if ((arr[i] - arr[i - 1]) > minNodeSpace)
-                {
-                    ++nodeDim[vector];
-                    for (j = nodeDim[vector]; j > i; --j)
-                        arr[j] = arr[j - 1];
-                    arr[i] = 0.5*(arr[i + 1] - arr[i - 1]) + arr[i - 1];
-                    i += 2;
-                }
-                --i;
+                if ((arr[k] - arr[k - 1]) > minNodeSpace)
+                    arr.Insert(k, 0.5 * (arr[k] - arr[k - 1]) + arr[k - 1]);
+                else k++;
             }
         }
 
@@ -208,9 +197,9 @@ namespace _3D_LayoutOpt
                 {
                     comp.NodeCenter = k;
                 }
-            }  
+            }
         }
-         
+
 
         /* ---------------------------------------------------------------------------------- */
         /* THIS FUNCTION FINDS ALL THE NODES THAT ARE CONTAINED IN COMPONENTS AND INNER       */
@@ -238,53 +227,62 @@ namespace _3D_LayoutOpt
 
         static void FindNeighbors(TemperatureNode[] tfield, Component comp, int k, int n, int hbw, int znodes, int from)
         {
-            /* This will check neighbors to the west so long as it didn't come FROM the west.*/
-            if ((from != -1) && ((Math.Abs(tfield[k - hbw].Coord[0] - comp.Ts.Center[0])) < (comp.Ts.XMax - comp.Ts.XMin)/2) &&
-                (tfield[k - hbw].Comp == null))
+            if(k > hbw && k < hbw*znodes - hbw)
             {
-                tfield[k - hbw].Comp = comp;
-                ++n;
-                FindNeighbors(tfield, comp, k - hbw, n, hbw, znodes, 1);
-            }
-            /* Checks to the east. */
-            if ((from != 1) && ((Math.Abs(tfield[k + hbw].Coord[0] - comp.Ts.Center[0])) < (comp.Ts.XMax - comp.Ts.XMin) / 2) &&
-                (tfield[k + hbw].Comp == null))
-            {
-                tfield[k + hbw].Comp = comp;
-                ++n;
-                FindNeighbors(tfield, comp, k + hbw, n, hbw, znodes, -1);
-            }
-            /* Checks to the south. */
-            if ((from != -2) && ((Math.Abs(tfield[k - znodes].Coord[1] - comp.Ts.Center[1])) < (comp.Ts.YMax - comp.Ts.YMin) / 2) &&
-                (tfield[k - znodes].Comp == null))
-            {
-                tfield[k - znodes].Comp = comp;
-                ++n;
-                FindNeighbors(tfield, comp, k - znodes, n, hbw, znodes, 2);
-            }
-            /* Checks to the north. */
-            if ((from != 2) && ((Math.Abs(tfield[k + znodes].Coord[1] - comp.Ts.Center[1])) < (comp.Ts.YMax - comp.Ts.YMin) / 2) &&
-                (tfield[k + znodes].Comp == null))
-            {
-                tfield[k + znodes].Comp = comp;
-                ++n;
-                FindNeighbors(tfield, comp, k + znodes, n, hbw, znodes, -2);
-            }
-            /* Checks down. */
-            if ((from != -3) && ((Math.Abs(tfield[k - 1].Coord[2] - comp.Ts.Center[2])) < (comp.Ts.ZMax - comp.Ts.ZMin) / 2) &&
-                (tfield[k - 1].Comp == null))
-            {
-                tfield[k - 1].Comp = comp;
-                ++n;
-                FindNeighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
-            }
-            /* Checks up. */
-            if ((from != 3) && ((Math.Abs(tfield[k + 1].Coord[2] - comp.Ts.Center[2])) < (comp.Ts.ZMax - comp.Ts.ZMin) / 2) &&
-                (tfield[k + 1].Comp == null))
-            {
-                tfield[k + 1].Comp = comp;
-                ++n;
-                FindNeighbors(tfield, comp, k + 1, n, hbw, znodes, -3);
+                /* This will check neighbors to the west so long as it didn't come FROM the west.*/
+                if ((from != -1) && ((Math.Abs(tfield[k - hbw].Coord[0] - comp.Ts.Center[0])) < (comp.Ts.XMax - comp.Ts.XMin) / 2) &&
+                    (tfield[k - hbw].Comp == null))
+                {
+                    comp.Nodes++;
+                    tfield[k - hbw].Comp = comp;
+                    ++n;
+                    FindNeighbors(tfield, comp, k - hbw, n, hbw, znodes, 1);
+                }
+                /* Checks to the east. */
+                if ((from != 1) && ((Math.Abs(tfield[k + hbw].Coord[0] - comp.Ts.Center[0])) < (comp.Ts.XMax - comp.Ts.XMin) / 2) &&
+                    (tfield[k + hbw].Comp == null))
+                {
+                    comp.Nodes++;
+                    tfield[k + hbw].Comp = comp;
+                    ++n;
+                    FindNeighbors(tfield, comp, k + hbw, n, hbw, znodes, -1);
+                }
+                /* Checks to the south. */
+                if ((from != -2) && ((Math.Abs(tfield[k - znodes].Coord[1] - comp.Ts.Center[1])) < (comp.Ts.YMax - comp.Ts.YMin) / 2) &&
+                    (tfield[k - znodes].Comp == null))
+                {
+                    comp.Nodes++;
+                    tfield[k - znodes].Comp = comp;
+                    ++n;
+                    FindNeighbors(tfield, comp, k - znodes, n, hbw, znodes, 2);
+                }
+                /* Checks to the north. */
+                if ((from != 2) && ((Math.Abs(tfield[k + znodes].Coord[1] - comp.Ts.Center[1])) < (comp.Ts.YMax - comp.Ts.YMin) / 2) &&
+                    (tfield[k + znodes].Comp == null))
+                {
+                    comp.Nodes++;
+                    tfield[k + znodes].Comp = comp;
+                    ++n;
+                    FindNeighbors(tfield, comp, k + znodes, n, hbw, znodes, -2);
+                }
+                /* Checks down. */
+                if ((from != -3) && ((Math.Abs(tfield[k - 1].Coord[2] - comp.Ts.Center[2])) < (comp.Ts.ZMax - comp.Ts.ZMin) / 2) &&
+                    (tfield[k - 1].Comp == null))
+                {
+                    comp.Nodes++;
+                    tfield[k - 1].Comp = comp;
+                    ++n;
+                    FindNeighbors(tfield, comp, k - 1, n, hbw, znodes, 3);
+                }
+                /* Checks up. */
+                if ((from != 3) && ((Math.Abs(tfield[k + 1].Coord[2] - comp.Ts.Center[2])) < (comp.Ts.ZMax - comp.Ts.ZMin) / 2) &&
+                    (tfield[k + 1].Comp == null))
+                {
+                    comp.Nodes++;
+                    tfield[k + 1].Comp = comp;
+                    ++n;
+                    FindNeighbors(tfield, comp, k + 1, n, hbw, znodes, -3);
+                }
             }
         }
 
@@ -299,7 +297,7 @@ namespace _3D_LayoutOpt
         {
             /*  flux[(comp.node_center)] = comp.q;*/
 
-            
+
             for (var i = 0; i < design.CompCount; i++)
             {
                 var comp = design.Components[i];
@@ -322,10 +320,10 @@ namespace _3D_LayoutOpt
             int k, i;
             double n, e, w, s, u, d;
 
-/*  Go through each node to fill in each row of the R-matrix  */
+            /*  Go through each node to fill in each row of the R-matrix  */
             for (k = 0; k < totNodes; ++k)
             {
-/* Find dimension n, e, w, s, u, d to surrounding points (0 if boundary).   */
+                /* Find dimension n, e, w, s, u, d to surrounding points (0 if boundary).   */
                 if ((k - hbw) >= 0)
                 {
                     w = design.Tfield[k].Coord[0] - design.Tfield[(k - hbw)].Coord[0];
@@ -340,28 +338,28 @@ namespace _3D_LayoutOpt
                 else
                     e = 0.0;
 
-                if ((k%hbw) >= znodes)
+                if ((k % hbw) >= znodes)
                 {
                     s = design.Tfield[k].Coord[1] - design.Tfield[k - znodes].Coord[1];
                 }
                 else
                     s = 0.0;
 
-                if (((k + znodes)%hbw) >= znodes)
+                if (((k + znodes) % hbw) >= znodes)
                 {
                     n = design.Tfield[k + znodes].Coord[1] - design.Tfield[k].Coord[1];
                 }
                 else
                     n = 0.0;
 
-                if ((k%znodes) != 0)
+                if ((k % znodes) != 0)
                 {
                     d = design.Tfield[k].Coord[2] - design.Tfield[k - 1].Coord[2];
                 }
                 else
                     d = 0.0;
 
-                if (((k + 1)%znodes) != 0)
+                if (((k + 1) % znodes) != 0)
                 {
                     u = design.Tfield[k + 1].Coord[2] - design.Tfield[k].Coord[2];
                 }
@@ -369,17 +367,17 @@ namespace _3D_LayoutOpt
                     u = 0.0;
 
 
-                CalcResistances(design, flux, r, hbw, ((u + d)*(n + s)), w, k, -hbw, 0);
+                CalcResistances(design, flux, r, hbw, ((u + d) * (n + s)), w, k, -hbw, 0);
 
-                CalcResistances(design, flux, r, hbw, ((u + d)*(n + s)), e, k, hbw, 0);
+                CalcResistances(design, flux, r, hbw, ((u + d) * (n + s)), e, k, hbw, 0);
 
-                CalcResistances(design, flux, r, hbw, ((u + d)*(e + w)), s, k, -znodes, 1);
+                CalcResistances(design, flux, r, hbw, ((u + d) * (e + w)), s, k, -znodes, 1);
 
-                CalcResistances(design, flux, r, hbw, ((u + d)*(e + w)), n, k, znodes, 1);
+                CalcResistances(design, flux, r, hbw, ((u + d) * (e + w)), n, k, znodes, 1);
 
-                CalcResistances(design, flux, r, hbw, ((n + s)*(e + w)), d, k, -1, 2);
+                CalcResistances(design, flux, r, hbw, ((n + s) * (e + w)), d, k, -1, 2);
 
-                CalcResistances(design, flux, r, hbw, ((n + s)*(e + w)), u, k, 1, 2);
+                CalcResistances(design, flux, r, hbw, ((n + s) * (e + w)), u, k, 1, 2);
             }
         }
 
@@ -397,8 +395,8 @@ namespace _3D_LayoutOpt
 
             if (x == 0.0)
             {
-                flux[k] += 0.25*(design.Tamb)*(design.H[dir])*area;
-                r[k][hbw] += 0.25*(design.H[dir])*area;
+                flux[k] += 0.25 * (design.Tamb) * (design.H[dir]) * area;
+                r[k][hbw] += 0.25 * (design.H[dir]) * area;
             }
             else
             {
@@ -449,8 +447,8 @@ namespace _3D_LayoutOpt
                     kn = design.Kb;
                     nx = 0.0;
                 }
-/* These two 'if' statements account for the chance that the node and the */
-/* neighboring node might be in the same component.                       */
+                /* These two 'if' statements account for the chance that the node and the */
+                /* neighboring node might be in the same component.                       */
                 /*Console.WriteLine("%f  %f  %f ", x, xc, nx);*/
                 if (x + nx <= xc)
                 {
@@ -464,11 +462,11 @@ namespace _3D_LayoutOpt
                 }
                 x -= xc + nx;
                 if (x < 0.0) x = 0.0;
-/* These resistances are actually 'admittances' and therefore the total resistance   */
-/* is the reciprocal of the sum of the reciprocals.                                  */
-                r[k][hbw] += (0.25*(design.Kb)*kc*kn*area)/(((design.Kb)*kn*xc) + (kc*kn*x) + (kc*(design.Kb)*nx));
-                r[k][(hbw + step)] = -(0.25*(design.Kb)*kc*kn*area)/
-                                     (((design.Kb)*kn*xc) + (kc*kn*x) + (kc*(design.Kb)*nx));
+                /* These resistances are actually 'admittances' and therefore the total resistance   */
+                /* is the reciprocal of the sum of the reciprocals.                                  */
+                r[k][hbw] += (0.25 * (design.Kb) * kc * kn * area) / (((design.Kb) * kn * xc) + (kc * kn * x) + (kc * (design.Kb) * nx));
+                r[k][(hbw + step)] = -(0.25 * (design.Kb) * kc * kn * area) /
+                                     (((design.Kb) * kn * xc) + (kc * kn * x) + (kc * (design.Kb) * nx));
             }
         }
 
@@ -499,7 +497,7 @@ namespace _3D_LayoutOpt
             double sum;
 
             Console.WriteLine("LU ");
-/*   L-U Decomposition of Banded Matrix; returning values to the R banded matrix  */
+            /*   L-U Decomposition of Banded Matrix; returning values to the R banded matrix  */
             for (i = 1; i <= hbw; ++i)
                 r[0][c + i] /= r[0][c];
 
@@ -511,7 +509,7 @@ namespace _3D_LayoutOpt
                     {
                         sum = r[k + i][c - i];
                         for (j = 1; j <= (hbw - i); ++j)
-                            if (j <= k) sum -= r[k - j][c + j]*r[k + i][c - i - j];
+                            if (j <= k) sum -= r[k - j][c + j] * r[k + i][c - i - j];
                         r[k + i][c - i] = sum;
                     }
                 }
@@ -519,28 +517,28 @@ namespace _3D_LayoutOpt
                 {
                     sum = r[k][c + i];
                     for (j = 1; j <= (hbw - i); ++j)
-                        if (j <= k) sum -= r[k - j][c + j + i]*r[k][c - j];
-                    r[k][c + i] = sum/r[k][c];
+                        if (j <= k) sum -= r[k - j][c + j + i] * r[k][c - j];
+                    r[k][c + i] = sum / r[k][c];
                 }
             }
             sum = r[n - 1][c];
             for (i = 1; i <= hbw; ++i)
-                sum -= r[n - 1][c - i]*r[n - 1 - i][c + i];
+                sum -= r[n - 1][c - i] * r[n - 1 - i][c + i];
             r[n - 1][c] = sum;
 
-/*   L-U Back-Substition to get temperatures.   */
+            /*   L-U Back-Substition to get temperatures.   */
             for (k = 0; k < n; ++k)
             {
                 sum = flux[k];
                 for (i = 1; i <= hbw; ++i)
-                    if (i <= k) sum -= r[k][c - i]*flux[k - i];
-                flux[k] = sum/r[k][c];
+                    if (i <= k) sum -= r[k][c - i] * flux[k - i];
+                flux[k] = sum / r[k][c];
             }
             for (k = n - 1; k >= 0; --k)
             {
                 sum = flux[k];
                 for (i = 1; i <= hbw; ++i)
-                    if ((k + i) < n) sum -= r[k][c + i]*(design.Tfield[k + i].Temp);
+                    if ((k + i) < n) sum -= r[k][c + i] * (design.Tfield[k + i].Temp);
                 design.Tfield[k].Temp = sum;
             }
         }
@@ -552,7 +550,7 @@ namespace _3D_LayoutOpt
         void GaussSeidel(Design design, double[][] r, double[] flux, int totNodes, int hbw, int znodes)
         {
             int i, k;
-            int[] pos = {1, 0, 0};
+            int[] pos = { 1, 0, 0 };
             Int16 iter = 0;
             double tol, rtot;
 
@@ -575,19 +573,19 @@ namespace _3D_LayoutOpt
                     {
                         if ((k - pos[i]) >= 0)
                         {
-                            rtot -= r[k][hbw - pos[i]]*design.Tfield[k - pos[i]].Temp;
+                            rtot -= r[k][hbw - pos[i]] * design.Tfield[k - pos[i]].Temp;
                         }
                         if ((k + pos[i]) < totNodes)
                         {
-                            rtot -= r[k][hbw + pos[i]]*design.Tfield[k + pos[i]].Temp;
+                            rtot -= r[k][hbw + pos[i]] * design.Tfield[k + pos[i]].Temp;
                         }
                     }
-                    design.Tfield[k].Temp = rtot/(r[k][hbw]);
+                    design.Tfield[k].Temp = rtot / (r[k][hbw]);
                     /*   SOR   */
-                    design.Tfield[k].Temp = Constants.Omega*design.Tfield[k].Temp +
-                                            (1 - Constants.Omega)*design.Tfield[k].PrevTemp;
+                    design.Tfield[k].Temp = Constants.Omega * design.Tfield[k].Temp +
+                                            (1 - Constants.Omega) * design.Tfield[k].PrevTemp;
                     /* Absolute Tolerance tabulation. */
-                    tol += Math.Abs(design.Tfield[k].Temp - design.Tfield[k].PrevTemp)/totNodes;
+                    tol += Math.Abs(design.Tfield[k].Temp - design.Tfield[k].PrevTemp) / totNodes;
                 }
                 /*Console.WriteLine("Iteration %d: Component #1 temperature = %.2f  %f", iter, 
 	design.tfield[0].temp, tol);*/
@@ -610,7 +608,7 @@ namespace _3D_LayoutOpt
             {
                 design.Tfield[k].Temp = design.Tfield[k].OldTemp;
             }
-            
+
             for (var i = 0; i < design.CompCount; i++)
             {
                 comp = design.Components[i];

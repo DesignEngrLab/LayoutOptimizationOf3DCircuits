@@ -60,30 +60,55 @@ namespace _3D_LayoutOpt
             var thetaX = coord[3];
             var thetaY = coord[4];
             var thetaZ = coord[5];
+            var center = Ts.Center;
+
+
+            var translateMatrix1 = new double[,]
+            {
+                {1, 0, 0, -center[0]},
+                {0, 1, 0, -center[1]},
+                {0, 0, 1, -center[2]},
+                {0, 0, 0, 1},
+            };
+            Ts.Transform(translateMatrix1);
+
             var transformMatrix = new double[,]
                  {
                     {
                          Math.Cos(thetaX) * Math.Cos(thetaY),
                          Math.Cos(thetaX) * Math.Sin(thetaY) * Math.Sin(thetaZ) - Math.Sin(thetaX) * Math.Cos(thetaZ),
                          Math.Cos(thetaX) * Math.Sin(thetaY) * Math.Cos(thetaZ) + Math.Sin(thetaX) * Math.Sin(thetaZ),
-                         x },
+                         0 },
                     {
                          Math.Sin(thetaX) * Math.Cos(thetaY),
                          Math.Sin(thetaX) * Math.Sin(thetaY) * Math.Sin(thetaZ) + Math.Cos(thetaX) * Math.Cos(thetaZ),
                          Math.Sin(thetaX) * Math.Sin(thetaY) * Math.Cos(thetaZ) - Math.Cos(thetaX) * Math.Sin(thetaZ),
-                         y },
+                         0 },
                     {
                          -1 * Math.Sin(thetaY),
                          Math.Cos(thetaY) * Math.Sin(thetaZ),
                          Math.Cos(thetaY) * Math.Cos(thetaZ),
-                         z },
+                         0 },
                     {0.0, 0.0, 0.0, 1.0}
                  };
             Ts.Transform(transformMatrix);
+
+            var translateMatrix2 = new double[,]
+            {
+                {1, 0, 0, center[0] + coord[0]},
+                {0, 1, 0, center[1] + coord[1]},
+                {0, 0, 1, center[2] + coord[2]},
+                {0, 0, 0, 1},
+            };
+            Ts.Transform(translateMatrix2);
+
             //UPDATING THE PIN COORDINATES
             foreach (var smd in Footprint.Pads)
+            {
+                smd.Coord = translateMatrix1.multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
                 smd.Coord = transformMatrix.multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
-
+                smd.Coord = translateMatrix2.multiply(new[] { smd.Coord[0], smd.Coord[1], smd.Coord[2], 1 });
+            }
         }
     }
 
@@ -182,6 +207,7 @@ namespace _3D_LayoutOpt
 		public void Route(Design design)
 		{
             List<Smd> visitedTermianlNodes = new List<Smd>();
+            NetLength = 0;
 			foreach (var item in TerminalNodesSortedQueue)
 			{
                 if (visitedTermianlNodes.Count == PinRefs.Count)
