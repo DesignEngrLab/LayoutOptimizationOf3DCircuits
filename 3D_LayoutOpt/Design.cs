@@ -12,6 +12,7 @@ namespace _3D_LayoutOpt
         public double[,] OldDesignVars = null;
         public List<Net> Netlist = new List<Net>();
 		public IList<double[]> RatsNest = new List<double[]>();
+        public List<Point> grid = new List<Point>();
 
 
         /* Box_min and box_max are the x, y, z bounds for the bounding box.  Overlap is a     */
@@ -27,7 +28,6 @@ namespace _3D_LayoutOpt
         public double[] OldCoord = new double[3];
         public double[] OldDim = new double[3];
         public double[] CGrav = new double[3];
-        //public double[] container = new double[3];                                             //ENCLOSURE DIMENSIONS READ FROM FILE
         public Container Container;
 
         /* First comp is a pointer to the first component in the component list.  Min_comp    */
@@ -96,7 +96,7 @@ namespace _3D_LayoutOpt
             return array;
         }
 
-        public void add_comp(Component comp)
+        public void AddComp(Component comp)
         {
             Components.Add(comp);
         }
@@ -115,13 +115,13 @@ namespace _3D_LayoutOpt
                     move[j] = DesignVars[i,j] - OldDesignVars[i,j];
                 }
                 Components[i].Update(move);
-                //for (var j = 0; j < 3; j++)
-                //{
-                //    if (BoxMin[j] > Components[i].Ts.Bounds[0][j])
-                //        BoxMin[j] = Components[i].Ts.Bounds[0][j];
-                //    if (BoxMax[j] < Components[i].Ts.Bounds[1][j])
-                //        BoxMax[j] = Components[i].Ts.Bounds[1][j];
-                //}
+                for (var j = 0; j < 3; j++)
+                {
+                    if (BoxMin[j] > Components[i].Ts.Bounds[0][j])
+                        BoxMin[j] = Components[i].Ts.Bounds[0][j];
+                    if (BoxMax[j] < Components[i].Ts.Bounds[1][j])
+                        BoxMax[j] = Components[i].Ts.Bounds[1][j];
+                }
             }
             OldDesignVars = (double[,])DesignVars.Clone();
 

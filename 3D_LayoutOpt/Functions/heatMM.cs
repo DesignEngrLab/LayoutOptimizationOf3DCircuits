@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TVGL;
 
 namespace _3D_LayoutOpt
 {
@@ -27,6 +28,15 @@ namespace _3D_LayoutOpt
             var width = 2 * hbw + 1;
             var totNodes = nodeDim[0] * hbw;
 
+            //SHOW GRID
+            //var grid = new List<Point>();
+            foreach (var node in design.Tfield)
+            {
+                var point = new Point(node.Coord.ToList());
+                design.grid.Add(point);
+            }
+
+            
 
             FindContainedNodes(design, hbw, nodeDim[2]);
 
@@ -45,18 +55,10 @@ namespace _3D_LayoutOpt
             }
             SetupFlux(design, flux, totNodes);
             SetupCoefMatrix(design, flux, r, totNodes, hbw, nodeDim[2]);
-            /*if (design.gauss) {
-    design.gauss = 0;
-    GaussSeidel(design, R, flux, tot_nodes, hbw, node_dim[2]);
-  }
-  else*/
+
             LU_Decomp(design, r, flux, totNodes, hbw);
             FindCompTemp(design);
 
-            //for (i = 0; i<tot_nodes; i++)
-            //    free(R[i]);
-            //    free(R);
-            //    free(flux);
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -70,7 +72,6 @@ namespace _3D_LayoutOpt
         {
             Component comp;
             List<double>[] xx = new List<double>[3];
-            //var xx = new double[3][];
             var fringe = new double[3];
             int j, k, m;
             var dim = new int[3];
@@ -112,7 +113,7 @@ namespace _3D_LayoutOpt
                     fringe[m] = Constants.CFRINGE;
             }
 #endif
-            // refine mesh
+            // REFINE MESH
             for (m = 0; m < Constants.Dimension; m++)
             {
                 xx[m].Insert(0, design.BoxMin[m] - fringe[m]);
@@ -295,9 +296,6 @@ namespace _3D_LayoutOpt
 
         static void SetupFlux(Design design, double[] flux, int totNodes)
         {
-            /*  flux[(comp.node_center)] = comp.q;*/
-
-
             for (var i = 0; i < design.CompCount; i++)
             {
                 var comp = design.Components[i];
@@ -449,7 +447,6 @@ namespace _3D_LayoutOpt
                 }
                 /* These two 'if' statements account for the chance that the node and the */
                 /* neighboring node might be in the same component.                       */
-                /*Console.WriteLine("%f  %f  %f ", x, xc, nx);*/
                 if (x + nx <= xc)
                 {
                     xc = x;
@@ -483,7 +480,6 @@ namespace _3D_LayoutOpt
             {
                 comp = design.Components[i];
                 comp.Temp = design.Tfield[comp.NodeCenter].Temp;
-                /*Console.WriteLine("Component %d temperature = %.2f", ++i, comp.temp);*/
             }
         }
 

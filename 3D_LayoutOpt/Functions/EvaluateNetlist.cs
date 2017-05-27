@@ -30,7 +30,7 @@ namespace _3D_LayoutOpt.Functions
                 //net.CalcNetDirectLineLength(_design);
                 sum += net.NetLength;
             }
-            _design.NewObjValues[0] = sum * 100;                 //MANUALLY APPLYING A WEIGHT OF 4
+            _design.NewObjValues[0] = sum;                 //MANUALLY APPLYING A WEIGHT OF 4
             Console.Write("netlist = {0};  ", _design.NewObjValues[0]);
             return _design.NewObjValues[0];
 

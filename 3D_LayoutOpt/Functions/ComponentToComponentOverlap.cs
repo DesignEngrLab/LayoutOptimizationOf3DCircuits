@@ -61,17 +61,17 @@ namespace _3D_LayoutOpt.Functions
 
 					var comp1 = _design.Components[j];
 					var ts1 = comp1.Ts;
-					if (!BoundingBoxOverlap(ts0, ts1))
-						_design.Overlap[j, i] = 0;
-					else if (!ConvexHullOverlap(ts0, ts1))
-						_design.Overlap[j, i] = 0;
-					else
-					{
-						List<Vertex> ts1VertsInts0, ts0VertsInts1;
-						List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
-						TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
-							out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, true);
-						ts1VertsInts0.AddRange(ts0VertsInts1);
+                    if (!BoundingBoxOverlap(ts0, ts1))
+                        _design.Overlap[j, i] = 0;
+                    else if (!ConvexHullOverlap(ts0, ts1))
+                        _design.Overlap[j, i] = 0;
+                    else
+                    {
+                        List<Vertex> ts1VertsInts0, ts0VertsInts1;
+                        List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
+                        TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
+                            out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, true);
+                        ts1VertsInts0.AddRange(ts0VertsInts1);
                         if (ts1VertsInts0.Count == 0)
                             _design.Overlap[j, i] = 0;
                         else
@@ -81,7 +81,23 @@ namespace _3D_LayoutOpt.Functions
                             /*_design.Overlap[j, i] = vol / (ts0.Volume + ts1.Volume);*/       //USING OVERLAP VOLUME PERCENTAGE
                             _design.Overlap[j, i] = vol;
                         }
-					}  
+                    }
+
+
+                    //List<Vertex> ts1VertsInts0, ts0VertsInts1;
+                    //List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
+                    //TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
+                    //    out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, true);
+                    //ts1VertsInts0.AddRange(ts0VertsInts1);
+                    //if (ts1VertsInts0.Count == 0)
+                    //    _design.Overlap[j, i] = 0;
+                    //else
+                    //{
+                    //    var convexHull = new TVGLConvexHull(ts1VertsInts0, 0.000001);
+                    //    var vol = convexHull.Volume;
+                    //    /*_design.Overlap[j, i] = vol / (ts0.Volume + ts1.Volume);*/       //USING OVERLAP VOLUME PERCENTAGE
+                    //    _design.Overlap[j, i] = vol;
+                    //}
                 }
             }
             var sum = 0.0;

@@ -56,8 +56,9 @@ namespace _3D_LayoutOpt
             Io.SaveTfield(design);
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
 			Presenter.ShowVertexPathsWithSolid(design.RatsNest, shapes);
+            Presenter.ShowAndHang(design.grid, "grid", Plot2DType.Points, true, OxyPlot.MarkerType.Circle);
 
-			stopwatch.Stop();
+            stopwatch.Stop();
             var timeElapsed = stopwatch.Elapsed;
             using (var writetext = new StreamWriter("results"))
             {
@@ -123,7 +124,7 @@ namespace _3D_LayoutOpt
             opty.Add(new squaredExteriorPenalty(opty, 10));
             opty.Add(new MaxAgeConvergence(40, 0.01));
             opty.Add(new MaxFnEvalsConvergence(10000));
-            opty.Add(new MaxIterationsConvergence(10));
+            opty.Add(new MaxIterationsConvergence(2));
             opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
             Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;

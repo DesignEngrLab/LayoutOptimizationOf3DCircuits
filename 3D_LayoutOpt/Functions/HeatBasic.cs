@@ -120,57 +120,5 @@ namespace _3D_LayoutOpt
             return (value);
         }
 
-
-        /* ---------------------------------------------------------------------------------- */
-        /* This function reverts to  the previous node temperatures if the new Move was       */
-        /* rejected.                                                                          */
-        /* ---------------------------------------------------------------------------------- */
-        public static void RevertTfield(Design design)
-        {
-            int k;
-
-            for (k = 0; k < Constants.NodeNum; ++k)
-                design.Tfield[k].Temp = design.Tfield[k].OldTemp;
-        }
-
-        /* ---------------------------------------------------------------------------------- */
-        /* This function backs up the current temperatures into old_temp if the step was      */
-        /* Accepted.                                                                          */
-        /* ---------------------------------------------------------------------------------- */
-        public static void BackUpTfield(Design design)
-        {
-            int k;
-
-            for (k = 0; k < Constants.NodeNum; ++k)
-                design.Tfield[k].OldTemp = design.Tfield[k].Temp;
-        }
-
-
-        /* ---------------------------------------------------------------------------------- */
-        /* This function is performed after determining the sample space but before
-        /* the beginning of the annealing run.  The sser provides input into when to
-        /* switch between thermal anylses. */
-        /* ---------------------------------------------------------------------------------- */
-        public static void EstablishThermalChanges(Design design)
-        {
-            int i;
-            Console.WriteLine("\nPlease define thermal anaylses changes.\n");
-            Console.WriteLine("After how many temperature drops should switch to more exact Lumped Method?");
-            i = Convert.ToInt16(Console.ReadLine());
-            design.AnalysisSwitch[0] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch from Lumped Method to Sub-Space Method?");
-            i = Convert.ToInt16(Console.ReadLine());
-            design.AnalysisSwitch[1] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch to more exact Sub-Space Method?");
-            i = Convert.ToInt16(Console.ReadLine());
-            design.AnalysisSwitch[2] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch from Sub-Space Method to Matrix Method?");
-            i = Convert.ToInt16(Console.ReadLine());
-            design.AnalysisSwitch[3] = Math.Pow(0.95, i);
-            Console.WriteLine("After how many temperature drops should switch to more exact Matrix Method?");
-            i = Convert.ToInt16(Console.ReadLine());
-            design.AnalysisSwitch[4] = Math.Pow(0.95, i);
-        }
-
     }
 }

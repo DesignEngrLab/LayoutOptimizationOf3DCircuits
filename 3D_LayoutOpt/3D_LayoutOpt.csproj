@@ -56,6 +56,7 @@
     <Reference Include="MIConvexHull.NET Standard, Version=1.0.17.411, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MIConvexHull.1.1.17.0411\lib\netstandard1.0\MIConvexHull.NET Standard.dll</HintPath>
     </Reference>
+    <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9" />
     <Reference Include="PropertyTools, Version=2.0.1.0, Culture=neutral, PublicKeyToken=ea0c9f2b460934d0, processorArchitecture=MSIL">
       <HintPath>packages\PropertyTools.Wpf.2.0.1\lib\net45\PropertyTools.dll</HintPath>
       <Private>True</Private>

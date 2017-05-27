@@ -53,8 +53,8 @@ namespace _3D_LayoutOpt.Functions
                 );
 
             _design.NewObjValues[2] = 10*CenterofGravityPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
-            Console.Write("CenterofGravityPenalty = {0};  ", 1000*CenterofGravityPenalty);
-            return 1000*CenterofGravityPenalty;
+            Console.Write("CenterofGravityPenalty = {0};  ", 10*CenterofGravityPenalty);
+            return 10*CenterofGravityPenalty;
         }
     }
 }
