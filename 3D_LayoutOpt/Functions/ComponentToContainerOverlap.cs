@@ -72,18 +72,13 @@ namespace _3D_LayoutOpt.Functions
                     List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
                     TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
                                 out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, false);
-                    //ts1VertsOutts0.AddRange(ts0VertsOutts1);
-                    //if (ts1VertsOutts0.Count < 4)
-                    //    vol = 0;
-                    //else
-                    //{
-                    //    var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);
-                    //    vol = convexHull.Volume;
-                    //}
-
-                    ts1VertsOutts0.AddRange(ts0VertsOutts1);
-                    var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);
-                    vol = convexHull.Volume;
+                    if (ts1VertsOutts0.Count() < 20)
+                        vol = (ts1VertsOutts0.Count() / ts1.Vertices.Count()) * ts1.Volume;
+                    else
+                    {
+                        var convexHull = new TVGLConvexHull(ts1VertsOutts0, 0.000001);
+                        vol = convexHull.Volume;
+                    }                
                 }
                 boxPenalty += vol;
 

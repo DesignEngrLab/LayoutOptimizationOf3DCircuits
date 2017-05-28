@@ -71,9 +71,11 @@ namespace _3D_LayoutOpt.Functions
                         List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
                         TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
                             out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, true);
+
+                       
                         ts1VertsInts0.AddRange(ts0VertsInts1);
-                        if (ts1VertsInts0.Count == 0)
-                            _design.Overlap[j, i] = 0;
+                        if (ts1VertsInts0.Count < 8)
+                            _design.Overlap[j, i] = (ts1VertsInts0.Count/(ts0.Vertices.Count()+ts1.Vertices.Count())) * (ts0.Volume + ts1.Volume);
                         else
                         {
                             var convexHull = new TVGLConvexHull(ts1VertsInts0, 0.000001);
@@ -109,10 +111,7 @@ namespace _3D_LayoutOpt.Functions
                     sum += _design.Overlap[j, i];
                 }
             }
-            //if (sum > 0.0)
-            //    _design.NewObjValues[1] = (0.05 + sum) * _design.NewObjValues[0];
-            //else
-            //    _design.NewObjValues[1] = 0.0;
+
             Console.Write("c2c = {0};  ", sum);
 
             return sum;

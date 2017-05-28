@@ -114,8 +114,8 @@ namespace _3D_LayoutOpt
         /* CLOSE_NODE: If nodes are this close than they are combined as one.                 */
         /* ---------------------------------------------------------------------------------- */
         public const double Omega = 1.85;
-        public const double Cfringe = 1.0;
-        public const int NodeNum = 15;
+        public const double Cfringe = 3.0;
+        public const int NodeNum = 16;
         public const double CloseNode = 0.1;
         public const int SwitchNum = 5;
 

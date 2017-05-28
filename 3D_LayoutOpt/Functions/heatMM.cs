@@ -30,11 +30,11 @@ namespace _3D_LayoutOpt
 
             //SHOW GRID
             //var grid = new List<Point>();
-            foreach (var node in design.Tfield)
-            {
-                var point = new Point(node.Coord.ToList());
-                design.grid.Add(point);
-            }
+            //foreach (var node in design.Tfield)
+            //{
+            //    var point = new Point(node.Coord.ToList());
+            //    design.grid.Add(point);
+            //}
 
             
 
@@ -53,7 +53,7 @@ namespace _3D_LayoutOpt
                 for (j = 0; j < width; ++j)
                     r[i][j] = 0.0;
             }
-            SetupFlux(design, flux, totNodes);
+            SetupHeatFluxMatrix(design, flux, totNodes);
             SetupCoefMatrix(design, flux, r, totNodes, hbw, nodeDim[2]);
 
             LU_Decomp(design, r, flux, totNodes, hbw);
@@ -98,12 +98,12 @@ namespace _3D_LayoutOpt
             }
 
 
-#if SFRINGE
-            for (m = 0; m < Constants.DIMENSION; m++)
+
+            for (m = 0; m < Constants.Dimension; m++)
             {
-                fringe[m] = Constants.SFRINGE;
+                fringe[m] = Constants.Cfringe;
             }
-#endif
+
 
 #if CFRINGE
             for (m = 0; m < Constants.DIMENSION; m++)
@@ -131,12 +131,10 @@ namespace _3D_LayoutOpt
                     for (dim[2] = 0; dim[2] < nodeDimensions[2]; dim[2]++)
                     {
                         for (m = 0; m < Constants.Dimension; m++)
-                        {
                             design.Tfield[k].Coord[m] = xx[m][dim[m]];
-                        }
                         design.Tfield[k].Comp = null;
-                        if ((k > nodeDimensions[0] * nodeDimensions[1]) && (k < nodeDimensions[0] * nodeDimensions[1] * nodeDimensions[2] - nodeDimensions[0] * nodeDimensions[1])) 
-                            FindIfCompCenter(design, design.Tfield, k);          
+                        //if ((k > nodeDimensions[0] * nodeDimensions[1]) && (k < nodeDimensions[0] * nodeDimensions[1] * nodeDimensions[2] - nodeDimensions[0] * nodeDimensions[1])) 
+                        FindIfCompCenter(design, design.Tfield, k);          
                         k++;
                     }
                 }
@@ -175,7 +173,7 @@ namespace _3D_LayoutOpt
         static void RefineMesh(List<double> arr, double minNodeSpace)
         {
             int k = 1;
-            while (k < arr.Count && arr.Count < Constants.NodeNum - 1)
+            while (k < arr.Count && arr.Count < Constants.NodeNum)
             {
                 if ((arr[k] - arr[k - 1]) > minNodeSpace)
                     arr.Insert(k, 0.5 * (arr[k] - arr[k - 1]) + arr[k - 1]);
@@ -214,7 +212,7 @@ namespace _3D_LayoutOpt
 
             for (var i = 0; i < design.CompCount; i++)
             {
-                comp = design.Components[k];
+                comp = design.Components[i];
                 design.Tfield[comp.NodeCenter].Comp = comp;
                 comp.Nodes = 1;
                 FindNeighbors(design.Tfield, comp, comp.NodeCenter, comp.Nodes, hbw, znodes, 0);
@@ -294,7 +292,7 @@ namespace _3D_LayoutOpt
         /* INSIDE THE COMPONENT.                                                              */
         /* ---------------------------------------------------------------------------------- */
 
-        static void SetupFlux(Design design, double[] flux, int totNodes)
+        static void SetupHeatFluxMatrix(Design design, double[] flux, int totNodes)
         {
             for (var i = 0; i < design.CompCount; i++)
             {
