@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OptimizationToolbox;
+
 namespace _3D_LayoutOpt.Functions
 {
     class CenterOfGravity : IInequality
@@ -46,11 +47,11 @@ namespace _3D_LayoutOpt.Functions
                 CGrav[i] = sum[i] / vol;
             }
 
-            double CenterofGravityPenalty = Math.Sqrt(
+            double CenterofGravityPenalty =
                     (CGrav[0] - _design.Container.Ts.Center[0]) * (CGrav[0] - _design.Container.Ts.Center[0])
-                +   (CGrav[1] - _design.Container.Ts.Center[1]) * (CGrav[1] - _design.Container.Ts.Center[1])
-                +   (CGrav[2] - _design.Container.Ts.Center[2]) * (CGrav[2] - _design.Container.Ts.Center[2])
-                );
+                + (CGrav[1] - _design.Container.Ts.Center[1]) * (CGrav[1] - _design.Container.Ts.Center[1])
+                + (CGrav[2] - _design.Container.Ts.Center[2]) * (CGrav[2] - _design.Container.Ts.Center[2]);
+
 
             _design.NewObjValues[2] = 10*CenterofGravityPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
             Console.Write("CenterofGravityPenalty = {0};  ", 10*CenterofGravityPenalty);

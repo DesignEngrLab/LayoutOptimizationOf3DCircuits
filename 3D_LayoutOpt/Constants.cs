@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace _3D_LayoutOpt
 {
-    public enum AcceptFlag
-    {
-        ComponentOutside = -1,
-        RejectedBadMove = 0,
-        AcceptedBadMove = 1,
-        AcceptedGoodMove = 2
-    }
+   
     public static class Constants
     {
 
@@ -36,8 +30,8 @@ namespace _3D_LayoutOpt
         /* UPDATE_INTERVAL: How often (# of iterations) balancing coefficients are updated    */
         /* BOX_LIMIT: The value that the bounding box dimensions are not allowed to exceed.   */
         /* ---------------------------------------------------------------------------------- */
-        public const int MaxNameLength = 25;
-        public const double InitialBoxSize = 10.0;
+        
+        
         public const int ObjNum = 4;
         public const int BalanceAvg = 45;
         public const int UpdateInterval = 1;

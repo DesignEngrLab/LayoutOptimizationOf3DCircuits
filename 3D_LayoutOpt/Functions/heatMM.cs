@@ -389,7 +389,7 @@ namespace _3D_LayoutOpt
             double xc = 0, nx = 0, kc, kn;
             int i;
 
-            if (x == 0.0)
+            if (x == 0.0)           //BOUNDARY CONDITION WHERE WE ONLY HAVE CONVETION
             {
                 flux[k] += 0.25 * (design.Tamb) * (design.H[dir]) * area;
                 r[k][hbw] += 0.25 * (design.H[dir]) * area;

@@ -31,6 +31,8 @@ namespace _3D_LayoutOpt
             stopwatch.Start();
 
 
+            #region Initialization
+
             // IMPORTING CAD MODELS, COMPONENT AND CONTAINER FEATURES
             Io.ImportData(design);
             Console.WriteLine("{0} components were read in from the file.\n", design.CompCount);
@@ -44,12 +46,12 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Initializing weights.\n");
             InitWeights(design);
 
-			
+            #endregion
 
             var shapes = design.Components.Select(c => c.Ts).ToList();
             //shapes.Add(design.Container.Ts);
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
-            OptimizeByPattern(design);
+            OptimizeByGA(design);
 
 
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
@@ -71,13 +73,13 @@ namespace _3D_LayoutOpt
             Console.ReadKey();
         }
 
+        #region Geneti Algorithm
         private static void OptimizeByGA(Design design)
         {
             //var opty = new GradientBasedOptimization();
             //var opty = new HillClimbing();
             var opty = new GeneticAlgorithm();
-
-
+            
             /* here is the Dependent Analysis. */
             opty.Add(design);
             // this is the objective function
@@ -86,7 +88,8 @@ namespace _3D_LayoutOpt
             opty.Add(new ComponentToComponentOverlap(design));
             opty.Add(new ComponentToContainerOverlap(design));
             opty.Add(new HeatBasic(design));
-            opty.Add(new CenterOfGravity(design));
+            //opty.Add(new CenterOfGravity(design));
+            opty.Add(new EvaluateBoundingBox(design));
 
             /******** Set up Design Space *************/
             /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
@@ -98,11 +101,11 @@ namespace _3D_LayoutOpt
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[6 * i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.1);
+                    dsd[6 * i + j] = new VariableDescriptor(.7*bounds[0][j], 0.7*bounds[1][j], 0.01);
                 }
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 360, 36);
+                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 360, 360);
                 }
             }
             opty.Add(dsd);
@@ -119,10 +122,10 @@ namespace _3D_LayoutOpt
             opty.Add(new PNormProportionalSelection(OptimizationToolbox.optimize.minimize, true));
             //opty.Add(new RandomNeighborGenerator(dsd,3000));
             //opty.Add(new KeepSingleBest(optimize.minimize));
-            opty.Add(new squaredExteriorPenalty(opty, 10));
-            opty.Add(new MaxAgeConvergence(40, 0.01));
+            opty.Add(new squaredExteriorPenalty(opty, 1));
+            opty.Add(new MaxAgeConvergence(12, 0.01));
             opty.Add(new MaxFnEvalsConvergence(10000));
-            opty.Add(new MaxIterationsConvergence(10));
+            opty.Add(new MaxIterationsConvergence(40));
             opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
             Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
@@ -133,6 +136,9 @@ namespace _3D_LayoutOpt
             var fStar = opty.Run(out xStar, design.CompCount * 6);
         }
 
+        #endregion
+
+        #region NelderMeads
         private static void OptimizeByPattern(Design design)
         {
             //var opty = new GradientBasedOptimization();
@@ -168,6 +174,126 @@ namespace _3D_LayoutOpt
 
             var fStar = opty.Run(out xStar, design.CompCount * 6);
         }
+        #endregion
+
+        #region Simulated Annealing
+
+        private static void OptimizeBySA(Design design)
+        {
+            //var opty = new GradientBasedOptimization();
+            //var opty = new HillClimbing();
+            var opty = new SimulatedAnnealing(optimize.minimize);
+
+
+            /* here is the Dependent Analysis. */
+            opty.Add(design);
+            // this is the objective function
+            opty.Add(new EvaluateNetlist(design));
+            // here are three inequality constraints
+            opty.Add(new ComponentToComponentOverlap(design));
+            opty.Add(new ComponentToContainerOverlap(design));
+            opty.Add(new HeatBasic(design));
+            //opty.Add(new CenterOfGravity(design));
+            opty.Add(new EvaluateBoundingBox(design));
+
+
+
+            /******** Set up Design Space *************/
+            /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
+             * location parameters should be continuous though. Consider removing the 800's below
+             * when using a mixed optimization method. */
+            var dsd = new DesignSpaceDescription(design.CompCount * 6);
+            var bounds = design.Container.Ts.Bounds;
+            for (var i = 0; i < design.CompCount; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    dsd[6 * i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.1);
+                }
+                for (var j = 0; j < 3; j++)
+                {
+                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 360, 36);
+                }
+            }
+            opty.Add(dsd);
+            opty.Add(new LatinHyperCube(dsd, VariablesInScope.BothDiscreteAndReal));
+            opty.Add(new squaredExteriorPenalty(opty, 10));
+            opty.Add(new RandomNeighborGenerator(dsd, 100));
+            opty.Add(new SACoolingSangiovanniVincentelli(100));
+            opty.Add(new MaxTimeConvergence(new TimeSpan(0, 5, 0)));
+
+            opty.ConvergenceMethods.RemoveAll(a => a is MaxSpanInPopulationConvergence);
+            /* the deltaX convergence needs to be removed as well, since RHC will end many iterations
+             * at the same point it started. */
+            opty.ConvergenceMethods.RemoveAll(a => a is DeltaXConvergence);
+            double[] xStar;
+            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
+            // this next line is to set the Debug statements from OOOT to the Console.
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            var timer = Stopwatch.StartNew();
+
+            var fStar = opty.Run(out xStar, design.CompCount * 6);
+        }
+
+        #endregion
+
+        #region Random Hill Climbing
+        private static void OptimizeByRHC(Design design)
+        { 
+            SearchIO.output("******************Random Hill Climbing ***********************");
+            var opty = new HillClimbing();
+            /* here is the Dependent Analysis. */
+            opty.Add(design);
+            // this is the objective function
+            opty.Add(new EvaluateNetlist(design));
+            // here are three inequality constraints
+            opty.Add(new ComponentToComponentOverlap(design));
+            opty.Add(new ComponentToContainerOverlap(design));
+            opty.Add(new HeatBasic(design));
+            //opty.Add(new CenterOfGravity(design));
+            opty.Add(new EvaluateBoundingBox(design));
+
+            /******** Set up Design Space *************/
+            /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
+             * location parameters should be continuous though. Consider removing the 800's below
+             * when using a mixed optimization method. */
+            var dsd = new DesignSpaceDescription(design.CompCount * 6);
+            var bounds = design.Container.Ts.Bounds;
+            for (var i = 0; i < design.CompCount; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    dsd[6 * i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.1);
+                }
+                for (var j = 0; j < 3; j++)
+                {
+                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 360, 36);
+                }
+            }
+            opty.Add(dsd);
+            opty.Add(new LatinHyperCube(dsd, VariablesInScope.BothDiscreteAndReal));
+            opty.Add(new squaredExteriorPenalty(opty, 10));
+            opty.Add(new RandomNeighborGenerator(dsd, 100));
+            opty.Add(new KeepSingleBest(optimize.minimize));
+            //opty.Add(new SACoolingSangiovanniVincentelli(100));
+            opty.Add(new MaxTimeConvergence(new TimeSpan(0, 5, 0)));
+
+            opty.ConvergenceMethods.RemoveAll(a => a is MaxSpanInPopulationConvergence);
+            /* the deltaX convergence needs to be removed as well, since RHC will end many iterations
+             * at the same point it started. */
+            opty.ConvergenceMethods.RemoveAll(a => a is DeltaXConvergence);
+            double[] xStar;
+            Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
+            // this next line is to set the Debug statements from OOOT to the Console.
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            var timer = Stopwatch.StartNew();
+
+            var fStar = opty.Run(out xStar, design.CompCount * 6);
+
+
+        }
+
+        #endregion
 
         /* ---------------------------------------------------------------------------------- */
         /* THIS FUNCTION SETS THE INITIAL OBJECTIVE FUNCTION WEIGHTS TO 1.0.                  */
@@ -197,8 +323,16 @@ namespace _3D_LayoutOpt
                 comp.SetCompToZero();
                 for (int i = 0; i < 6; i++)
                 {
-                    design.DesignVars[comp.Index, i] = 0;
-                    design.OldDesignVars[comp.Index, i] = 0;
+                    if (i < 3)
+                    {
+                        design.DesignVars[comp.Index, i] = comp.Ts.Center[i];
+                        design.OldDesignVars[comp.Index, i] = comp.Ts.Center[i];
+                    }
+                    else
+                    {
+                        design.DesignVars[comp.Index, i] = 0;
+                        design.OldDesignVars[comp.Index, i] = 0;
+                    }
                 }
 
             }

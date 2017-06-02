@@ -391,7 +391,8 @@ namespace OptimizationToolbox
                 {
                     try
                     {
-                        x = new RandomSampling(spaceDescriptor).GenerateCandidates(null, 1)[0];
+                        xStart = new RandomSampling(spaceDescriptor).GenerateCandidates(null, 1)[0];
+                        x = (double[])xStart.Clone();
                     }
                     catch
                     {
@@ -400,6 +401,7 @@ namespace OptimizationToolbox
                         var randy = new Random();
                         for (var i = 0; i < n; i++)
                             x[i] = 100.0 * randy.NextDouble();
+                        x = (double[])xStart.Clone();
                     }
                 }
                 if (RequiresFeasibleStartPoint && !feasible(x))

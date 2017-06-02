@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Design.cs" />
     <Compile Include="Classes.cs" />
+    <Compile Include="Functions\EvaluateBoundingBox.cs" />
     <Compile Include="Routing\Edge.cs" />
     <Compile Include="Functions\CenterOfGravity.cs" />
     <Compile Include="Functions\ComponentToContainerOverlap.cs" />

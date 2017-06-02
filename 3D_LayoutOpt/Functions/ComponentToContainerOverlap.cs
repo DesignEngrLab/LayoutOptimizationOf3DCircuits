@@ -55,13 +55,15 @@ namespace _3D_LayoutOpt.Functions
 
 		public double calculate(double[] x)
         {
-            double boxPenalty;
-            boxPenalty = 0.0;
+            var volPenalty = 0.0;
+            var totCompVolume = 0.0;
+            var containerPenalty = 0.0;
             var ts0 = _design.Container.Ts;
 			var vol = 0.0;
 			foreach (var comp in _design.Components)
             {
                 var ts1 = comp.Ts;
+                totCompVolume += ts1.Volume;
                 if (!BoundingBoxOverlap(ts0, ts1))
                     vol = ts1.Volume;
                 else if (!ConvexHullOverlap(ts0, ts1))
@@ -72,7 +74,7 @@ namespace _3D_LayoutOpt.Functions
                     List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
                     TVGL.MiscFunctions.FindSolidIntersections(ts0, ts1, out ts0VertsInts1,
                                 out ts0VertsOutts1, out ts1VertsInts0, out ts1VertsOutts0, false);
-                    if (ts1VertsOutts0.Count() < 20)
+                    if (ts1VertsOutts0.Count() < 6)
                         vol = (ts1VertsOutts0.Count() / ts1.Vertices.Count()) * ts1.Volume;
                     else
                     {
@@ -80,8 +82,8 @@ namespace _3D_LayoutOpt.Functions
                         vol = convexHull.Volume;
                     }                
                 }
-                boxPenalty += vol;
-
+                volPenalty += vol;
+                containerPenalty = volPenalty / totCompVolume;
                 //var ts1 = comp.Ts;
                 //List<Vertex> ts1VertsInts0, ts0VertsInts1;
                 //List<Vertex> ts1VertsOutts0, ts0VertsOutts1;
@@ -92,10 +94,10 @@ namespace _3D_LayoutOpt.Functions
                 //vol = convexHull.Volume;
                 //boxPenalty += vol;
             }
-			_design.NewObjValues[2] = boxPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
-            Console.Write("c2b = {0};  ", boxPenalty);
+			_design.NewObjValues[2] = 4*containerPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
+            Console.Write("c2b = {0};  ", 4*containerPenalty);
 
-            return boxPenalty;
+            return 4*containerPenalty;
         }
     }
 }

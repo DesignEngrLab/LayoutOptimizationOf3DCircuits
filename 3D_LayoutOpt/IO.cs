@@ -25,7 +25,7 @@ namespace _3D_LayoutOpt
             "Designs/D1.STL"
         };
         private static readonly string ContainerName =
-            "Designs/Container1.STL";
+            "Designs/Container8.STL";
 
 
         public static void ImportData(Design design)
@@ -61,6 +61,8 @@ namespace _3D_LayoutOpt
             design.Container = container;
         }
 
+        #region Import Component thermal values
+
         private static void ImportCompFeatures(Design design)
         {
             try
@@ -89,6 +91,11 @@ namespace _3D_LayoutOpt
             }
 
         }
+
+        #endregion
+
+
+        #region Import Environment thermal values
 
         private static void ImportContFeatures(Design design)
         {
@@ -123,6 +130,9 @@ namespace _3D_LayoutOpt
 
         }
 
+        #endregion
+
+        #region Import Component Footprints
 
         public static void ImportFootprints(Design design)
         {
@@ -186,8 +196,9 @@ namespace _3D_LayoutOpt
 
         }
 
-        
+        #endregion
 
+        #region Import Component Models
         private static void ImportCompModels(Design design)
         {
             for (var i = 0; i < CompNames.Count(); i++)
@@ -209,17 +220,9 @@ namespace _3D_LayoutOpt
                 }
             }
         }
+        #endregion
 
-        private static string GetNameFromFileName(string filename)
-        {
-            var startIndex = filename.LastIndexOf('/') + 1;
-            if (startIndex == -1) startIndex = filename.LastIndexOf('\\') + 1;
-            var endIndex = filename.IndexOf('.', startIndex);
-            if (endIndex == -1) endIndex = filename.Length - 1;
-            return filename.Substring(startIndex, endIndex - startIndex);
-        }
-
-
+        #region Import Netlist
 
         public static void ImportNetlist(Design design)
         {
@@ -250,5 +253,18 @@ namespace _3D_LayoutOpt
                 }
             }
         }
+
+        #endregion
+
+        private static string GetNameFromFileName(string filename)
+        {
+            var startIndex = filename.LastIndexOf('/') + 1;
+            if (startIndex == -1) startIndex = filename.LastIndexOf('\\') + 1;
+            var endIndex = filename.IndexOf('.', startIndex);
+            if (endIndex == -1) endIndex = filename.Length - 1;
+            return filename.Substring(startIndex, endIndex - startIndex);
+        }
+
+        
     }
 }
