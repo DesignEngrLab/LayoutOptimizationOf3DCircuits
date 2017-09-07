@@ -53,9 +53,14 @@ namespace _3D_LayoutOpt.Functions
                 + (CGrav[2] - _design.Container.Ts.Center[2]) * (CGrav[2] - _design.Container.Ts.Center[2]);
 
 
-            _design.NewObjValues[2] = 10*CenterofGravityPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
-            Console.Write("CenterofGravityPenalty = {0};  ", 10*CenterofGravityPenalty);
-            return 10*CenterofGravityPenalty;
+            _design.NewObjValues[5] = CenterofGravityPenalty * _design.objWeight[5];
+            if (_design.NewObjValues[5] < _design.minObjValues[5])
+                _design.minObjValues[5] = _design.NewObjValues[5];
+            if (_design.NewObjValues[5] > _design.maxObjValues[5])
+                _design.maxObjValues[5] = _design.NewObjValues[5];
+            _design.rangeObjValues[5] = _design.maxObjValues[5] - _design.minObjValues[5];
+            Console.WriteLine("BBox = {0} min = {1} max = {2} range = {3};  ", _design.NewObjValues[5], _design.minObjValues[5], _design.maxObjValues[5], _design.rangeObjValues[5]);
+            return _design.NewObjValues[5];
         }
     }
 }

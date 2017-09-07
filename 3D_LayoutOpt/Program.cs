@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using StarMathLib;
 using TVGL;
 
+
+
 namespace _3D_LayoutOpt
 {
     class Program
@@ -19,11 +21,8 @@ namespace _3D_LayoutOpt
         [STAThread]
         static void Main(string[] args)
         {
-            int i;
-            double eval, h, w, l;
-            char wait;
+
             var design = new Design();
-            Component comp;
 
 
             Directory.SetCurrentDirectory("../../workspace");
@@ -46,6 +45,8 @@ namespace _3D_LayoutOpt
             Console.WriteLine("Initializing weights.\n");
             InitWeights(design);
 
+            InitObjValues(design);
+
             #endregion
 
             var shapes = design.Components.Select(c => c.Ts).ToList();
@@ -53,6 +54,7 @@ namespace _3D_LayoutOpt
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
             OptimizeByGA(design);
 
+            
 
             Presenter.ShowAndHangTransparentsAndSolids(new [] { design.Container.Ts }, shapes);
 			Presenter.ShowVertexPathsWithSolid(design.RatsNest, shapes);
@@ -60,16 +62,8 @@ namespace _3D_LayoutOpt
 
             stopwatch.Stop();
             var timeElapsed = stopwatch.Elapsed;
-            using (var writetext = new StreamWriter("results"))
-            {
-                if (design.NewObjValues[1] != 0.0)
-                {
-                    writetext.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!");
-                    Console.WriteLine("*** THE FINAL OVERLAP WAS NOT ZERO!!!");
-                }
-                writetext.WriteLine("The elapsed time was {0} seconds", timeElapsed);
-                Console.WriteLine("The elapsed time was {0} seconds", timeElapsed);
-            }
+            
+            Console.WriteLine("The elapsed time was {0} seconds", timeElapsed);
             Console.ReadKey();
         }
 
@@ -78,7 +72,7 @@ namespace _3D_LayoutOpt
         {
             //var opty = new GradientBasedOptimization();
             //var opty = new HillClimbing();
-            var opty = new GeneticAlgorithm();
+            var opty = new GeneticAlgorithm(420);
             
             /* here is the Dependent Analysis. */
             opty.Add(design);
@@ -89,7 +83,7 @@ namespace _3D_LayoutOpt
             opty.Add(new ComponentToContainerOverlap(design));
             opty.Add(new HeatBasic(design));
             //opty.Add(new CenterOfGravity(design));
-            opty.Add(new EvaluateBoundingBox(design));
+            //opty.Add(new EvaluateBoundingBox(design));
 
             /******** Set up Design Space *************/
             /* for the GA and the Hill Climbing, a compete discrete space is needed. Face width and
@@ -101,11 +95,12 @@ namespace _3D_LayoutOpt
             {
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[6 * i + j] = new VariableDescriptor(.7*bounds[0][j], 0.7*bounds[1][j], 0.01);
+                    //dsd[6 * i + j] = new VariableDescriptor(bounds[0][j], bounds[1][j], 0.2);
+                    dsd[6 * i + j] = new VariableDescriptor(1.2*design.DesignSpaceMin[j], 1.2*design.DesignSpaceMax[j], 0.1);
                 }
                 for (var j = 0; j < 3; j++)
                 {
-                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 360, 360);
+                    dsd[6 * i + 3 + j] = new VariableDescriptor(0, 2*Math.PI, 100);
                 }
             }
             opty.Add(dsd);
@@ -116,23 +111,23 @@ namespace _3D_LayoutOpt
             //opty.Add(searchDirMethod);
             //abstractLineSearch lineSearchMethod = new ArithmeticMean(0.0001, 1, 100);
             //opty.Add(lineSearchMethod);
-            opty.Add(new LatinHyperCube(dsd, VariablesInScope.BothDiscreteAndReal));
+            opty.Add(new LatinHyperCube(dsd, VariablesInScope.OnlyDiscrete));
             opty.Add(new GACrossoverBitString(dsd));
             opty.Add(new GAMutationBitString(dsd));
             opty.Add(new PNormProportionalSelection(OptimizationToolbox.optimize.minimize, true));
             //opty.Add(new RandomNeighborGenerator(dsd,3000));
             //opty.Add(new KeepSingleBest(optimize.minimize));
             opty.Add(new squaredExteriorPenalty(opty, 1));
-            opty.Add(new MaxAgeConvergence(12, 0.01));
-            opty.Add(new MaxFnEvalsConvergence(10000));
-            opty.Add(new MaxIterationsConvergence(40));
-            opty.Add(new MaxSpanInPopulationConvergence(15));
+            //opty.Add(new DeltaFConvergence(.01));
+            opty.Add(new MaxAgeConvergence(5, 0.01));
+            opty.Add(new MaxFnEvalsConvergence(1000000));
+            opty.Add(new MaxIterationsConvergence(15));
+            //opty.Add(new MaxSpanInPopulationConvergence(15));
             double[] xStar;
             Parameters.Verbosity = OptimizationToolbox.VerbosityLevels.AboveNormal;
             // this next line is to set the Debug statements from OOOT to the Console.
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             var timer = Stopwatch.StartNew();
-
             var fStar = opty.Run(out xStar, design.CompCount * 6);
         }
 
@@ -296,16 +291,28 @@ namespace _3D_LayoutOpt
         #endregion
 
         /* ---------------------------------------------------------------------------------- */
-        /* THIS FUNCTION SETS THE INITIAL OBJECTIVE FUNCTION WEIGHTS TO 1.0.                  */
+        /* THIS FUNCTION SETS THE INITIAL OBJECTIVE FUNCTION WEIGHTS.                         */
         /* ---------------------------------------------------------------------------------- */
 
         static void InitWeights(Design design)
         {
-            int i;
-            for (i = 0; i < Constants.ObjNum; ++i)
-                design.Weight[i] = 1.0;
-            design.Weight[3] = 0.01;
-            design.Weight[1] = 2.5;
+            design.objWeight[0] = .08;                  //Netlist
+            design.objWeight[1] = 120;                  //Comp2Comp
+            design.objWeight[2] = 15;                   //Comp2Cont
+            design.objWeight[3] = .0001;                    //Heat
+            design.objWeight[4] = 40;                    //BBox
+            design.objWeight[5] = 10;                   //CGravity
+        }
+
+        static void InitObjValues(Design design)
+        {
+            for (int i = 0; i < Constants.ObjNum; i++)
+            {
+                design.NewObjValues[i] = double.PositiveInfinity;
+                design.minObjValues[i] = double.PositiveInfinity;
+                design.maxObjValues[i] = 0;
+            }
+
         }
 
         /* ---------------------------------------------------------------------------------- */
@@ -318,6 +325,8 @@ namespace _3D_LayoutOpt
             design.DesignVars = new double[design.CompCount,6];
             design.OldDesignVars = new double[design.CompCount,6];
             design.Container.SetToZero();
+            design.DesignSpaceMax = new[] { design.Container.Ts.XMax, design.Container.Ts.YMax, design.Container.Ts.ZMax };
+            design.DesignSpaceMin = new[] { design.Container.Ts.XMin, design.Container.Ts.YMin, design.Container.Ts.ZMin };
             foreach (var comp in design.Components)
             {
                 comp.SetCompToZero();

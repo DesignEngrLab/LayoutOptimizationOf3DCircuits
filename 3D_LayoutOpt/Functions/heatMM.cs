@@ -116,8 +116,8 @@ namespace _3D_LayoutOpt
             // REFINE MESH
             for (m = 0; m < Constants.Dimension; m++)
             {
-                xx[m].Insert(0, design.BoxMin[m] - fringe[m]);
-                xx[m].Add(design.BoxMax[m] + fringe[m]);
+                xx[m].Insert(0, design.Container.Ts.Bounds[0][m] - fringe[m]);
+                xx[m].Add(design.Container.Ts.Bounds[1][m] + fringe[m]);
                 RefineMesh(xx[m], design.MinNodeSpace);
             }
             nodeDimensions = xx.Select(a => a.Count).ToArray();

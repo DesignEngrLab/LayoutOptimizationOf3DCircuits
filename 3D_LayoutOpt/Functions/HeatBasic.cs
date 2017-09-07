@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OptimizationToolbox;
+using System.IO;
+
 namespace _3D_LayoutOpt
 {
     class HeatBasic : IInequality
@@ -15,7 +17,7 @@ namespace _3D_LayoutOpt
         {
             this._design = design;
             design.Tolerance = 0.001;
-            design.MinNodeSpace = 5.0;
+            design.MinNodeSpace = 0.1;
             design.Hcf = 0.1;
             design.GaussMove = 0.0;
             design.Gauss = 0;
@@ -57,16 +59,38 @@ namespace _3D_LayoutOpt
                     break;
             }
 
-            _design.NewObjValues[3] = 0.0;
+            double sum = 0;
 
             for (var i = 0; i < _design.CompCount; i++)
             {
                 comp = _design.Components[i];
-                _design.NewObjValues[3] += CalcTempPenalty2(_design, comp);
-            }
-            Console.Write("heat = {0};  ", 4*_design.NewObjValues[3]);
+                using (FileStream fileStream = new FileStream("Designs/simple/results2.txt", FileMode.Append))
+                {
+                    using (var writetext = new StreamWriter(fileStream))
+                    {
+                        writetext.Write("{0},",comp.Temp);
 
-            return 4*_design.NewObjValues[3];
+                    }
+                }
+                sum += CalcTempPenalty(_design, comp);
+            }
+            using (FileStream fileStream = new FileStream("Designs/simple/results2.txt", FileMode.Append))
+            {
+                using (var writetext = new StreamWriter(fileStream))
+                {
+                    writetext.WriteLine();
+
+                }
+            }
+
+            _design.NewObjValues[3] = sum * _design.objWeight[3];
+            if (_design.NewObjValues[3] < _design.minObjValues[3])
+                _design.minObjValues[3] = _design.NewObjValues[3];
+            if (_design.NewObjValues[3] > _design.maxObjValues[3])
+                _design.maxObjValues[3] = _design.NewObjValues[3];
+            _design.rangeObjValues[3] = _design.maxObjValues[3] - _design.minObjValues[3];
+            Console.WriteLine("Heat = {0} min = {1} max = {2} range = {3};  ", _design.NewObjValues[3], _design.minObjValues[3], _design.maxObjValues[3], _design.rangeObjValues[3]);
+            return _design.NewObjValues[3];
         }
 
         /* ---------------------------------------------------------------------------------- */

@@ -24,6 +24,8 @@ namespace _3D_LayoutOpt
         public double[] OldOrientation;
         public double[] BoxMin = new double[3];
         public double[] BoxMax = new double[3];
+        public double[] DesignSpaceMin = new double[3];
+        public double[] DesignSpaceMax = new double[3];
         public double[,] Overlap;
         public double[] OldCoord = new double[3];
         public double[] OldDim = new double[3];
@@ -54,10 +56,15 @@ namespace _3D_LayoutOpt
         /* copies the backed up values to new_obj_values to restore the previous state.       */
 
         public double[] NewObjValues = new double[Constants.ObjNum];
+        public double[] minObjValues = new double[Constants.ObjNum];
+        public double[] maxObjValues = new double[Constants.ObjNum];
+        public double[] aveObjValues = new double[Constants.ObjNum];
+        public double[] ObjValuesCounter = new double[Constants.ObjNum];
+        public double[] rangeObjValues = new double[Constants.ObjNum];
         public double[,] OldObjValues = new double[Constants.ObjNum, Constants.BalanceAvg];
         public double[] BackupObjValues = new double[Constants.ObjNum];
         public double[] Coef = new double[Constants.ObjNum];
-        public double[] Weight = new double[Constants.ObjNum];
+        public double[] objWeight = new double[Constants.ObjNum];
 
         /* These variables have been added for the thermal analysis.                          */
         /* tfield is the vector of temperature nodes.  It is constrained to NODE_NUM in each  */
@@ -103,8 +110,10 @@ namespace _3D_LayoutOpt
 
         public void calculate(double[] x)
         {
-            BoxMax = new[] { Container.Ts.XMax, Container.Ts.YMax, Container.Ts.ZMax };
-            BoxMin = new[] { Container.Ts.XMin, Container.Ts.YMin, Container.Ts.ZMin };
+            BoxMax = new double[] {0, 0, 0 };
+            BoxMin = new double[] {0, 0, 0 };
+            DesignSpaceMax = new[] { Container.Ts.XMax, Container.Ts.YMax, Container.Ts.ZMax };
+            DesignSpaceMin = new[] { Container.Ts.XMin, Container.Ts.YMin, Container.Ts.ZMin };
             var k = 0;
             for (var i = 0; i < CompCount; i++)
             {
@@ -121,6 +130,10 @@ namespace _3D_LayoutOpt
                         BoxMin[j] = Components[i].Ts.Bounds[0][j];
                     if (BoxMax[j] < Components[i].Ts.Bounds[1][j])
                         BoxMax[j] = Components[i].Ts.Bounds[1][j];
+                    if (DesignSpaceMin[j] > Components[i].Ts.Bounds[0][j])
+                        DesignSpaceMin[j] = Components[i].Ts.Bounds[0][j];
+                    if (DesignSpaceMax[j] < Components[i].Ts.Bounds[1][j])
+                        DesignSpaceMax[j] = Components[i].Ts.Bounds[1][j];
                 }
             }
             OldDesignVars = (double[,])DesignVars.Clone();

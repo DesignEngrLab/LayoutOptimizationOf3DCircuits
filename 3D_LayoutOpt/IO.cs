@@ -17,15 +17,20 @@ namespace _3D_LayoutOpt
 
         private static readonly string[] CompNames =
         {
-            "Designs/IC1.STL",
-            "Designs/R1.STL",
-            "Designs/R2.STL",
-            "Designs/R3.STL",
-            "Designs/C1.STL",
-            "Designs/D1.STL"
+            //"Designs/IC1.STL",
+            //"Designs/IC2.STL",
+            //"Designs/IC3.STL",
+            //"Designs/IC4.STL",
+            "Designs/D1.STL",
+            "Designs/D2.STL",
+            "Designs/D3.STL",
+            "Designs/D4.STL",
+            "Designs/D5.STL",
+            "Designs/D6.STL",
+            "Designs/D7.STL"
         };
         private static readonly string ContainerName =
-            "Designs/Container8.STL";
+            "Designs/Container14.STL";
 
 
         public static void ImportData(Design design)
@@ -59,6 +64,7 @@ namespace _3D_LayoutOpt
             var name = GetNameFromFileName(filename);
             var container = new Container(name, ts);
             design.Container = container;
+
         }
 
         #region Import Component thermal values
@@ -67,7 +73,7 @@ namespace _3D_LayoutOpt
         {
             try
             {
-                using (var readtext = new StreamReader("datafile1"))
+                using (var readtext = new StreamReader("Designs/simple/simpledatafile3"))
                 {
                     Console.WriteLine("Reading component data from file.");
                     string line;
@@ -137,7 +143,7 @@ namespace _3D_LayoutOpt
         public static void ImportFootprints(Design design)
         {
 
-            var doc = XDocument.Load("Designs/555LED.sch");
+            var doc = XDocument.Load("Designs/simple/555LED3.sch");
             var Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
             var Parts = doc.Element("eagle").Element("drawing").Element("schematic").Element("parts");
             var parts = Parts.Elements("part");
@@ -226,7 +232,7 @@ namespace _3D_LayoutOpt
 
         public static void ImportNetlist(Design design)
         {
-            var doc = XDocument.Load("Designs/555LED.sch");
+            var doc = XDocument.Load("Designs/simple/555LED3.sch");
             var Sheets = doc.Element("eagle").Element("drawing").Element("schematic").Element("sheets");
             if (Sheets != null)
             {

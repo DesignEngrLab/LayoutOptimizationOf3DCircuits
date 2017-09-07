@@ -32,7 +32,7 @@ namespace _3D_LayoutOpt
         /* ---------------------------------------------------------------------------------- */
         
         
-        public const int ObjNum = 4;
+        public const int ObjNum = 6;
         public const int BalanceAvg = 45;
         public const int UpdateInterval = 1;
         public const double BoxLimit = 30.0;

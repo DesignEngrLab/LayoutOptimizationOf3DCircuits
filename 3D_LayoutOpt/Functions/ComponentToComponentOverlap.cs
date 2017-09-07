@@ -122,9 +122,14 @@ namespace _3D_LayoutOpt.Functions
                 }
             }
 
-            Console.Write("c2c = {0};  ", 50*sum);
-
-            return 50*sum;
+            _design.NewObjValues[1] = sum * _design.objWeight[1];
+            if (_design.NewObjValues[1] < _design.minObjValues[1])
+                _design.minObjValues[1] = _design.NewObjValues[1];
+            if (_design.NewObjValues[1] > _design.maxObjValues[1])
+                _design.maxObjValues[1] = _design.NewObjValues[1];
+            _design.rangeObjValues[1] = _design.maxObjValues[1] - _design.minObjValues[1];
+            Console.WriteLine("Comp to Copm = {0} min = {1} max = {2} range = {3};  ", _design.NewObjValues[1], _design.minObjValues[1], _design.maxObjValues[1], _design.rangeObjValues[1]);
+            return _design.NewObjValues[1];
         }
     }
 }

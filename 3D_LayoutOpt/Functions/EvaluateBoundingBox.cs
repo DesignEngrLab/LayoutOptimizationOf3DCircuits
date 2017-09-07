@@ -28,13 +28,13 @@ namespace _3D_LayoutOpt.Functions
             if (volPenalty < 0)
                 volPenalty = 0;
 
-            var dimensionPenaltyX = ((_design.BoxMax[0] - _design.BoxMin[0]) - (_design.Container.Ts.XMax - _design.Container.Ts.XMin))/ (_design.BoxMax[0] - _design.BoxMin[0]);
+            var dimensionPenaltyX = ((_design.BoxMax[0] - _design.BoxMin[0]) - (_design.Container.Ts.XMax - _design.Container.Ts.XMin))/ (_design.Container.Ts.XMax - _design.Container.Ts.XMin);
             if (dimensionPenaltyX < 0)
                 dimensionPenaltyX = 0;
-            var dimensionPenaltyY = ((_design.BoxMax[1] - _design.BoxMin[1]) - (_design.Container.Ts.YMax - _design.Container.Ts.YMin))/ (_design.BoxMax[1] - _design.BoxMin[1]);
+            var dimensionPenaltyY = ((_design.BoxMax[1] - _design.BoxMin[1]) - (_design.Container.Ts.YMax - _design.Container.Ts.YMin))/ (_design.Container.Ts.YMax - _design.Container.Ts.YMin);
             if (dimensionPenaltyY < 0)
                 dimensionPenaltyY = 0;
-            var dimensionPenaltyZ = ((_design.BoxMax[2] - _design.BoxMin[2]) - (_design.Container.Ts.ZMax - _design.Container.Ts.ZMin))/ (_design.BoxMax[2] - _design.BoxMin[2]);
+            var dimensionPenaltyZ = ((_design.BoxMax[2] - _design.BoxMin[2]) - (_design.Container.Ts.ZMax - _design.Container.Ts.ZMin))/ (_design.Container.Ts.ZMax - _design.Container.Ts.ZMin);
             if (dimensionPenaltyZ < 0)
                 dimensionPenaltyZ = 0;
 
@@ -47,9 +47,14 @@ namespace _3D_LayoutOpt.Functions
             //var boundingBoxPenalty = volPenalty / boundingBoxVolume;
             //var boundingBoxPenalty = dimensionPenalty / sumOfBoundingBoxDimensions;
             var boundingBoxPenalty = dimensionPenalty;
-            _design.NewObjValues[2] = 8 * boundingBoxPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
-            Console.Write("Bounding Box Penalty = {0};  ", 8*boundingBoxPenalty);
-            return 8*(boundingBoxPenalty);
+            _design.NewObjValues[4] = boundingBoxPenalty * _design.objWeight[4];
+            if (_design.NewObjValues[4] < _design.minObjValues[4])
+                _design.minObjValues[4] = _design.NewObjValues[4];
+            if (_design.NewObjValues[4] > _design.maxObjValues[4])
+                _design.maxObjValues[4] = _design.NewObjValues[4];
+            _design.rangeObjValues[4] = _design.maxObjValues[4] - _design.minObjValues[4];
+            Console.WriteLine("BBox = {0} min = {1} max = {2} range = {3};  ", _design.NewObjValues[4], _design.minObjValues[4], _design.maxObjValues[4], _design.rangeObjValues[4]);
+            return _design.NewObjValues[4];
         }
     }
 }

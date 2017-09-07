@@ -94,10 +94,14 @@ namespace _3D_LayoutOpt.Functions
                 //vol = convexHull.Volume;
                 //boxPenalty += vol;
             }
-			_design.NewObjValues[2] = 4*containerPenalty;  //MANUALLY APPLYING A WEIGHT OF 2
-            Console.Write("c2b = {0};  ", 4*containerPenalty);
-
-            return 4*containerPenalty;
+            _design.NewObjValues[2] = containerPenalty * _design.objWeight[2];
+            if (_design.NewObjValues[2] < _design.minObjValues[2])
+                _design.minObjValues[2] = _design.NewObjValues[2];
+            if (_design.NewObjValues[2] > _design.maxObjValues[2])
+                _design.maxObjValues[2] = _design.NewObjValues[2];
+            _design.rangeObjValues[2] = _design.maxObjValues[2] - _design.minObjValues[2];
+            Console.WriteLine("Comp to Cont = {0} min = {1} max = {2} range = {3};  ", _design.NewObjValues[2], _design.minObjValues[2], _design.maxObjValues[2], _design.rangeObjValues[2]);
+            return _design.NewObjValues[2];
         }
     }
 }

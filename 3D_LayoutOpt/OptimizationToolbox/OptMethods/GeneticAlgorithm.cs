@@ -22,6 +22,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using StarMathLib;
+using System.IO;
+
 
 namespace OptimizationToolbox
 {
@@ -85,7 +87,18 @@ namespace OptimizationToolbox
                                 "*******************\n* Iteration: " + k + " *\n*******************");
                 /* 3. selection survivors*/
                 SearchIO.output("selecting from population  (current pop = " + population.Count + ").", 4);
-                SearchIO.output(CalcPopulationStats(population).MakePrintString(), 4);
+                var pubStats = CalcPopulationStats(population);
+                SearchIO.output(pubStats.MakePrintString(), 4);
+
+                //using (FileStream fileStream = new FileStream("Designs/simple/results.txt", FileMode.OpenOrCreate))
+                //{
+                //    using (var writetext = new StreamWriter(fileStream))
+                //    {
+                //        writetext.WriteLine("min:{0}, average:{1}, max:{2})", pubStats[0], pubStats[1], pubStats[2]);
+
+                //    }
+                //}
+
                 fitnessSelector.SelectCandidates(ref population);
                 /* 4. generate remainder of population with crossover generators */
                 SearchIO.output("generating new candidates (current pop = " + population.Count + ").", 4);
@@ -110,14 +123,22 @@ namespace OptimizationToolbox
             return fStar;
         }
 
-        private static double[] CalcPopulationStats(IEnumerable<ICandidate> population)
+        private double[] CalcPopulationStats(IEnumerable<ICandidate> population)
         {
             return new[]
                        {
                            (from c in population select c.objectives[0]).Min(),
                            (from c in population select c.objectives[0]).Average(),
-                           (from c in population select c.objectives[0]).Max()
+                           (from c in population select c.objectives[0]).Max(),
+
                        };
+
+
+            // calculate weights here
+
+            // reset database so that old values aren't used.
+            //ResetFunctionEvaluationDatabase();
+            
         }
 
 
